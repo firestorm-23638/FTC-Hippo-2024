@@ -15,6 +15,10 @@ public class DrivetrainCommand extends CommandBase {
 
     public DrivetrainCommand(Drivetrain drive, Supplier<Double> forward, Supplier<Double> strafe, Supplier<Double> turn) {
         m_drivetrain = drive;
+        forwardSupplier = forward;
+        strafeSupplier = strafe;
+        turnSupplier = turn;
+
         addRequirements(m_drivetrain);
     }
 
