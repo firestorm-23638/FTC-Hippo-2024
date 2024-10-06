@@ -16,4 +16,18 @@ public class Constants {
 
     public static final double depositorBasketToDepositAngle = 60;
     public static final double depositorBasketToHomeAngle = 0;
+
+    public static final String intakeHorizontalConfig = "horizontal";
+    public static final String intakePivotConfig = "pivot";
+    public static final String intakeVacuumConfig = "vacuumServo";
+
+    public static final double intakeHorizontalToIntakePose = 100;
+    public static final double intakeHorizontalToHomePose = 0;
+
+    public static final double intakePivotToDown = 40;
+    public static final double intakePivotToUp = 0;
+
+    public static final double intakeVacuumSpeed = .4;
+
+    public static final double intakeHorizontalKP = .05;
 }

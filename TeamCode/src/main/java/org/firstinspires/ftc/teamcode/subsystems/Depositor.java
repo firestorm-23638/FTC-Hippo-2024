@@ -6,16 +6,20 @@ import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Constants;
 
 public class Depositor extends SubsystemBase {
     private final Motor vertical;
     private final ServoEx basket;
+    private final Telemetry telemetry;
 
-    public Depositor(HardwareMap hardwareMap) {
+    public Depositor(HardwareMap hardwareMap, Telemetry telemetry) {
         vertical = new Motor(hardwareMap, Constants.depositorVerticalConfig);
         basket = new SimpleServo(hardwareMap, Constants.depositorBasketConfig, 0, 180, AngleUnit.DEGREES);
+
+        this.telemetry = telemetry;
     };
 
     private void verticalToPos(double targetPos) {
@@ -63,5 +67,12 @@ public class Depositor extends SubsystemBase {
 
     public void basketToHome() {
         basket.turnToAngle(Constants.depositorBasketToHomeAngle);
+    }
+
+    public void printVerticalPose() {
+        telemetry.addData("Vertical Position", vertical.getCurrentPosition());
+    }
+    public void printBasketPose() {
+        telemetry.addData("Basket Position", basket.getAngle());
     }
 }
