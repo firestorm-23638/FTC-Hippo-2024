@@ -24,7 +24,6 @@ public class DepositorCommand extends CommandBase {
 
     @Override
     public void execute() {
-        m_depositor.printBasketPose();
-        m_depositor.printVerticalPose();
+        //TODO make depositor go up and down
     }
 }
