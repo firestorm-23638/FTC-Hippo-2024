@@ -23,7 +23,6 @@ public class IntakeCommand extends CommandBase {
 
     @Override
     public void execute() {
-        m_intake.printHorizontalPose();
-        m_intake.printPivotPose();
+        //TODO make intake go in and out
     }
 }

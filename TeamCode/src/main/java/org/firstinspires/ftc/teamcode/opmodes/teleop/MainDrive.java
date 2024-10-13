@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.arcrobotics.ftclib.command.RunCommand;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.commands.DepositorCommand;
@@ -36,5 +37,8 @@ public class MainDrive extends CommandOpMode {
                 ()->this.gamepad1.dpad_down));
 
         register(drive, intake, depositor);
+
+        // Automatically updates telemetry
+        schedule(new RunCommand(telemetry::update));
     }
 }

@@ -26,6 +26,12 @@ public class Intake extends SubsystemBase {
         this.telemetry = telemetry;
     };
 
+    @Override
+    public void periodic() {
+        telemetry.addData("Horizontal Position", horizontal.getAngle());
+        telemetry.addData("Pivot Position", pivot.getAngle());
+    }
+
     private void horizontalToPos(double targetPos) {
         horizontal.turnToAngle(targetPos);
     }
@@ -80,15 +86,5 @@ public class Intake extends SubsystemBase {
             }
 
         }
-    }
-
-    // Tests
-
-    public void printHorizontalPose() {
-        telemetry.addData("Horizontal Position", horizontal.getAngle());
-    }
-
-    public void printPivotPose() {
-        telemetry.addData("Pivot Position", pivot.getAngle());
     }
 }

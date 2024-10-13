@@ -22,6 +22,12 @@ public class Depositor extends SubsystemBase {
         this.telemetry = telemetry;
     };
 
+    @Override
+    public void periodic() {
+        telemetry.addData("Vertical Position", vertical.getCurrentPosition());
+        telemetry.addData("Basket Position", basket.getAngle());
+    }
+
     private void verticalToPos(double targetPos) {
         vertical.setRunMode(Motor.RunMode.RawPower);
         double kP = Constants.depositorVerticalKP;
@@ -67,12 +73,5 @@ public class Depositor extends SubsystemBase {
 
     public void basketToHome() {
         basket.turnToAngle(Constants.depositorBasketToHomeAngle);
-    }
-
-    public void printVerticalPose() {
-        telemetry.addData("Vertical Position", vertical.getCurrentPosition());
-    }
-    public void printBasketPose() {
-        telemetry.addData("Basket Position", basket.getAngle());
     }
 }
