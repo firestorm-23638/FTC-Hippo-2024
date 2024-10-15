@@ -18,7 +18,7 @@ public class Drivetrain extends SubsystemBase {
 
     private final MecanumDrive mecanum;
 
-    private final RevIMU gyro;
+    //private final RevIMU gyro;
 
     public Drivetrain(HardwareMap hardwareMap) {
         frontLeft = new Motor(hardwareMap, Constants.driveFrontLeftConfig);
@@ -26,13 +26,16 @@ public class Drivetrain extends SubsystemBase {
         backLeft = new Motor(hardwareMap, Constants.driveBackLeftConfig);
         backRight = new Motor(hardwareMap, Constants.driveBackRightConfig);
 
+        frontRight.setInverted(true);
+        backRight.setInverted(true);
+
         mecanum = new MecanumDrive(frontLeft, frontRight, backLeft, backRight);
 
-        gyro = new RevIMU(hardwareMap);
+        //gyro = new RevIMU(hardwareMap);
 
     };
 
     public void drive(double strafe, double forward, double turn) {
-        mecanum.driveFieldCentric(strafe, forward, turn, gyro.getHeading());
+        mecanum.driveFieldCentric(strafe, forward, turn, 0);
     }
 }
