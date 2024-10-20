@@ -9,22 +9,19 @@ import com.arcrobotics.ftclib.geometry.Vector2d;
 import com.arcrobotics.ftclib.kinematics.wpilibkinematics.MecanumDriveKinematics;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
-public class Drivetrain extends SubsystemBase {
+public class NewDrivetrain extends SubsystemBase {
     private static int frontLeft = 0;
-    private static int frontRight = 1;
-    private static int backLeft = 2;
-    private static int backRight = 3;
+    private static int frontRight = 0;
+    private static int backLeft = 0;
+    private static int backRight = 0;
 
     private MecanumDrive mecanumDrive;
-    private Telemetry telemetry;
-    public Drivetrain(HardwareMap hmap, Pose2d pose, Telemetry telemetry) {
+    public NewDrivetrain(HardwareMap hmap, Pose2d pose) {
         // get motors for drivetrain
-        mecanumDrive = new MecanumDrive(hmap,pose);
-        this.telemetry = telemetry;
 
+        mecanumDrive = new MecanumDrive(hmap,pose);
     }
 
     private double clipRange(double value) {
@@ -79,7 +76,7 @@ public class Drivetrain extends SubsystemBase {
 
     public void driveFieldCentric(double forwardSpeed, double strafeSpeed, double turnSpeed) {
         Rotation2d gyroAngle = this.mecanumDrive.pose.heading;
-        this.fieldCentricDrive(forwardSpeed, strafeSpeed, turnSpeed, 0);
+        this.fieldCentricDrive(forwardSpeed, strafeSpeed, turnSpeed, gyroAngle.toDouble());
     }
 
     private void fieldCentricDrive(double forwardSpeed, double strafeSpeed, double turnSpeed, double gyroAngle) {
@@ -111,11 +108,6 @@ public class Drivetrain extends SubsystemBase {
         this.mecanumDrive.rightFront.setPower(wheelSpeeds[frontRight]);
         this.mecanumDrive.leftBack.setPower(wheelSpeeds[backLeft]);
         this.mecanumDrive.rightBack.setPower(wheelSpeeds[backRight]);
-
-        telemetry.addData("Front Left", wheelSpeeds[frontLeft]);
-        telemetry.addData("Front Right", wheelSpeeds[frontRight]);
-        telemetry.addData("Back Left", wheelSpeeds[backLeft]);
-        telemetry.addData("Back Right", wheelSpeeds[backRight]);
     }
 
     public TrajectoryActionBuilder getTrajectoryBuilder(Pose2d initalPose) {

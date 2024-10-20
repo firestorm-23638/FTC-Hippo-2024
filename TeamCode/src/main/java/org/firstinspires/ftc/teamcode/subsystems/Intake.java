@@ -16,13 +16,12 @@ public class Intake extends SubsystemBase {
     private final CRServo intake;
     private final Telemetry telemetry;
 
-    private int intakePivotPos = 0;
-    private double pivotPoses[] = {Constants.intakePivotToBasket, Constants.intakePivotToUp, Constants.intakePivotToDown};
-    private boolean intakeSpinning = false;
+    private boolean intakeOut = false;
+    public boolean intakeSpinning = false;
 
     public Intake(HardwareMap hardwareMap, Telemetry telemetry) {
         horizontal = new SimpleServo(hardwareMap, Constants.intakeHorizontalConfig, 0, 180, AngleUnit.DEGREES);
-        pivot = new SimpleServo(hardwareMap, Constants.intakePivotConfig, 0, 210, AngleUnit.DEGREES);
+        pivot = new SimpleServo(hardwareMap, Constants.intakePivotConfig, 0, 220, AngleUnit.DEGREES);
         intake = new CRServo(hardwareMap, Constants.intakeVacuumConfig);
 
         this.telemetry = telemetry;
@@ -32,15 +31,6 @@ public class Intake extends SubsystemBase {
     public void periodic() {
         telemetry.addData("Horizontal Position", horizontal.getAngle());
         telemetry.addData("Pivot Position", pivot.getAngle());
-
-        pivotToPos(pivotPoses[intakePivotPos]);
-
-        if (intakePivotPos == 2) {
-            vacuumRun();
-        }
-        else {
-            vacuumStop();
-        }
 
     }
 
@@ -61,23 +51,25 @@ public class Intake extends SubsystemBase {
     }
 
     public void pivotDown() {
-        intakePivotPos = 2;
-    }
-
-    public void pivotUp() {
-        intakePivotPos = 1;
+        pivotToPos(Constants.intakePivotToDown);
     }
 
     public void pivotBasket() {
-        intakePivotPos = 0;
+        pivotToPos(Constants.intakePivotToBasket);
+    }
+
+    public void vacuumEject() {
+        intake.set(Constants.intakeEjectSpeed);
     }
 
     public void vacuumRun() {
         intake.set(Constants.intakeVacuumSpeed);
+        //intakeSpinning = true;
     }
 
     public void vacuumStop() {
         intake.set(0);
+        //intakeSpinning = false;
     }
 
     public void horizontalOut(boolean controlInput) {

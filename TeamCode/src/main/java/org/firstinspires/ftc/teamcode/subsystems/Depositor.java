@@ -11,12 +11,24 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Constants;
 
 public class Depositor extends SubsystemBase {
+    public enum state {
+            HOME((int)Constants.depositorVerticalToBottomPose),
+            MIDDLE_BASKET((int)Constants.depositorVerticalToMidPose),
+            HIGH_BASKET((int)Constants.depositorVerticalToTopPose);
+
+            public final int pos;
+            private state(int pos) {
+                this.pos = pos;
+            }
+    }
+
     private final Motor vertical;
     private final ServoEx basket;
     private final Telemetry telemetry;
 
-    private int currentStage = 0;
+    public state currentStage = state.HOME;
     private double pidTarget = 0;
+    private double basketTime = -1;
 
     private final double[] stageTargets = {Constants.depositorVerticalToBottomPose, Constants.depositorVerticalToMidPose, Constants.depositorVerticalToTopPose};
 
@@ -28,17 +40,27 @@ public class Depositor extends SubsystemBase {
     };
 
     public void increaseStage() {
-        if (currentStage == 2) {
+        if (currentStage == state.HIGH_BASKET) {
             return;
         }
-        currentStage ++;
+        if (currentStage == state.HOME) {
+            currentStage = state.MIDDLE_BASKET;
+        }
+        else {
+            currentStage = state.HIGH_BASKET;
+        }
     }
 
     public void decreaseStage() {
-        if (currentStage == 0) {
+        if (currentStage == state.HOME) {
             return;
         }
-        currentStage --;
+        if (currentStage == state.HIGH_BASKET) {
+            currentStage = state.MIDDLE_BASKET;
+        }
+        else {
+            currentStage = state.HOME;
+        }
     }
 
     @Override
@@ -47,7 +69,8 @@ public class Depositor extends SubsystemBase {
         telemetry.addData("Basket Position", basket.getAngle());
         telemetry.addData("Current Stage", currentStage);
 
-        pidTarget = stageTargets[currentStage];
+
+        pidTarget = currentStage.pos;
         verticalToPos(pidTarget);
 
     }
@@ -66,6 +89,12 @@ public class Depositor extends SubsystemBase {
         //else {
         //vertical.set(kConstant);
         //}
+
+    }
+
+    public boolean isAtPos() {
+        telemetry.addData("At target", (vertical.getCurrentPosition() >= currentStage.pos - 150) && (vertical.getCurrentPosition() <= currentStage.pos + 150));
+        return (vertical.getCurrentPosition() >= currentStage.pos - 150) && (vertical.getCurrentPosition() <= currentStage.pos + 150);
     }
 
     public void moveVertical(double speed) {
@@ -81,11 +110,13 @@ public class Depositor extends SubsystemBase {
         pidTarget = Constants.depositorVerticalToBottomPose;
     }
 
-    public void basketToDeposit() {
+    public boolean basketToDeposit() {
         basket.turnToAngle(Constants.depositorBasketToDepositAngle);
+        return false;
     }
 
-    public void basketToHome() {
+    public boolean basketToHome() {
         basket.turnToAngle(Constants.depositorBasketToHomeAngle);
+        return false;
     }
 }
