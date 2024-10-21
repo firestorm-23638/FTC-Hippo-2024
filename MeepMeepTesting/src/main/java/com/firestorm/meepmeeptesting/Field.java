@@ -18,5 +18,5 @@ public class Field {
             new Vector2d(57, 25.5),
             new Vector2d(67, 25.5)
     };
-    public static final Vector2d BLUE_OBSERVATION = new Vector2d(46.9, 61);
+    public static final Vector2d BLUE_OBSERVATION = new Vector2d(-46.9, 61);
 }

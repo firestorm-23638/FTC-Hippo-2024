@@ -26,10 +26,14 @@ public class MeepMeepTesting {
                 .setDimensions(15,15)
                 .setStartPose(new Pose2d(-47,-60.5, Math.toRadians(45)))
                 .build();
+        /* Sanity Test */
+//        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(new Vector2d(0,0), Math.toRadians(0)))
+//                .strafeTo(new Vector2d(-6, 10))
+//                .build());
 
-        Vector2d blueBasket = new Vector2d(-56.1923881554, -55.5502525317);
+        /* Pretty sure all routes can be adjusted for blue by negating x,y and adding 180 to all angles */
 
-        // Start to Red Basket
+        /* Start to Red Basket */
 //        Action basketTrajectory = myBot.getDrive().actionBuilder(myBot.getPose())
 //                .strafeTo(Field.RED_BASKET)
 //                .build();
