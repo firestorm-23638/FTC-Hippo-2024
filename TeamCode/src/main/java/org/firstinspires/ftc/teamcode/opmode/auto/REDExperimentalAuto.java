@@ -5,9 +5,12 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.RunCommand;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.commands.ElevatorGotoCommand;
 import org.firstinspires.ftc.teamcode.commands.TrajectoryCommand;
 import org.firstinspires.ftc.teamcode.subsystems.Depositor;
@@ -53,6 +56,20 @@ public class REDExperimentalAuto extends CommandOpMode {
                 .andThen(new ElevatorGotoCommand(depositor, Depositor.state.HOME))
                 .andThen(new TrajectoryCommand(basketToObservation, drive))
         );
+
+        // alternate way of organizing commands
+//        schedule(new SequentialCommandGroup(
+//                new ParallelCommandGroup(
+//                        new TrajectoryCommand(startToBasket, drive),
+//                        new ElevatorGotoCommand(depositor, Depositor.state.HIGH_BASKET)
+//                ),
+//                new RunCommand(() -> depositor.basketToDeposit()).withTimeout(1000),
+//                new RunCommand(() -> depositor.basketToHome()).withTimeout(1000),
+//                new ParallelCommandGroup(
+//                        new TrajectoryCommand(basketToObservation, drive),
+//                        new ElevatorGotoCommand(depositor, Depositor.state.HOME)
+//                )
+//        ));
         //.andThen(new TrajectoryCommand(basketToObservation, drive)));
 
     }

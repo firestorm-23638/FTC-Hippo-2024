@@ -21,8 +21,11 @@ public class BLUEExperimentalAuto extends CommandOpMode {
 
     @Override
     public void initialize() {
+        // Correct way to map is to (x,y,theta) -> (-x, -y, theta + 180)
+        // Not (x,y,theta) -> (-x,-y,-theta). When we are on blue, we need to be facing in the
+        // opposite direction. -0 != 180.
         Pose2d home = new Pose2d(-47,-60.5, Math.toRadians(45));
-        drive = new Drivetrain(hardwareMap, new Pose2d(-47, -60.5, Math.toRadians(45)), telemetry);
+        drive = new Drivetrain(hardwareMap, new Pose2d(47, 60.5, Math.toRadians(225)), telemetry);
         depositor = new Depositor(hardwareMap, telemetry);
 
         Vector2d basket = new Vector2d(-56.1923881554, -55.5502525317);
