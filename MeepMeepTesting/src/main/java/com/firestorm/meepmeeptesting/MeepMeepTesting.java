@@ -41,11 +41,11 @@ public class MeepMeepTesting {
 
 
         /* Red Basket to Observation Zone */
-//        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(Field.RED_BASKET, Math.toRadians(45)))
-//                .splineTo(new Vector2d(-24, -35), Math.toRadians(0))
-//                .splineTo(new Vector2d(10, -35), Math.toRadians(0))
-//                .splineTo(Field.RED_OBSERVATION, Math.toRadians(0))
-//                .build());
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(Field.RED_BASKET, Math.toRadians(45)))
+                .splineTo(new Vector2d(-24, -40), Math.toRadians(0))
+                .splineTo(new Vector2d(23, -40), Math.toRadians(0))
+                .splineTo(new Vector2d(46.9, -61), Math.toRadians(0))
+                .build());
 
         /* Red Basket to First Sample */
 //        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(Field.RED_BASKET, Math.toRadians(45)))

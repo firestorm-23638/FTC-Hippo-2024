@@ -16,6 +16,12 @@ public class Intake extends SubsystemBase {
     private final CRServo intake;
     private final Telemetry telemetry;
 
+    public enum state {
+        INTAKING,
+        RESTING,
+        TRANSFERRING
+    }
+
     private boolean intakeOut = false;
     public boolean intakeSpinning = false;
 
@@ -56,6 +62,11 @@ public class Intake extends SubsystemBase {
 
     public void pivotBasket() {
         pivotToPos(Constants.intakePivotToBasket);
+    }
+
+    public void pivotHome() {
+        pivotToPos(Constants.intakePivotToBasket+20);
+
     }
 
     public void vacuumEject() {

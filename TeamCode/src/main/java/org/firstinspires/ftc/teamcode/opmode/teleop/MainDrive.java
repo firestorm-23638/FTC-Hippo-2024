@@ -72,14 +72,16 @@ public class MainDrive extends CommandOpMode {
             intake.horizontalOut();
             intake.vacuumRun();
         })).whenReleased(new InstantCommand(() -> {
-            intake.pivotBasket();
+            intake.pivotHome();
             intake.horizontalIn();
             intake.vacuumStop();
         }));
 
         toBasket.whenHeld(new InstantCommand(() -> {
+            intake.pivotBasket();
             intake.vacuumEject();
         })).whenReleased(new InstantCommand(() -> {
+            intake.pivotHome();
             intake.vacuumStop();
         }));
 
@@ -99,6 +101,7 @@ public class MainDrive extends CommandOpMode {
         schedule(new InstantCommand(() -> {
             intake.horizontalIn();
             depositor.basketToHome();
+            intake.pivotHome();
         }));
     }
 }

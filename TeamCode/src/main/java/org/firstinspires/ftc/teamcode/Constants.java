@@ -25,8 +25,8 @@ public class Constants {
     public static final double intakeHorizontalToIntakePose = 100;
     public static final double intakeHorizontalToHomePose = 0;
 
-    public static final double intakePivotToBasket = 42.5;
-    public static final double intakePivotToDown = 212;
+    public static final double intakePivotToBasket = 50;
+    public static final double intakePivotToDown = 205;
 
     public static final double intakeVacuumSpeed = .5;
     public static final double intakeEjectSpeed = -.7;

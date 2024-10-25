@@ -14,27 +14,30 @@ import org.firstinspires.ftc.teamcode.subsystems.Depositor;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 
 @Autonomous
-public class MainAuto extends CommandOpMode {
+public class REDExperimentalAuto extends CommandOpMode {
     private Drivetrain drive;
     private Depositor depositor;
 
 
     @Override
     public void initialize() {
-        drive = new Drivetrain(hardwareMap, new Pose2d(new Vector2d(0, 0), Math.toRadians(0)), telemetry);
+        Pose2d home = new Pose2d(-47,-60.5, Math.toRadians(45));
+
+        drive = new Drivetrain(hardwareMap, home, telemetry);
         depositor = new Depositor(hardwareMap, telemetry);
 
-        Vector2d home = new Vector2d(0, 0);
-        Vector2d toBasket = new Vector2d(-6, 10);
-        Vector2d toObservationZone = new Vector2d(-70, 0);
+        Vector2d basket = new Vector2d(-56.1923881554, -55.5502525317);
+        //Vector2d[] toObservationZone = {new Vector2d(30, 20), new Vector2d(30, -70), new Vector2d(5, -70)};
 
-        Action startToBasket = drive.getTrajectoryBuilder(new Pose2d(home, Math.toRadians(0)))
-                .strafeTo(toBasket)
+        Action startToBasket = drive.getTrajectoryBuilder(home)
+                .strafeTo(basket)
                 .build();
 
 
-        Action basketToObservation = drive.getTrajectoryBuilder(new Pose2d(toBasket, Math.toRadians(0)))
-                .splineTo(toObservationZone, Math.toRadians(90))
+        Action basketToObservation = drive.getTrajectoryBuilder(new Pose2d(basket, Math.toRadians(45)))
+                .splineTo(new Vector2d(-24, -40), Math.toRadians(0))
+                .splineTo(new Vector2d(23, -40), Math.toRadians(0))
+                .splineTo(new Vector2d(46.9, -61), Math.toRadians(0))
                 .build();
 
         register(drive);
@@ -44,12 +47,13 @@ public class MainAuto extends CommandOpMode {
             depositor.basketToHome();
         }));
         schedule(new TrajectoryCommand(startToBasket, drive)
-                .alongWith(new ElevatorGotoCommand(depositor, Depositor.state.HIGH_BASKET))
+                .andThen(new ElevatorGotoCommand(depositor, Depositor.state.HIGH_BASKET))
                 .andThen(new RunCommand(() -> depositor.basketToDeposit()).withTimeout(1000))
                 .andThen(new RunCommand(() -> depositor.basketToHome()).withTimeout(1000))
                 .andThen(new ElevatorGotoCommand(depositor, Depositor.state.HOME))
+                .andThen(new TrajectoryCommand(basketToObservation, drive))
         );
-                //.andThen(new TrajectoryCommand(basketToObservation, drive)));
+        //.andThen(new TrajectoryCommand(basketToObservation, drive)));
 
     }
 }

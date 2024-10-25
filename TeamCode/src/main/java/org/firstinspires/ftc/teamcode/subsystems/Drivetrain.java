@@ -121,4 +121,8 @@ public class Drivetrain extends SubsystemBase {
     public TrajectoryActionBuilder getTrajectoryBuilder(Pose2d initalPose) {
         return this.mecanumDrive.actionBuilder(initalPose);
     }
+
+    public TrajectoryActionBuilder inverseGetTrajectoryBuilder(Pose2d initialPose) {
+        return this.mecanumDrive.inverseActionBuilder(initialPose);
+    }
 }

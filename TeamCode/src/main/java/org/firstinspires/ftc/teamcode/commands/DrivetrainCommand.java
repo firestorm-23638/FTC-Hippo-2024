@@ -24,6 +24,6 @@ public class DrivetrainCommand extends CommandBase {
 
     @Override
     public void execute() {
-        m_drivetrain.driveFieldCentric(forwardSupplier.get()*0.5, -strafeSupplier.get()*0.5, -turnSupplier.get()*0.5);
+        m_drivetrain.driveFieldCentric(forwardSupplier.get()*0.75, -strafeSupplier.get()*0.75, -turnSupplier.get()*0.75);
     }
 }
