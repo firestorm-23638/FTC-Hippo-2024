@@ -51,7 +51,7 @@ public class REDExperimentalAuto extends CommandOpMode {
                 .andThen(new RunCommand(() -> depositor.basketToDeposit()).withTimeout(1000))
                 .andThen(new RunCommand(() -> depositor.basketToHome()).withTimeout(1000))
                 .andThen(new ElevatorGotoCommand(depositor, Depositor.state.HOME))
-                .andThen(new TrajectoryCommand(basketToObservation, drive))
+                //.andThen(new TrajectoryCommand(basketToObservation, drive))
         );
         //.andThen(new TrajectoryCommand(basketToObservation, drive)));
 

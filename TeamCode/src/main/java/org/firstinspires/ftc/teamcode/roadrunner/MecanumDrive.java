@@ -504,7 +504,7 @@ public final class MecanumDrive {
                 defaultTurnConstraints,
                 defaultVelConstraint, defaultAccelConstraint,
                 pose -> new Pose2dDual<>(
-                        pose.position.x.unaryMinus(), pose.position.y.unaryMinus(), pose.heading.inverse()
+                        pose.position.x.unaryMinus(), pose.position.y.unaryMinus(), pose.heading.plus(180)
                 )
         );
     }
