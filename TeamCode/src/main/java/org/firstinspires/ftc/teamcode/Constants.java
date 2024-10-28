@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.Pose2d;
+
 public class Constants {
     public static final String driveFrontLeftConfig = "frontLeft";   // Control Hub Port 0
     public static final String driveFrontRightConfig = "frontRight"; // Control Hub Port 1
@@ -9,7 +11,7 @@ public class Constants {
     public static final String depositorVerticalConfig = "vertical";
 
     public static final String depositorBasketConfig = "basketServo";
-    public static final double depositorVerticalToTopPose = 2880;
+    public static final double depositorVerticalToTopPose = 2600;
     public static final double depositorVerticalToMidPose = 1600;
     public static final double depositorVerticalToBottomPose = 0;
     public static final double depositorVerticalKP = .0022;
@@ -32,4 +34,6 @@ public class Constants {
     public static final double intakeEjectSpeed = -.7;
 
     public static final double intakeHorizontalKP = .05;
+
+    public static Pose2d pose;
 }

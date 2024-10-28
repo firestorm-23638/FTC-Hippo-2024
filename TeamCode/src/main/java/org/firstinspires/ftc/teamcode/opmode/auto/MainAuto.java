@@ -8,8 +8,8 @@ import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.commands.ElevatorGotoCommand;
-import org.firstinspires.ftc.teamcode.commands.TrajectoryCommand;
+import org.firstinspires.ftc.teamcode.commands.ElevatorPositionCommand;
+import org.firstinspires.ftc.teamcode.commands.TrajectoryGotoCommand;
 import org.firstinspires.ftc.teamcode.subsystems.Depositor;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
@@ -48,11 +48,11 @@ public class MainAuto extends CommandOpMode {
             intake.pivotHome();
             intake.horizontalIn();
         }));
-        schedule(new TrajectoryCommand(startToBasket, drive)
-                .alongWith(new ElevatorGotoCommand(depositor, Depositor.state.HIGH_BASKET))
+        schedule(new TrajectoryGotoCommand(startToBasket, drive)
+                .alongWith(new ElevatorPositionCommand(depositor, Depositor.state.HIGH_BASKET))
                 .andThen(new RunCommand(() -> depositor.basketToDeposit()).withTimeout(1000))
                 .andThen(new RunCommand(() -> depositor.basketToHome()).withTimeout(1000))
-                .andThen(new ElevatorGotoCommand(depositor, Depositor.state.HOME))
+                .andThen(new ElevatorPositionCommand(depositor, Depositor.state.HOME))
         );
                 //.andThen(new TrajectoryCommand(basketToObservation, drive)));
 

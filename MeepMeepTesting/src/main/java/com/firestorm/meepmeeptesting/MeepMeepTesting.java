@@ -65,8 +65,13 @@ public class MeepMeepTesting {
         /* Red Basket to First Sample */
 //        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(Field.RED_BASKET, Math.toRadians(45)))
 //                .setTangent(0)
-//                .splineTo(new Vector2d(-36, -35), Math.toRadians(100))
+//                .splineTo(new Vector2d(-26.5, -40.1), Math.toRadians(100))
 //                .build());
+
+//        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(new Vector2d(-36, -35), Math.toRadians(145)))
+//                .strafeTo(new Vector2d(-36 + Math.cos(145) * -5, -35 + Math.sin(145) * 5))
+//                .build());
+
 
         /* First Sample to Red Basket */
 //        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(new Vector2d(-36, -35), Math.toRadians(145)))
@@ -75,10 +80,10 @@ public class MeepMeepTesting {
 //                .build());
 
         /* Red Basket to Second Sample */
-//        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(Field.RED_BASKET, Math.toRadians(45)))
-//                    .setTangent(0)
-//                    .splineTo(new Vector2d(-41, -34), Math.toRadians(100))
-//                .build());
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(Field.RED_BASKET, Math.toRadians(45)))
+                    .setTangent(0)
+                    .splineTo(new Vector2d(-39, -40), Math.toRadians(100))
+                .build());
 
         /* Second Sample to Red Basket */
 //        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(new Vector2d(-41, -34), Math.toRadians(145)))

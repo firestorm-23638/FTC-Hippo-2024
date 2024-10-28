@@ -1,15 +1,17 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.geometry.Vector2d;
-import com.arcrobotics.ftclib.kinematics.wpilibkinematics.MecanumDriveKinematics;
+import com.arcrobotics.ftclib.hardware.RevIMU;
+import com.qualcomm.hardware.bosch.BHI260IMU;
+import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
 public class Drivetrain extends SubsystemBase {
@@ -20,11 +22,12 @@ public class Drivetrain extends SubsystemBase {
 
     private MecanumDrive mecanumDrive;
     private Telemetry telemetry;
+    private double imuOffset;
+
     public Drivetrain(HardwareMap hmap, Pose2d pose, Telemetry telemetry) {
         // get motors for drivetrain
         mecanumDrive = new MecanumDrive(hmap,pose);
         this.telemetry = telemetry;
-
     }
 
     private double clipRange(double value) {
@@ -71,15 +74,26 @@ public class Drivetrain extends SubsystemBase {
     @Override
     public void periodic() {
         this.mecanumDrive.updatePoseEstimate();
+        telemetry.addData("Robot X", this.mecanumDrive.pose.position.x);
+        telemetry.addData("Robot Y", this.mecanumDrive.pose.position.y);
+        telemetry.addData("Robot Heading", this.mecanumDrive.pose.heading.log());
     }
 
     public void driveArcade(double forwardSpeed, double strafeSpeed, double turnSpeed) {
         this.fieldCentricDrive(forwardSpeed, strafeSpeed, turnSpeed, 0.0);
     }
 
+    public void setCurrentPose(Pose2d newPose) {
+        this.mecanumDrive.pose = newPose;
+    }
+
+    public Pose2d getCurrentPose() {
+        return this.mecanumDrive.pose;
+    }
+
     public void driveFieldCentric(double forwardSpeed, double strafeSpeed, double turnSpeed) {
-        Rotation2d gyroAngle = this.mecanumDrive.pose.heading;
-        this.fieldCentricDrive(forwardSpeed, strafeSpeed, turnSpeed, 0);
+
+        this.fieldCentricDrive(forwardSpeed, strafeSpeed, turnSpeed, Math.toDegrees(mecanumDrive.pose.heading.log()) + 90);
     }
 
     private void fieldCentricDrive(double forwardSpeed, double strafeSpeed, double turnSpeed, double gyroAngle) {
