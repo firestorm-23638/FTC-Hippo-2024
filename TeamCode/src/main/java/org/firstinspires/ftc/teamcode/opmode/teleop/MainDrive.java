@@ -12,11 +12,13 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.commands.DrivetrainCommand;
+import org.firstinspires.ftc.teamcode.commands.LimelightCommand;
 import org.firstinspires.ftc.teamcode.subsystems.Basket;
 import org.firstinspires.ftc.teamcode.subsystems.Depositor;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.Elevator;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.Limelight;
 
 import java.security.interfaces.ECKey;
 
@@ -30,6 +32,8 @@ public class MainDrive extends CommandOpMode {
     private Basket basket;
     private Elevator elevator;
 
+    private Limelight limelight;
+
     @Override
     public void initialize() {
         driver = new GamepadEx(this.gamepad1);
@@ -39,6 +43,8 @@ public class MainDrive extends CommandOpMode {
         intake = new Intake(hardwareMap, telemetry);
         basket = new Basket(hardwareMap, telemetry);
         elevator = new Elevator(hardwareMap, telemetry);
+
+        limelight = new Limelight(hardwareMap, telemetry);
 
         GamepadButton intakeOut = new GamepadButton(driver, GamepadKeys.Button.RIGHT_BUMPER);
         GamepadButton toBasket = new GamepadButton(operator, GamepadKeys.Button.Y);
@@ -52,6 +58,9 @@ public class MainDrive extends CommandOpMode {
                 ()->(double)-this.gamepad1.left_stick_y,
                 ()->(double)-this.gamepad1.left_stick_x,
                 ()->(double)-this.gamepad1.right_stick_x));
+
+        // Reads limelight position for now
+        limelight.setDefaultCommand(new LimelightCommand(limelight));
 
         intakeOut.whenHeld(new InstantCommand(() -> {
             intake.pivotDown();

@@ -79,7 +79,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void vacuumStop() {
-        intake.set(0);
+        intake.set(Constants.intakeRestingSpeed);
         //intakeSpinning = false;
     }
 

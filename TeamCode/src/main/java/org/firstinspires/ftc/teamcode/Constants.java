@@ -30,6 +30,7 @@ public class Constants {
     public static final double intakePivotToBasket = 50;
     public static final double intakePivotToDown = 205;
 
+    public static final double intakeRestingSpeed = .1;
     public static final double intakeVacuumSpeed = .5;
     public static final double intakeEjectSpeed = -.7;
 
