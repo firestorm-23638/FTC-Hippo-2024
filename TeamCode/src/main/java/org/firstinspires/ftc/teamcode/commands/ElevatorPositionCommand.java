@@ -7,10 +7,10 @@ import org.firstinspires.ftc.teamcode.subsystems.Elevator;
 
 public class ElevatorPositionCommand extends CommandBase {
     private final Elevator elevator;
-    private Elevator.state state;
+    private Elevator.basketState state;
     private boolean isFinished = false;
 
-    public ElevatorPositionCommand(Elevator elevator, Elevator.state state) {
+    public ElevatorPositionCommand(Elevator elevator, Elevator.basketState state) {
         addRequirements(elevator);
         this.elevator = elevator;
         this.state = state;

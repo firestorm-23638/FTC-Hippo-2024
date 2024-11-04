@@ -50,17 +50,16 @@ public class MainAuto extends CommandOpMode {
         waitForStart();
         schedule(new InstantCommand(() -> {
             basket.toHome();
-            elevator.currentStage = Elevator.state.HOME;
+            elevator.currentStage = Elevator.basketState.HOME;
             intake.pivotHome();
             intake.horizontalIn();
         }));
         schedule(new TrajectoryGotoCommand(startToBasket, drive)
-                .alongWith(new ElevatorPositionCommand(elevator, Elevator.state.HIGH_BASKET))
+                .alongWith(new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET))
                 .andThen(new BasketPositionCommand(basket, Basket.state.BUCKET)).withTimeout(1000)
                 .andThen(new BasketPositionCommand(basket, Basket.state.HOME)).withTimeout(1000)
-                .andThen(new ElevatorPositionCommand(elevator, Elevator.state.HOME))
+                .andThen(new ElevatorPositionCommand(elevator, Elevator.basketState.HOME))
         );
                 //.andThen(new TrajectoryCommand(basketToObservation, drive)));
-
     }
 }

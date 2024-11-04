@@ -10,17 +10,19 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Constants;
 
+/*
+Basket Class: Controls the Basket section of the depositor
+*/
+
 public class Basket extends SubsystemBase {
-    public enum state {
+    public enum state {     // The state that the basket is currently in. Home = in, bucket = deposit. Used in BasketPositionCommand
         HOME,
         BUCKET
     };
 
-    private final ServoEx basket;
-    private final Telemetry telemetry;
+    private final ServoEx basket;     // Servo object
 
-    public state currentStage = state.HOME;
-    private double pidTarget = 0;
+    private final Telemetry telemetry;     // Telemetry object, for printouts
 
     public Basket(HardwareMap hardwareMap, Telemetry telemetry) {
         basket = new SimpleServo(hardwareMap, Constants.depositorBasketConfig, 0, 180, AngleUnit.DEGREES);
@@ -31,7 +33,6 @@ public class Basket extends SubsystemBase {
     @Override
     public void periodic() {
         telemetry.addData("Basket Position", basket.getAngle());
-
     }
     public boolean toDeposit() {
         basket.turnToAngle(Constants.depositorBasketToDepositAngle);

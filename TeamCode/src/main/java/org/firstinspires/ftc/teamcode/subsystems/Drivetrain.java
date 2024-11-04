@@ -14,6 +14,10 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
+
+/*
+Drivetrain: The drivetrain subsystem for the robot.
+*/
 public class Drivetrain extends SubsystemBase {
     private static int frontLeft = 0;
     private static int frontRight = 1;
@@ -93,7 +97,7 @@ public class Drivetrain extends SubsystemBase {
 
     public void driveFieldCentric(double forwardSpeed, double strafeSpeed, double turnSpeed) {
 
-        this.fieldCentricDrive(forwardSpeed, strafeSpeed, turnSpeed, Math.toDegrees(mecanumDrive.pose.heading.log()) + 90);
+        this.fieldCentricDrive(forwardSpeed, strafeSpeed, turnSpeed, 0);//Math.toDegrees(mecanumDrive.pose.heading.log()) + 90);
     }
 
     private void fieldCentricDrive(double forwardSpeed, double strafeSpeed, double turnSpeed, double gyroAngle) {

@@ -10,6 +10,10 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Constants;
 
+
+/*
+ DEPRECATED. Use Basket and Elevator separate subsystems instead
+ */
 public class Depositor extends SubsystemBase {
     public enum state {
             HOME((int)Constants.depositorVerticalToBottomPose),

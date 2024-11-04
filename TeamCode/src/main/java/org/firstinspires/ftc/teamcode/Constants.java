@@ -11,11 +11,14 @@ public class Constants {
     public static final String depositorVerticalConfig = "vertical";
 
     public static final String depositorBasketConfig = "basketServo";
-    public static final double depositorVerticalToTopPose = 2600;
+    public static final double depositorVerticalToTopPose = 2700;
     public static final double depositorVerticalToMidPose = 1600;
     public static final double depositorVerticalToBottomPose = 0;
     public static final double depositorVerticalKP = .0022;
     public static final double depositorVerticalErrorRange = 10;
+
+    public static final double depositorVerticalToTopBar = 2000;
+    public static final double depositorVerticalUpSlightly = 500;
 
     public static final double depositorBasketToDepositAngle = 110;
     public static final double depositorBasketToHomeAngle = 0;
@@ -31,10 +34,17 @@ public class Constants {
     public static final double intakePivotToDown = 205;
 
     public static final double intakeRestingSpeed = .1;
-    public static final double intakeVacuumSpeed = .5;
+    public static final double intakeVacuumSpeed = .7;
     public static final double intakeEjectSpeed = -.7;
 
     public static final double intakeHorizontalKP = .05;
+
+    public static final String specimenClawConfig = "specimen";
+
+    public static final double specimenOpenAngle = 90;
+    public static final double specimenCloseAngle = 0;
+
+    public static boolean isRed = false;
 
     public static Pose2d pose;
 }

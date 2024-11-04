@@ -6,6 +6,7 @@ import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Const;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Constants;
@@ -22,8 +23,14 @@ public class Intake extends SubsystemBase {
         TRANSFERRING
     }
 
-    private boolean intakeOut = false;
-    public boolean intakeSpinning = false;
+    public enum vacuum {
+        SUCKING,
+        SPEWING,
+        STATIONING
+    }
+
+    public state intakeState = state.RESTING;
+    public vacuum vacuumState = vacuum.STATIONING;
 
     public Intake(HardwareMap hardwareMap, Telemetry telemetry) {
         horizontal = new SimpleServo(hardwareMap, Constants.intakeHorizontalConfig, 0, 180, AngleUnit.DEGREES);
@@ -38,6 +45,15 @@ public class Intake extends SubsystemBase {
         telemetry.addData("Horizontal Position", horizontal.getAngle());
         telemetry.addData("Pivot Position", pivot.getAngle());
 
+        if (vacuumState == vacuum.SUCKING) {
+            intake.set(Constants.intakeVacuumSpeed);
+        }
+        else if (vacuumState == vacuum.SPEWING) {
+            intake.set(Constants.intakeEjectSpeed);
+        }
+        else {
+            intake.set(0);
+        }
     }
 
     private void horizontalToPos(double targetPos) {
@@ -50,10 +66,12 @@ public class Intake extends SubsystemBase {
 
     public void horizontalIn() {
         horizontalToPos(Constants.intakeHorizontalToHomePose);
+        intakeState = state.RESTING;
     }
 
     public void horizontalOut() {
         horizontalToPos(Constants.intakeHorizontalToIntakePose);
+        intakeState = state.INTAKING;
     }
 
     public void pivotDown() {
@@ -61,45 +79,27 @@ public class Intake extends SubsystemBase {
     }
 
     public void pivotBasket() {
-        pivotToPos(Constants.intakePivotToBasket);
+        if (intakeState == state.RESTING) {
+            pivotToPos(Constants.intakePivotToBasket);
+        }
     }
 
     public void pivotHome() {
+        if ((vacuumState == vacuum.SPEWING) && (intakeState == state.INTAKING)) {
+            return;
+        }
         pivotToPos(Constants.intakePivotToBasket+20);
-
     }
 
     public void vacuumEject() {
-        intake.set(Constants.intakeEjectSpeed);
+        vacuumState = vacuum.SPEWING;
     }
 
     public void vacuumRun() {
-        intake.set(Constants.intakeVacuumSpeed);
-        //intakeSpinning = true;
+        vacuumState = vacuum.SUCKING;
     }
 
     public void vacuumStop() {
-        intake.set(Constants.intakeRestingSpeed);
-        //intakeSpinning = false;
-    }
-
-    public void horizontalOut(boolean controlInput) {
-        /*if (controlInput) {
-            if (horizontalOut()) {
-                pivotDown();
-                vacuumRun();
-            }
-            else {
-                pivotUp();
-                vacuumStop();
-            }
-        }
-        else {
-            vacuumStop();
-            if (pivotUp()) {
-                horizontalIn();
-            }
-
-        }*/
+        vacuumState = vacuum.STATIONING;
     }
 }

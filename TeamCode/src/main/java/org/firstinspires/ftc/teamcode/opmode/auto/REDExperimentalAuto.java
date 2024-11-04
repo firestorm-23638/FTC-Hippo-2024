@@ -1,11 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmode.auto;
 
-import com.acmerobotics.roadrunner.AccelConstraint;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.ProfileAccelConstraint;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.InstantCommand;
@@ -14,19 +10,20 @@ import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.robotcore.external.Const;
+import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.commands.BasketPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.ElevatorPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakePositionCommand;
 import org.firstinspires.ftc.teamcode.commands.StrafeToPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.TrajectoryGotoCommand;
 import org.firstinspires.ftc.teamcode.subsystems.Basket;
-import org.firstinspires.ftc.teamcode.subsystems.Depositor;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.Elevator;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 
 @Autonomous
-public class ExperimentalAuto extends CommandOpMode {
+public class REDExperimentalAuto extends CommandOpMode {
     private Drivetrain drive;
     private Basket basket;
     private Elevator elevator;
@@ -42,6 +39,8 @@ public class ExperimentalAuto extends CommandOpMode {
 
     @Override
     public void initialize() {
+        Constants.isRed = true;
+
         Pose2d home = new Pose2d(-47,-58.5, Math.toRadians(45));
 
         drive = new Drivetrain(hardwareMap, home, telemetry);
@@ -49,7 +48,7 @@ public class ExperimentalAuto extends CommandOpMode {
         elevator = new Elevator(hardwareMap, telemetry);
         intake = new Intake(hardwareMap, telemetry);
 
-        final Vector2d basketPos = new Vector2d(-58.923881554, -55.0502525317);
+        final Vector2d basketPos = new Vector2d(-59.923881554, -54.0502525317);
         final Pose2d firstSample = new Pose2d(new Vector2d(-36, -35), Math.toRadians(100));
         final Pose2d inchToFirstSamplePose = addPoses(shiftForward(5, Math.toRadians(100)), firstSample);
 
@@ -64,17 +63,17 @@ public class ExperimentalAuto extends CommandOpMode {
 
         Action basketToSecondSample = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
                 .setTangent(0)
-                .splineTo(new Vector2d(-39, -41.5), Math.toRadians(100))
+                .splineTo(new Vector2d(-39, -40.5), Math.toRadians(100))
                 .build();
 
         Action basketToThirdSample = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
                 .setTangent(0)
-                .splineTo(new Vector2d(-50, -40.5), Math.toRadians(100))
+                .splineTo(new Vector2d(-50, -39.5), Math.toRadians(100))
                 .build();
 
         Action basketToObservation = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
-                .splineTo(new Vector2d(-24, -38), Math.toRadians(0))
-                .splineTo(new Vector2d(23, -38), Math.toRadians(0))
+                .splineTo(new Vector2d(-24, -40), Math.toRadians(0))
+                .splineTo(new Vector2d(14, -40), Math.toRadians(0))
                 .splineTo(new Vector2d(46.9, -61), Math.toRadians(0))
                 .build();
 
@@ -83,7 +82,7 @@ public class ExperimentalAuto extends CommandOpMode {
         waitForStart();
         schedule(new InstantCommand(() -> {
             basket.toHome();
-            elevator.currentStage = Elevator.state.HOME;
+            elevator.currentStage = Elevator.basketState.HOME;
             intake.pivotHome();
             intake.horizontalIn();
         }));
@@ -91,12 +90,12 @@ public class ExperimentalAuto extends CommandOpMode {
         schedule(new SequentialCommandGroup(
                 new ParallelCommandGroup(
                         new TrajectoryGotoCommand(startToBasket, drive),
-                        new ElevatorPositionCommand(elevator, Elevator.state.HIGH_BASKET)
+                        new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
                 ),
                 new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(600),
                 new ParallelCommandGroup(
                         new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
-                        new ElevatorPositionCommand(elevator, Elevator.state.HOME)
+                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME)
                 ),
 
                 // First Sample
@@ -106,21 +105,21 @@ public class ExperimentalAuto extends CommandOpMode {
                 ),
                 new RunCommand(() -> {
                     drive.driveArcade(.2, 0, 0);
-                }, drive).withTimeout(1000),
+                }, drive).withTimeout(1100),
                 new RunCommand(() -> {
                     drive.driveArcade(0, 0, 0);
-                }, drive).withTimeout(100),
-                        new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(1000),
+                }, drive).withTimeout(250),
+                        new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(700),
                         new IntakePositionCommand(intake, Intake.state.TRANSFERRING).withTimeout(700),
                         new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(200),
                         new ParallelCommandGroup(
                                 new StrafeToPositionCommand(new Pose2d(basketPos, Math.toRadians(45)), drive),
-                                new ElevatorPositionCommand(elevator, Elevator.state.HIGH_BASKET)
+                                new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
                         ),
                 new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(600),
                 new ParallelCommandGroup(
                         new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
-                        new ElevatorPositionCommand(elevator, Elevator.state.HOME),
+                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME),
 
                         // Second Sample
                         new TrajectoryGotoCommand(basketToSecondSample, drive),
@@ -128,21 +127,21 @@ public class ExperimentalAuto extends CommandOpMode {
                 ),
                 new RunCommand(() -> {
                     drive.driveArcade(.2, 0, 0);
-                }, drive).withTimeout(1000),
+                }, drive).withTimeout(1100),
                 new RunCommand(() -> {
                     drive.driveArcade(0, 0, 0);
-                }, drive).withTimeout(100),
-                new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(1000),
+                }, drive).withTimeout(250),
+                new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(700),
                 new IntakePositionCommand(intake, Intake.state.TRANSFERRING).withTimeout(700),
                 new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(200),
                 new ParallelCommandGroup(
                         new StrafeToPositionCommand(new Pose2d(basketPos, Math.toRadians(45)), drive),
-                        new ElevatorPositionCommand(elevator, Elevator.state.HIGH_BASKET)
+                        new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
                 ),
                 new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(600),
                 new ParallelCommandGroup(
                         new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
-                        new ElevatorPositionCommand(elevator, Elevator.state.HOME),
+                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME),
 
                         // Third Sample
                         new TrajectoryGotoCommand(basketToThirdSample, drive),
@@ -150,21 +149,21 @@ public class ExperimentalAuto extends CommandOpMode {
                 ),
                 new RunCommand(() -> {
                     drive.driveArcade(.2, 0, 0);
-                }, drive).withTimeout(1000),
+                }, drive).withTimeout(1100),
                 new RunCommand(() -> {
                     drive.driveArcade(0, 0, 0);
-                }, drive).withTimeout(100),
-                new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(1000),
+                }, drive).withTimeout(250),
+                new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(700),
                 new IntakePositionCommand(intake, Intake.state.TRANSFERRING).withTimeout(700),
                 new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(200),
                 new ParallelCommandGroup(
                         new StrafeToPositionCommand(new Pose2d(basketPos, Math.toRadians(45)), drive),
-                        new ElevatorPositionCommand(elevator, Elevator.state.HIGH_BASKET)
+                        new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
                 ),
                 new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(600),
                 new ParallelCommandGroup(
                         new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
-                        new ElevatorPositionCommand(elevator, Elevator.state.HOME)
+                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME)
                 ),
                 new TrajectoryGotoCommand(basketToObservation, drive)
         ));
