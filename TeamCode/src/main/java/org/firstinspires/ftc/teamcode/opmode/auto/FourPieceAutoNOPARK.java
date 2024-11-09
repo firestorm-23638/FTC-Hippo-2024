@@ -57,23 +57,23 @@ public class FourPieceAutoNOPARK extends CommandOpMode {
 
         Action basketToFirstSample = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
                 .setTangent(0)
-                .splineTo(new Vector2d(-26.5, -40.25), Math.toRadians(100))
+                .splineTo(new Vector2d(-28.5, -39), Math.toRadians(100))
                 .build();
 
         Action basketToSecondSample = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
                 .setTangent(0)
-                .splineTo(new Vector2d(-37, -40.75), Math.toRadians(100))
+                .splineTo(new Vector2d(-37, -40), Math.toRadians(100))
                 .build();
 
         Action basketToThirdSample = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
                 .setTangent(0)
-                .splineTo(new Vector2d(-49, -41), Math.toRadians(100))
+                .splineTo(new Vector2d(-49, -38.5), Math.toRadians(100))
                 .build();
 
         Action basketToObservation = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
-                .splineTo(new Vector2d(-24, -40), Math.toRadians(0))
-                .splineTo(new Vector2d(14, -40), Math.toRadians(0))
-                .splineTo(new Vector2d(46.9, -61), Math.toRadians(0))
+                .splineTo(new Vector2d(-24, -35), Math.toRadians(0))
+                .splineTo(new Vector2d(30, -35), Math.toRadians(0))
+                .splineTo(new Vector2d(55, -61), Math.toRadians(0))
                 .build();
 
         register(drive);
@@ -103,18 +103,18 @@ public class FourPieceAutoNOPARK extends CommandOpMode {
 
                 // First Sample
                 new RunCommand(() -> {
-                    drive.driveArcade(.2, strafeSpeed, 0);
-                }, drive).withTimeout(1100),
+                    drive.driveArcade(.3, strafeSpeed, 0);
+                }, drive).withTimeout(800),
                 new RunCommand(() -> {
                     drive.driveArcade(0, strafeSpeed, 0);
                 }, drive).withTimeout(550),
-                        new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(700),
-                        new IntakePositionCommand(intake, Intake.state.TRANSFERRING).withTimeout(700),
-                        new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(200),
-                        new ParallelCommandGroup(
-                                new StrafeToPositionCommand(new Pose2d(basketPos, Math.toRadians(45)), drive),
-                                new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
-                        ),
+                new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(700),
+                new IntakePositionCommand(intake, Intake.state.TRANSFERRING).withTimeout(700),
+                new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(200),
+                new ParallelCommandGroup(
+                        new StrafeToPositionCommand(new Pose2d(basketPos, Math.toRadians(45)), drive),
+                        new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
+                ),
                 new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(600),
                 new ParallelCommandGroup(
                         new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
@@ -125,8 +125,8 @@ public class FourPieceAutoNOPARK extends CommandOpMode {
                         new IntakePositionCommand(intake, Intake.state.INTAKING).withTimeout(1000)
                 ),
                 new RunCommand(() -> {
-                    drive.driveArcade(.2, strafeSpeed, 0);
-                }, drive).withTimeout(1100),
+                    drive.driveArcade(.3, strafeSpeed, 0);
+                }, drive).withTimeout(800),
                 new RunCommand(() -> {
                     drive.driveArcade(0, strafeSpeed, 0);
                 }, drive).withTimeout(550),
@@ -168,8 +168,8 @@ public class FourPieceAutoNOPARK extends CommandOpMode {
                 new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(600),
                 new ParallelCommandGroup(
                         new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME),
-                        new TrajectoryGotoCommand(basketToObservation, drive)
+                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME)
+                        //new TrajectoryGotoCommand(basketToObservation, drive)
                 )
         ));
         //.andThen(new TrajectoryGotoCommand(basketToObservation, drive)));
