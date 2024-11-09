@@ -10,7 +10,6 @@ import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.robotcore.external.Const;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.commands.BasketPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.ElevatorPositionCommand;
@@ -23,7 +22,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Elevator;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 
 @Autonomous
-public class REDExperimentalAuto extends CommandOpMode {
+public class FourPieceAutoNOPARK extends CommandOpMode {
     private Drivetrain drive;
     private Basket basket;
     private Elevator elevator;
@@ -41,7 +40,7 @@ public class REDExperimentalAuto extends CommandOpMode {
     public void initialize() {
         Constants.isRed = true;
 
-        Pose2d home = new Pose2d(-47,-58.5, Math.toRadians(45));
+        Pose2d home = new Pose2d(-38,-60.5, Math.toRadians(90));
 
         drive = new Drivetrain(hardwareMap, home, telemetry);
         basket = new Basket(hardwareMap, telemetry);
@@ -53,22 +52,22 @@ public class REDExperimentalAuto extends CommandOpMode {
         final Pose2d inchToFirstSamplePose = addPoses(shiftForward(5, Math.toRadians(100)), firstSample);
 
         Action startToBasket = drive.getTrajectoryBuilder(home)
-                .strafeTo(basketPos)
+                .strafeToLinearHeading(basketPos, Math.toRadians(45))
                 .build();
 
         Action basketToFirstSample = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
                 .setTangent(0)
-                .splineTo(new Vector2d(-26.5, -42.5), Math.toRadians(100))
+                .splineTo(new Vector2d(-26.5, -40.25), Math.toRadians(100))
                 .build();
 
         Action basketToSecondSample = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
                 .setTangent(0)
-                .splineTo(new Vector2d(-39, -40.5), Math.toRadians(100))
+                .splineTo(new Vector2d(-37, -40.75), Math.toRadians(100))
                 .build();
 
         Action basketToThirdSample = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
                 .setTangent(0)
-                .splineTo(new Vector2d(-50, -39.5), Math.toRadians(100))
+                .splineTo(new Vector2d(-49, -41), Math.toRadians(100))
                 .build();
 
         Action basketToObservation = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
@@ -87,6 +86,8 @@ public class REDExperimentalAuto extends CommandOpMode {
             intake.horizontalIn();
         }));
 
+        final double strafeSpeed = -0.05;
+
         schedule(new SequentialCommandGroup(
                 new ParallelCommandGroup(
                         new TrajectoryGotoCommand(startToBasket, drive),
@@ -95,20 +96,18 @@ public class REDExperimentalAuto extends CommandOpMode {
                 new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(600),
                 new ParallelCommandGroup(
                         new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME)
-                ),
-
-                // First Sample
-                new ParallelCommandGroup(
+                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME),
                         new TrajectoryGotoCommand(basketToFirstSample, drive),
                         new IntakePositionCommand(intake, Intake.state.INTAKING).withTimeout(1000)
                 ),
+
+                // First Sample
                 new RunCommand(() -> {
-                    drive.driveArcade(.2, 0, 0);
+                    drive.driveArcade(.2, strafeSpeed, 0);
                 }, drive).withTimeout(1100),
                 new RunCommand(() -> {
-                    drive.driveArcade(0, 0, 0);
-                }, drive).withTimeout(250),
+                    drive.driveArcade(0, strafeSpeed, 0);
+                }, drive).withTimeout(550),
                         new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(700),
                         new IntakePositionCommand(intake, Intake.state.TRANSFERRING).withTimeout(700),
                         new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(200),
@@ -126,11 +125,11 @@ public class REDExperimentalAuto extends CommandOpMode {
                         new IntakePositionCommand(intake, Intake.state.INTAKING).withTimeout(1000)
                 ),
                 new RunCommand(() -> {
-                    drive.driveArcade(.2, 0, 0);
+                    drive.driveArcade(.2, strafeSpeed, 0);
                 }, drive).withTimeout(1100),
                 new RunCommand(() -> {
-                    drive.driveArcade(0, 0, 0);
-                }, drive).withTimeout(250),
+                    drive.driveArcade(0, strafeSpeed, 0);
+                }, drive).withTimeout(550),
                 new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(700),
                 new IntakePositionCommand(intake, Intake.state.TRANSFERRING).withTimeout(700),
                 new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(200),
@@ -148,12 +147,18 @@ public class REDExperimentalAuto extends CommandOpMode {
                         new IntakePositionCommand(intake, Intake.state.INTAKING).withTimeout(1000)
                 ),
                 new RunCommand(() -> {
-                    drive.driveArcade(.2, 0, 0);
-                }, drive).withTimeout(1100),
+                    drive.driveArcade(.2, strafeSpeed, 0);
+                }, drive).withTimeout(1000),
                 new RunCommand(() -> {
-                    drive.driveArcade(0, 0, 0);
-                }, drive).withTimeout(250),
-                new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(700),
+                    drive.driveArcade(-.2, strafeSpeed, 0);
+                }, drive).withTimeout(550),
+                new ParallelCommandGroup(
+                        new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(700),
+                        new RunCommand(() -> {
+                            drive.driveArcade(0, 0, 0);
+                        }, drive).withTimeout(500)
+                ),
+
                 new IntakePositionCommand(intake, Intake.state.TRANSFERRING).withTimeout(700),
                 new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(200),
                 new ParallelCommandGroup(
@@ -163,9 +168,9 @@ public class REDExperimentalAuto extends CommandOpMode {
                 new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(600),
                 new ParallelCommandGroup(
                         new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME)
-                ),
-                new TrajectoryGotoCommand(basketToObservation, drive)
+                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME),
+                        new TrajectoryGotoCommand(basketToObservation, drive)
+                )
         ));
         //.andThen(new TrajectoryGotoCommand(basketToObservation, drive)));
 

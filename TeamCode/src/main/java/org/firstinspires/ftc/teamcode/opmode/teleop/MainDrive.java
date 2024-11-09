@@ -52,7 +52,7 @@ public class MainDrive extends CommandOpMode {
         //limelight = new Limelight(hardwareMap, telemetry);
 
         GamepadButton intakeOut = new GamepadButton(driver, GamepadKeys.Button.RIGHT_BUMPER);
-        GamepadButton toBasket = new GamepadButton(operator, GamepadKeys.Button.Y);
+        GamepadButton toBasket = new GamepadButton(driver, GamepadKeys.Button.LEFT_BUMPER);
 
         GamepadButton basketOut = new GamepadButton(operator, GamepadKeys.Button.A);
         GamepadButton depositorUp = new GamepadButton(operator, GamepadKeys.Button.DPAD_UP);

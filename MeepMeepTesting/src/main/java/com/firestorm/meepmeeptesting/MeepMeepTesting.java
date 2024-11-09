@@ -30,14 +30,14 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 // adjust this to be where the robot really starts
                 .setDimensions(17.8,17)
-                .setStartPose(new Pose2d(-47,-58.5, Math.toRadians(45)))
+                .setStartPose(new Pose2d(-38,-61.5, Math.toRadians(90)))
                 .build();
         RoadRunnerBotEntity myBot2 = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 // adjust this to be where the robot really starts
                 .setDimensions(17.8,17)
-                .setStartPose(forBlue(new Pose2d(-47,-58.5, Math.toRadians(45))))
+                .setStartPose(forBlue(new Pose2d(-38,-61.5, Math.toRadians(45))))
                 .setColorScheme(new ColorSchemeBlueLight())
                 .build();
 
@@ -50,16 +50,16 @@ public class MeepMeepTesting {
 
         /* Start to Red Basket */
 //        Action basketTrajectory = myBot.getDrive().actionBuilder(myBot.getPose())
-//                .strafeTo(Field.RED_BASKET)
+//                .strafeToLinearHeading(Field.RED_BASKET, Math.toRadians(45))
 //                .build();
 //        myBot.runAction(basketTrajectory);
 
 
         /* Red Basket to Observation Zone */
         myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(Field.RED_BASKET, Math.toRadians(45)))
-                .splineTo(new Vector2d(-24, -40), Math.toRadians(0))
-                .splineTo(new Vector2d(14, -40), Math.toRadians(0))
-                .splineTo(new Vector2d(46.9, -61), Math.toRadians(0))
+                .splineTo(new Vector2d(-24, -37), Math.toRadians(0))
+                .splineTo(new Vector2d(30, -37), Math.toRadians(0))
+                .splineTo(new Vector2d(55, -61), Math.toRadians(0))
                 .build());
 
         /* Red Basket to First Sample */

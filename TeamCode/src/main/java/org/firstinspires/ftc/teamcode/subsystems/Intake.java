@@ -52,7 +52,7 @@ public class Intake extends SubsystemBase {
             intake.set(Constants.intakeEjectSpeed);
         }
         else {
-            intake.set(0);
+            intake.set(Constants.intakeRestingSpeed);
         }
     }
 
