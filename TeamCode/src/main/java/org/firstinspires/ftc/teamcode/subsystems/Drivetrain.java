@@ -28,6 +28,10 @@ public class Drivetrain extends SubsystemBase {
     private Telemetry telemetry;
     private double imuOffset;
 
+    public double forwardSpeedlimit = 1;
+    public double strafeSpeedlimit = 1;
+    public double rotSpeedLimit = 1;
+
     public Drivetrain(HardwareMap hmap, Pose2d pose, Telemetry telemetry) {
         // get motors for drivetrain
         mecanumDrive = new MecanumDrive(hmap,pose);
@@ -101,6 +105,10 @@ public class Drivetrain extends SubsystemBase {
     }
 
     private void fieldCentricDrive(double forwardSpeed, double strafeSpeed, double turnSpeed, double gyroAngle) {
+
+        forwardSpeed = forwardSpeed * forwardSpeedlimit;
+        strafeSpeed = strafeSpeed * strafeSpeedlimit;
+        turnSpeed = turnSpeed * rotSpeedLimit;
 
         strafeSpeed = clipRange(strafeSpeed);
         forwardSpeed = clipRange(forwardSpeed);

@@ -56,16 +56,15 @@ public class MeepMeepTesting {
 
 
         /* Red Basket to Observation Zone */
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(Field.RED_BASKET, Math.toRadians(45)))
-                .splineTo(new Vector2d(-24, -37), Math.toRadians(0))
-                .splineTo(new Vector2d(30, -37), Math.toRadians(0))
-                .splineTo(new Vector2d(55, -61), Math.toRadians(0))
-                .build());
+//        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(Field.RED_BASKET, Math.toRadians(45)))
+//                .splineTo(new Vector2d(-24, -37), Math.toRadians(0))
+//                .splineTo(new Vector2d(30, -37), Math.toRadians(0))
+//                .splineTo(new Vector2d(55, -61), Math.toRadians(0))
+//                .build());
 
         /* Red Basket to First Sample */
 //        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(Field.RED_BASKET, Math.toRadians(45)))
-//                .setTangent(0)
-//                .splineTo(new Vector2d(-26.5, -40.1), Math.toRadians(100))
+//                .strafeToLinearHeading(new Vector2d(-48, -48), Math.toRadians(90))
 //                .build());
 
 //        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(new Vector2d(-36, -35), Math.toRadians(145)))
@@ -81,8 +80,7 @@ public class MeepMeepTesting {
 
         /* Red Basket to Second Sample */
 //        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(Field.RED_BASKET, Math.toRadians(45)))
-//                    .setTangent(0)
-//                    .splineTo(new Vector2d(-39, -40), Math.toRadians(100))
+//                .strafeToLinearHeading(new Vector2d(-57, -46), Math.toRadians(90))
 //                .build());
 
         /* Second Sample to Red Basket */
@@ -93,9 +91,25 @@ public class MeepMeepTesting {
 
         /* Red Basket to Third Sample */
 //        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(Field.RED_BASKET, Math.toRadians(45)))
-//                .setTangent(0)
-//                .splineTo(new Vector2d(-52.5, -34), Math.toRadians(110))
-//                .build());
+//                    .strafeToLinearHeading(new Vector2d(-55, -45), Math.toRadians(125))
+//                    .build());
+
+        /* Red Basket to Fourth Sample */
+//            myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(Field.RED_BASKET, Math.toRadians(45)))
+//            .splineTo(new Vector2d(-24, -37), Math.toRadians(0))
+//            .splineTo(new Vector2d(10, -37), Math.toRadians(0))
+//            .splineTo(new Vector2d(30, -35), Math.toRadians(30))
+//            .build());
+
+        /*  Red Basket to Submersible Zone */
+
+//        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(Field.RED_BASKET, Math.toRadians(45)))
+//            .strafeToLinearHeading(new Vector2d(30, -30), Math.toRadians(0))
+//            .build());
+
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(Field.RED_BASKET, Math.toRadians(45)))
+            .splineTo(new Vector2d(-30, -10), Math.toRadians(0))
+            .build());
 
         /* Third Sample to Red Basket */
 //        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(new Vector2d(-52.5, -34), Math.toRadians(145)))
@@ -112,11 +126,11 @@ public class MeepMeepTesting {
 //        myBot2.runAction(basketTrajectory);
 
         // Blue bucket to Blue Observation Zone
-        myBot2.runAction(myBot.getDrive().actionBuilder(forBlue(new Pose2d(Field.RED_BASKET, Math.toRadians(45))))
-                .splineTo(forBlue(new Vector2d(-24, -40)), forBlue(Math.toRadians(0)))
-                .splineTo(forBlue(new Vector2d(23, -40)), forBlue(Math.toRadians(0)))
-                .splineTo(forBlue(new Vector2d(46.9, -61)), forBlue(Math.toRadians(0)))
-                .build());
+//        myBot2.runAction(myBot.getDrive().actionBuilder(forBlue(new Pose2d(Field.RED_BASKET, Math.toRadians(45))))
+//                .splineTo(forBlue(new Vector2d(-24, -40)), forBlue(Math.toRadians(0)))
+//                .splineTo(forBlue(new Vector2d(23, -40)), forBlue(Math.toRadians(0)))
+//                .splineTo(forBlue(new Vector2d(46.9, -61)), forBlue(Math.toRadians(0)))
+//                .build());
         meepMeep.setBackground(MeepMeep.Background.FIELD_INTO_THE_DEEP_OFFICIAL)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)

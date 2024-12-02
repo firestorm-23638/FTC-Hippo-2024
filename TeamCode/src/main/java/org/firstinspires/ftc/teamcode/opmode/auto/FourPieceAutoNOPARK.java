@@ -45,7 +45,7 @@ public class FourPieceAutoNOPARK extends CommandOpMode {
         drive = new Drivetrain(hardwareMap, home, telemetry);
         basket = new Basket(hardwareMap, telemetry);
         elevator = new Elevator(hardwareMap, telemetry);
-        intake = new Intake(hardwareMap, telemetry);
+        intake = new Intake(hardwareMap, telemetry, Intake.color.NONE);
 
         final Vector2d basketPos = new Vector2d(-59.923881554, -54.0502525317);
         final Pose2d firstSample = new Pose2d(new Vector2d(-36, -35), Math.toRadians(100));

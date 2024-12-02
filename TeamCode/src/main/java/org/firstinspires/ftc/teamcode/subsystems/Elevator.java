@@ -29,7 +29,7 @@ public class Elevator extends SubsystemBase {
     public boolean isBarState = false;
     public boolean isSlightState = false;
 
-    private final Motor vertical;     // The motor for the elevator
+    public final Motor vertical;     // The motor for the elevator
 
     private final Telemetry telemetry;    // Telemetry class for printouts
 
@@ -71,6 +71,7 @@ public class Elevator extends SubsystemBase {
     public void periodic() {         // Constantly runs the PID algorithm based on the currentStage
         telemetry.addData("Vertical Position", vertical.getCurrentPosition());
         telemetry.addData("Current Stage", currentStage);
+        telemetry.addData("Vertical %", vertical.get());
 
         if (isSlightState) {
             pidTarget = Constants.depositorVerticalUpSlightly;

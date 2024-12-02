@@ -30,7 +30,7 @@ public class MainAuto extends CommandOpMode {
         drive = new Drivetrain(hardwareMap, new Pose2d(new Vector2d(0, 0), Math.toRadians(0)), telemetry);
         elevator = new Elevator(hardwareMap, telemetry);
         basket = new Basket(hardwareMap, telemetry);
-        intake = new Intake(hardwareMap, telemetry);
+        intake = new Intake(hardwareMap, telemetry, Intake.color.NONE);
 
         Vector2d home = new Vector2d(0, 0);
         Vector2d toBasket = new Vector2d(-3, 10);
