@@ -27,14 +27,23 @@ public class MeepMeepTesting {
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .setConstraints(60, 120, Math.toRadians(500), Math.toRadians(720), 15)
                 // adjust this to be where the robot really starts
                 .setDimensions(17.8,17)
-                .setStartPose(new Pose2d(-38,-61.5, Math.toRadians(90)))
+                .setStartPose(new Pose2d(-0.4,-33, Math.toRadians(180)))
                 .build();
         RoadRunnerBotEntity myBot2 = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .setConstraints(60, 120, Math.toRadians(500), Math.toRadians(720), 15)
+                // adjust this to be where the robot really starts
+                .setDimensions(17.8,17)
+                .setStartPose(forBlue(new Pose2d(-47,-58.5, Math.toRadians(45))))
+                .setColorScheme(new ColorSchemeBlueLight())
+                .build();
+
+        RoadRunnerBotEntity myBot3 = new DefaultBotBuilder(meepMeep)
+                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+                .setConstraints(60, 120, Math.toRadians(500), Math.toRadians(720), 15)
                 // adjust this to be where the robot really starts
                 .setDimensions(17.8,17)
                 .setStartPose(forBlue(new Pose2d(-38,-61.5, Math.toRadians(45))))
@@ -131,11 +140,62 @@ public class MeepMeepTesting {
 //                .splineTo(forBlue(new Vector2d(23, -40)), forBlue(Math.toRadians(0)))
 //                .splineTo(forBlue(new Vector2d(46.9, -61)), forBlue(Math.toRadians(0)))
 //                .build());
+        // start to specimen score
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, -61, Math.toRadians(180)))
+                        .strafeTo(new Vector2d(0, -33))
+                                .build());
+        // specimen score to spike mark
+        myBot2.runAction(myBot2.getDrive().actionBuilder(new Pose2d(0, -33, Math.toRadians(180)))
+                .setReversed(true)
+                .waitSeconds(1.5)
+                // from specimen to first spike mark
+                .splineToConstantHeading(new Vector2d(10, -37), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(35.5, -37, Math.toRadians(180)), Math.toRadians(90))
+                .splineToSplineHeading(new Pose2d(35.5, -10, Math.toRadians(180)), Math.toRadians(90))
+                .splineToSplineHeading(new Pose2d(47, -12, Math.toRadians(270)), Math.toRadians(270))
+                // from first spike to obs then back
+                .splineToConstantHeading(new Vector2d(47, -55), Math.toRadians(270))
+                .waitSeconds(0.1)
+                .setReversed(true)
+                .splineToConstantHeading(new Vector2d(47, -13), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(57, -24), Math.toRadians(270))
+                // second spike to obs then back
+                .splineToConstantHeading(new Vector2d(57, -55), Math.toRadians(270))
+                .waitSeconds(0.1)
+                .setReversed(true)
+                .splineToConstantHeading(new Vector2d(57, -13), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(61, -24), Math.toRadians(270))
+                // third spike to obs
+                .splineToConstantHeading(new Vector2d(61, -55), Math.toRadians(270))
+                .build()
+        );
+
+        myBot3.runAction(myBot3.getDrive().actionBuilder(new Pose2d(60, -55, Math.toRadians(90)))
+                .waitSeconds(9.2)
+                .strafeToSplineHeading(new Vector2d(37, -57), Math.toRadians(0))
+                .strafeTo(new Vector2d(37, -60))
+                .strafeToSplineHeading(new Vector2d(8, -33), Math.toRadians(180))
+                .waitSeconds(0.5)
+                .strafeToSplineHeading(new Vector2d(37, -57), Math.toRadians(0))
+                .strafeTo(new Vector2d(37, -60))
+                .strafeToSplineHeading(new Vector2d(6, -33), Math.toRadians(180))
+                .waitSeconds(0.5)
+                .strafeToSplineHeading(new Vector2d(37, -57), Math.toRadians(0))
+                .strafeTo(new Vector2d(37, -60))
+                .strafeToSplineHeading(new Vector2d(4, -33), Math.toRadians(180))
+                .waitSeconds(0.5)
+                .strafeToSplineHeading(new Vector2d(37, -57), Math.toRadians(0))
+                .strafeTo(new Vector2d(37, -60))
+                .strafeToSplineHeading(new Vector2d(2, -33), Math.toRadians(180))
+                .build()
+        );
         meepMeep.setBackground(MeepMeep.Background.FIELD_INTO_THE_DEEP_OFFICIAL)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(myBot)
                 .addEntity(myBot2)
+                .addEntity(myBot3)
                 .start();
+
     }
 }
