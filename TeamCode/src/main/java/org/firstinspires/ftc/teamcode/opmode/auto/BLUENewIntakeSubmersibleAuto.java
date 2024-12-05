@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.commands.BasketPositionCommand;
-import org.firstinspires.ftc.teamcode.commands.BlankCommand;
 import org.firstinspires.ftc.teamcode.commands.ElevatorPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.ForwardUntilHasPieceCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeHasSampleCommand;
@@ -21,7 +20,6 @@ import org.firstinspires.ftc.teamcode.commands.IntakePositionCommand;
 import org.firstinspires.ftc.teamcode.commands.RawDrivetrainCommand;
 import org.firstinspires.ftc.teamcode.commands.StrafeToPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.TrajectoryGotoCommand;
-import org.firstinspires.ftc.teamcode.commands.TurnToNearestSampleCommand;
 import org.firstinspires.ftc.teamcode.subsystems.Basket;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.Elevator;
@@ -95,7 +93,7 @@ public class BLUENewIntakeSubmersibleAuto extends CommandOpMode {
         waitForStart();
         schedule(new InstantCommand(() -> {
             basket.toHome();
-            elevator.currentStage = Elevator.basketState.HOME;
+            elevator.setDesiredState(Elevator.BasketState.HOME);
             intake.pivotHome();
             intake.horizontalIn();
         }));
@@ -103,12 +101,12 @@ public class BLUENewIntakeSubmersibleAuto extends CommandOpMode {
         schedule(new SequentialCommandGroup(
                 new ParallelCommandGroup(
                         new TrajectoryGotoCommand(startToBasket, drive),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
+                        new ElevatorPositionCommand(elevator, Elevator.BasketState.HIGH_BASKET)
                 ),
                 new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(500),
                 new ParallelCommandGroup(
                         new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME),
+                        new ElevatorPositionCommand(elevator, Elevator.BasketState.HOME),
                         new TrajectoryGotoCommand(basketToFirstSample, drive),
                         new IntakePositionCommand(intake, Intake.state.INTAKING).withTimeout(1000)
                 ),
@@ -125,13 +123,13 @@ public class BLUENewIntakeSubmersibleAuto extends CommandOpMode {
                 new IntakePositionCommand(intake, Intake.state.TRANSFERRING).withTimeout(500),
                 new ParallelCommandGroup(
                         new StrafeToPositionCommand(new Pose2d(basketPos, Math.toRadians(45)), drive),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET),
+                        new ElevatorPositionCommand(elevator, Elevator.BasketState.HIGH_BASKET),
                         new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(200)
                 ),
                 new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(600),
                 new ParallelCommandGroup(
                         new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME),
+                        new ElevatorPositionCommand(elevator, Elevator.BasketState.HOME),
 
                         // Second Sample
                         new TrajectoryGotoCommand(basketToSecondSample, drive),
@@ -147,12 +145,12 @@ public class BLUENewIntakeSubmersibleAuto extends CommandOpMode {
                 new ParallelCommandGroup(
                         new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(200),
                         new StrafeToPositionCommand(new Pose2d(basketPos, Math.toRadians(45)), drive),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
+                        new ElevatorPositionCommand(elevator, Elevator.BasketState.HIGH_BASKET)
                 ),
                 new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(500),
                 new ParallelCommandGroup(
                         new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME),
+                        new ElevatorPositionCommand(elevator, Elevator.BasketState.HOME),
 
                         // Third Sample
                         new TrajectoryGotoCommand(basketToThirdSample, drive),
@@ -169,12 +167,12 @@ public class BLUENewIntakeSubmersibleAuto extends CommandOpMode {
                 new ParallelCommandGroup(
                         new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(200),
                         new StrafeToPositionCommand(new Pose2d(basketPos, Math.toRadians(45)), drive),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
+                        new ElevatorPositionCommand(elevator, Elevator.BasketState.HIGH_BASKET)
                 ),
                 new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(500),
                 new ParallelCommandGroup(
                         new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME),
+                        new ElevatorPositionCommand(elevator, Elevator.BasketState.HOME),
                         // sub
                         new TrajectoryGotoCommand(basketToSubmersible, drive)
                 ),
@@ -186,12 +184,12 @@ public class BLUENewIntakeSubmersibleAuto extends CommandOpMode {
                 new IntakePositionCommand(intake, Intake.state.TRANSFERRING).withTimeout(300),
                 new ParallelCommandGroup(
                         new StrafeToPositionCommand(new Pose2d(basketPos, Math.toRadians(45)), drive),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
+                        new ElevatorPositionCommand(elevator, Elevator.BasketState.HIGH_BASKET)
                 ),
                 new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(500),
                 new ParallelCommandGroup(
                         new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME)
+                        new ElevatorPositionCommand(elevator, Elevator.BasketState.HOME)
                 )
         ));
         //.andThen(new TrajectoryGotoCommand(basketToObservation, drive)));

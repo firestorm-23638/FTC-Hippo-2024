@@ -2,15 +2,14 @@ package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 
-import org.firstinspires.ftc.teamcode.subsystems.Depositor;
 import org.firstinspires.ftc.teamcode.subsystems.Elevator;
 
 public class ElevatorPositionCommand extends CommandBase {
     private final Elevator elevator;
-    private Elevator.basketState state;
+    private Elevator.BasketState state;
     private boolean isFinished = false;
 
-    public ElevatorPositionCommand(Elevator elevator, Elevator.basketState state) {
+    public ElevatorPositionCommand(Elevator elevator, Elevator.BasketState state) {
         addRequirements(elevator);
         this.elevator = elevator;
         this.state = state;
@@ -18,7 +17,7 @@ public class ElevatorPositionCommand extends CommandBase {
 
     @Override
     public void execute() {
-        elevator.currentStage = state;
+        elevator.setDesiredState(state);
         isFinished = elevator.isAtPos();
     }
 

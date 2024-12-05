@@ -12,7 +12,6 @@ import org.firstinspires.ftc.teamcode.commands.BasketPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.ElevatorPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.TrajectoryGotoCommand;
 import org.firstinspires.ftc.teamcode.subsystems.Basket;
-import org.firstinspires.ftc.teamcode.subsystems.Depositor;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.Elevator;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
@@ -50,15 +49,15 @@ public class MainAuto extends CommandOpMode {
         waitForStart();
         schedule(new InstantCommand(() -> {
             basket.toHome();
-            elevator.currentStage = Elevator.basketState.HOME;
+            elevator.setDesiredState(Elevator.BasketState.HOME);
             intake.pivotHome();
             intake.horizontalIn();
         }));
         schedule(new TrajectoryGotoCommand(startToBasket, drive)
-                .alongWith(new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET))
+                .alongWith(new ElevatorPositionCommand(elevator, Elevator.BasketState.HIGH_BASKET))
                 .andThen(new BasketPositionCommand(basket, Basket.state.BUCKET)).withTimeout(1000)
                 .andThen(new BasketPositionCommand(basket, Basket.state.HOME)).withTimeout(1000)
-                .andThen(new ElevatorPositionCommand(elevator, Elevator.basketState.HOME))
+                .andThen(new ElevatorPositionCommand(elevator, Elevator.BasketState.HOME))
         );
                 //.andThen(new TrajectoryCommand(basketToObservation, drive)));
     }

@@ -81,7 +81,7 @@ public class FourPieceAutoNOPARK extends CommandOpMode {
         waitForStart();
         schedule(new InstantCommand(() -> {
             basket.toHome();
-            elevator.currentStage = Elevator.basketState.HOME;
+            elevator.setDesiredState(Elevator.BasketState.HOME);
             intake.pivotHome();
             intake.horizontalIn();
         }));
@@ -91,12 +91,12 @@ public class FourPieceAutoNOPARK extends CommandOpMode {
         schedule(new SequentialCommandGroup(
                 new ParallelCommandGroup(
                         new TrajectoryGotoCommand(startToBasket, drive),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
+                        new ElevatorPositionCommand(elevator, Elevator.BasketState.HIGH_BASKET)
                 ),
                 new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(600),
                 new ParallelCommandGroup(
                         new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME),
+                        new ElevatorPositionCommand(elevator, Elevator.BasketState.HOME),
                         new TrajectoryGotoCommand(basketToFirstSample, drive),
                         new IntakePositionCommand(intake, Intake.state.INTAKING).withTimeout(1000)
                 ),
@@ -113,12 +113,12 @@ public class FourPieceAutoNOPARK extends CommandOpMode {
                 new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(200),
                 new ParallelCommandGroup(
                         new StrafeToPositionCommand(new Pose2d(basketPos, Math.toRadians(45)), drive),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
+                        new ElevatorPositionCommand(elevator, Elevator.BasketState.HIGH_BASKET)
                 ),
                 new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(600),
                 new ParallelCommandGroup(
                         new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME),
+                        new ElevatorPositionCommand(elevator, Elevator.BasketState.HOME),
 
                         // Second Sample
                         new TrajectoryGotoCommand(basketToSecondSample, drive),
@@ -135,12 +135,12 @@ public class FourPieceAutoNOPARK extends CommandOpMode {
                 new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(200),
                 new ParallelCommandGroup(
                         new StrafeToPositionCommand(new Pose2d(basketPos, Math.toRadians(45)), drive),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
+                        new ElevatorPositionCommand(elevator, Elevator.BasketState.HIGH_BASKET)
                 ),
                 new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(600),
                 new ParallelCommandGroup(
                         new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME),
+                        new ElevatorPositionCommand(elevator, Elevator.BasketState.HOME),
 
                         // Third Sample
                         new TrajectoryGotoCommand(basketToThirdSample, drive),
@@ -163,12 +163,12 @@ public class FourPieceAutoNOPARK extends CommandOpMode {
                 new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(200),
                 new ParallelCommandGroup(
                         new StrafeToPositionCommand(new Pose2d(basketPos, Math.toRadians(45)), drive),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
+                        new ElevatorPositionCommand(elevator, Elevator.BasketState.HIGH_BASKET)
                 ),
                 new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(600),
                 new ParallelCommandGroup(
                         new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME)
+                        new ElevatorPositionCommand(elevator, Elevator.BasketState.HOME)
                         //new TrajectoryGotoCommand(basketToObservation, drive)
                 )
         ));

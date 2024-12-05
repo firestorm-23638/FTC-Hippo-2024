@@ -11,6 +11,7 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.RunCommand;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -19,6 +20,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.commands.DrivetrainCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakePositionCommand;
+import org.firstinspires.ftc.teamcode.commands.SafeMoveElevatorCommand;
+import org.firstinspires.ftc.teamcode.commands.SafeMoveElevatorDownCommand;
+import org.firstinspires.ftc.teamcode.commands.SafeMoveElevatorUpCommand;
 import org.firstinspires.ftc.teamcode.commands.StrafeToPositionCommand;
 import org.firstinspires.ftc.teamcode.subsystems.Basket;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
@@ -162,24 +166,12 @@ public class MainTeleop extends CommandOpMode {
         basketOut.whenHeld(new InstantCommand(() -> basket.toDeposit()))
                 .whenReleased(new InstantCommand(() -> basket.toHome()));
 
-        depositorUp.whenPressed(new ConditionalCommand(
-                new IntakePositionCommand(intake, Intake.state.SLIGHTLY, 300)
-                        .andThen(new InstantCommand(() -> {
-                            elevator.increaseStage();
-                        })),
-                new InstantCommand(() -> {
-            elevator.increaseStage();
-        }),
-                () -> elevator.currentStage == Elevator.basketState.HOME));
+        depositorUp.whenPressed(new SafeMoveElevatorUpCommand(elevator, intake));
 
-        depositorDown.whenPressed(new InstantCommand(() -> {
-            elevator.decreaseStage();
-            if (elevator.isAtPos() && (elevator.currentStage == Elevator.basketState.HOME)) {
-                intake.horizontalIn();
-            }
-        }));
-        depositorSlight.whenHeld(new InstantCommand(() -> elevator.isSlightState = true))
-                .whenReleased(new InstantCommand(() -> elevator.isSlightState = false));
+        depositorDown.whenPressed(new SafeMoveElevatorDownCommand(elevator, intake));
+
+        depositorSlight.whenHeld(new SafeMoveElevatorCommand(elevator, Elevator.BasketState.SLIGHT_STATE, intake))
+                .whenReleased(new SafeMoveElevatorCommand(elevator, Elevator.BasketState.HOME, intake));
 
         // If a subsystem has a default command, you don't need to register.
         register(intake, basket, elevator, limelight);
@@ -197,10 +189,12 @@ public class MainTeleop extends CommandOpMode {
         waitForStart();
         // Put game start code here. i.e home everything
         schedule(new InstantCommand(() -> {
-            intake.horizontalIn();
             basket.toHome();
-            elevator.currentStage = Elevator.basketState.HOME;
             intake.pivotHome();
-        }));
+        }), new SequentialCommandGroup(
+                new SafeMoveElevatorCommand(elevator, Elevator.BasketState.HOME, intake)),
+                new InstantCommand(() -> intake.horizontalIn())
+        );
+
     }
 }
