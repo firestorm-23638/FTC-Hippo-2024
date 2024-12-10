@@ -26,8 +26,8 @@ public class Constants {
     public static final double depositorVerticalToTopBar = 2000;
     public static final double depositorVerticalUpSlightly = 500;
 
-    public static final double depositorBasketToDepositAngle = 179;
-    public static final double depositorBasketToHomeAngle = 5;
+    public static final double depositorBasketToDepositAngle = 210;
+    public static final double depositorBasketToHomeAngle = 0;
 
     public static final String intakeLeftHorizontalConfig = "leftHorizontal";
     public static final String intakeRightHorizontalConfig = "rightHorizontal";
@@ -35,11 +35,13 @@ public class Constants {
     public static final String intakeLeftVacuumConfig = "leftVacuum";
     public static final String intakeRightVacuumConfig = "rightVacuum";
 
-    public static final double intakeHorizontalToIntakePose = 100;
+    public static final double intakeHorizontalToIntakePose = 30;
     public static final double intakeHorizontalToHomePose = 0;
 
-    public static final double intakePivotToBasket = 55;
-    public static final double intakePivotToDown = 230;
+    public static final double intakePivotToBasket = 230;
+    public static final double intakePivotToDown = 95;
+    public static final double intakePivotToRest = 200;
+
 
     public static final double intakeRestingSpeed = 0.05;
     public static final double intakeVacuumSpeed = -.3;

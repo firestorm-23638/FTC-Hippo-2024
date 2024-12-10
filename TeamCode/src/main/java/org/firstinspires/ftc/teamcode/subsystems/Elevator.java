@@ -4,11 +4,15 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Constants;
+
+import java.text.StringCharacterIterator;
 
 /*
 Elevator: The elevator subsystem for the robot.
@@ -18,6 +22,7 @@ public class Elevator extends SubsystemBase {
     public enum basketState {    // The current "state" or position of the elevator
         HOME((int)Constants.depositorVerticalToBottomPose),
         MIDDLE_BASKET((int)Constants.depositorVerticalToMidPose),
+        SPECIMEN((int)Constants.depositorVerticalToTopPose-100),
         HIGH_BASKET((int)Constants.depositorVerticalToTopPose);
 
         public final int pos;
@@ -28,26 +33,44 @@ public class Elevator extends SubsystemBase {
 
     public boolean isBarState = false;
     public boolean isSlightState = false;
+    public boolean isZeroed = true;
+    private double trim = 0;
 
     public final Motor vertical;     // The motor for the elevator
-
     private final Telemetry telemetry;    // Telemetry class for printouts
+    private final DigitalChannel limitSwitch;
+    private Gamepad gamepad;
 
     public basketState currentStage = basketState.HOME;
 
     private double pidTarget = 0;
+    private boolean isGamepad = false;
 
-    public Elevator(HardwareMap hardwareMap, Telemetry telemetry) {
+    public Elevator(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad) {
         vertical = new Motor(hardwareMap, Constants.depositorVerticalConfig);
+        limitSwitch = hardwareMap.get(DigitalChannel.class, "elevatorLimit");
+        this.gamepad = gamepad;
+        isGamepad = true;
 
         this.telemetry = telemetry;
+    };
+
+    public Elevator(HardwareMap hardwareMap, Telemetry telemetry) {
+        this(hardwareMap, telemetry, null);
+        isGamepad = false;
     };
 
     public void increaseStage() {       // Increases the stage of the elevator
         if (currentStage == basketState.HIGH_BASKET) {
             return;
         }
-        if (currentStage == basketState.HOME) {
+        if (currentStage == basketState.SPECIMEN) {
+            currentStage = basketState.HIGH_BASKET;
+        }
+        else if (currentStage == basketState.MIDDLE_BASKET) {
+            currentStage = basketState.SPECIMEN;
+        }
+        else if (currentStage == basketState.HOME) {
             currentStage = basketState.MIDDLE_BASKET;
         }
         else {
@@ -60,6 +83,9 @@ public class Elevator extends SubsystemBase {
             return;
         }
         if (currentStage == basketState.HIGH_BASKET) {
+            currentStage = basketState.SPECIMEN;
+        }
+        else if (currentStage == basketState.SPECIMEN) {
             currentStage = basketState.MIDDLE_BASKET;
         }
         else {
@@ -67,23 +93,52 @@ public class Elevator extends SubsystemBase {
         }
     }
 
+    public void setTrim(double amt) {
+        trim = amt;
+    }
+
     @Override
     public void periodic() {         // Constantly runs the PID algorithm based on the currentStage
         telemetry.addData("Vertical Position", vertical.getCurrentPosition());
         telemetry.addData("Current Stage", currentStage);
         telemetry.addData("Vertical %", vertical.get());
+        telemetry.addData("Limit Switch", limitSwitch.getState());
 
-        if (isSlightState) {
-            pidTarget = Constants.depositorVerticalUpSlightly;
+//        if (isSlightState) {
+//            pidTarget = Constants.depositorVerticalUpSlightly;
+//        }
+//        else if (isBarState) {
+//            pidTarget = Constants.depositorVerticalToTopBar;
+//        }
+        //else {
+        pidTarget = currentStage.pos;
+        //}
+
+
+        if (isGamepad) {
+                trim = (gamepad.right_trigger * 275);
         }
-        else if (isBarState) {
-            pidTarget = Constants.depositorVerticalToTopBar;
+        telemetry.addData("Trim", trim);
+
+        if (currentStage == basketState.HOME) {
+            if (!isZeroed) {
+                if (!limitSwitch.getState()) {
+                    moveVertical(0);
+                    vertical.resetEncoder();
+                    isZeroed = true;
+                }
+                else {
+                    moveVertical(-0.5);
+                }
+            }
+            else {
+                verticalToPos(pidTarget - trim);
+            }
         }
         else {
-            pidTarget = currentStage.pos;
+            verticalToPos(pidTarget - trim);    // Runs PID algorithm
         }
 
-        verticalToPos(pidTarget);    // Runs PID algorithm
     }
 
     private void verticalToPos(double targetPos) {     // PID algorithm function. There is just a kP term for now
@@ -93,7 +148,7 @@ public class Elevator extends SubsystemBase {
         double currPos = vertical.getCurrentPosition();
         double error = targetPos - currPos;
 
-        vertical.set(error * kP);
+        moveVertical(error * kP);
 
     }
 
