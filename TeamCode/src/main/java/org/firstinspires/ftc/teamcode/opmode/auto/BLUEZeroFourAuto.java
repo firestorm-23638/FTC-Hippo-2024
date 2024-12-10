@@ -9,6 +9,7 @@ import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.ParallelRaceGroup;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Constants;
@@ -20,7 +21,6 @@ import org.firstinspires.ftc.teamcode.commands.IntakePositionCommand;
 import org.firstinspires.ftc.teamcode.commands.RawDrivetrainCommand;
 import org.firstinspires.ftc.teamcode.commands.StrafeToPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.TrajectoryGotoCommand;
-import org.firstinspires.ftc.teamcode.commands.TurnToNearestSampleCommand;
 import org.firstinspires.ftc.teamcode.subsystems.Basket;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.Elevator;
@@ -28,7 +28,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Limelight;
 
 @Autonomous
-public class BLUENewIntakeFourSampleAuto extends CommandOpMode {
+public class BLUEZeroFourAuto extends CommandOpMode {
     private Drivetrain drive;
     private Basket basket;
     private Elevator elevator;
@@ -59,7 +59,7 @@ public class BLUENewIntakeFourSampleAuto extends CommandOpMode {
         drive.strafeSpeedlimit = 1;
         drive.rotSpeedLimit = 1;
 
-        final Vector2d basketPos = new Vector2d(-59.923881554, -54.0502525317);
+        final Vector2d basketPos = new Vector2d(-58.023881554, -54.02525317);
         final Pose2d firstSample = new Pose2d(new Vector2d(-36, -35), Math.toRadians(100));
         final Pose2d inchToFirstSamplePose = addPoses(shiftForward(5, Math.toRadians(100)), firstSample);
 
@@ -68,15 +68,15 @@ public class BLUENewIntakeFourSampleAuto extends CommandOpMode {
                 .build();
 
         Action basketToFirstSample = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
-                .strafeToLinearHeading(new Vector2d(-48, -48), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(-48, -52), Math.toRadians(90))
                 .build();
 
         Action basketToSecondSample = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
-                .strafeToLinearHeading(new Vector2d(-57, -46), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(-55.5, -53, Math.toRadians(90)), Math.toRadians(90))
                 .build();
 
         Action basketToThirdSample = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
-                .strafeToLinearHeading(new Vector2d(-55, -45), Math.toRadians(125))
+                .strafeToLinearHeading(new Vector2d(-44, -37), Math.toRadians(150))
                 .build();
 
         Action basketToFourthSample = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
@@ -106,102 +106,91 @@ public class BLUENewIntakeFourSampleAuto extends CommandOpMode {
                         new TrajectoryGotoCommand(startToBasket, drive),
                         new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
                 ),
-                new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(500),
+                new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(700),
                 new ParallelCommandGroup(
                         new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME),
+                        new SequentialCommandGroup(
+                                new WaitCommand(500),
+                                new ElevatorPositionCommand(elevator, Elevator.basketState.HOME)
+                        ),
+
                         new TrajectoryGotoCommand(basketToFirstSample, drive),
-                        new IntakePositionCommand(intake, Intake.state.INTAKING).withTimeout(1000)
+                        new IntakePositionCommand(intake, Intake.state.INTAKING, 1000)
                 ),
                 //new TurnToNearestSampleCommand(limelight, drive),
                 // First Sample
                 new ParallelRaceGroup(
-                        new RawDrivetrainCommand(drive, .3, 0, 0).withTimeout(1000),
+                        new RawDrivetrainCommand(drive, .3, 0, 0).withTimeout(1500),
                         new IntakeHasSampleCommand(intake)
                 ),
-                new ParallelCommandGroup(
-                        new RawDrivetrainCommand(drive, 0, 0, 0).withTimeout(50),
-                        new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(700)
-                ),
-                new IntakePositionCommand(intake, Intake.state.TRANSFERRING).withTimeout(500),
+                new RawDrivetrainCommand(drive, 0, 0, 0).withTimeout(50),
+                new IntakePositionCommand(intake, Intake.state.RESTING, 700),
+                new IntakePositionCommand(intake, Intake.state.TRANSFERRING, 700),
                 new ParallelCommandGroup(
                         new StrafeToPositionCommand(new Pose2d(basketPos, Math.toRadians(45)), drive),
                         new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET),
-                        new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(200)
+                        new IntakePositionCommand(intake, Intake.state.RESTING, 200)
                 ),
-                new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(600),
+                new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(700),
                 new ParallelCommandGroup(
                         new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME),
+                        new SequentialCommandGroup(
+                                new WaitCommand(500),
+                                new ElevatorPositionCommand(elevator, Elevator.basketState.HOME)
+                        ),
 
                         // Second Sample
-                        new TrajectoryGotoCommand(basketToSecondSample, drive),
-                        new IntakePositionCommand(intake, Intake.state.INTAKING).withTimeout(1000)
+                        new TrajectoryGotoCommand(basketToSecondSample, drive)
                 ),
+                new IntakePositionCommand(intake, Intake.state.INTAKING, 1000),
                 new ParallelRaceGroup(
-                        new RawDrivetrainCommand(drive, .3, 0, 0).withTimeout(1000),
+                        new RawDrivetrainCommand(drive, .3, 0, 0).withTimeout(1500),
                         new IntakeHasSampleCommand(intake)
                 ),
                 new RawDrivetrainCommand(drive, 0, 0, 0).withTimeout(50),
-                new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(700),
-                new IntakePositionCommand(intake, Intake.state.TRANSFERRING).withTimeout(500),
+                new IntakePositionCommand(intake, Intake.state.RESTING, 700),
+                new IntakePositionCommand(intake, Intake.state.TRANSFERRING, 500),
                 new ParallelCommandGroup(
-                        new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(200),
+                        new IntakePositionCommand(intake, Intake.state.RESTING, 200),
                         new StrafeToPositionCommand(new Pose2d(basketPos, Math.toRadians(45)), drive),
                         new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
                 ),
-                new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(500),
+                new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(700),
                 new ParallelCommandGroup(
                         new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME),
+                        new SequentialCommandGroup(
+                                new WaitCommand(500),
+                                new ElevatorPositionCommand(elevator, Elevator.basketState.HOME)
+                        ),
 
                         // Third Sample
                         new TrajectoryGotoCommand(basketToThirdSample, drive),
-                        new IntakePositionCommand(intake, Intake.state.INTAKING).withTimeout(1000)
+                        new IntakePositionCommand(intake, Intake.state.INTAKING, 1000)
                 ),
 
                 new ParallelRaceGroup(
-                        new RawDrivetrainCommand(drive,.3, 0, 0).withTimeout(1000),
+                        new RawDrivetrainCommand(drive,.2, 0, 0).withTimeout(1500),
                         new IntakeHasSampleCommand(intake)
                 ),
                 new RawDrivetrainCommand(drive, 0, 0, 0).withTimeout(50),
-                new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(700),
-                new IntakePositionCommand(intake, Intake.state.TRANSFERRING).withTimeout(500),
+                new IntakePositionCommand(intake, Intake.state.RESTING, 700),
+                new IntakePositionCommand(intake, Intake.state.TRANSFERRING, 500),
                 new ParallelCommandGroup(
-                        new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(200),
+                        new IntakePositionCommand(intake, Intake.state.RESTING, 200),
                         new StrafeToPositionCommand(new Pose2d(basketPos, Math.toRadians(45)), drive),
                         new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
                 ),
                 new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(500),
                 new ParallelCommandGroup(
                         new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME),
-                        // Fourth Sample
-                        new TrajectoryGotoCommand(basketToFourthSample, drive),
                         new SequentialCommandGroup(
-                                new BlankCommand().withTimeout(2000),
-                                new IntakePositionCommand(intake, Intake.state.INTAKING)
+                                new WaitCommand(500),
+                                new ElevatorPositionCommand(elevator, Elevator.basketState.HOME)
                         )
                 ),
-                new ParallelRaceGroup(
-                        new RawDrivetrainCommand(drive,.3, 0, 0).withTimeout(1000),
-                        new IntakeHasSampleCommand(intake)
-                ),
-                new RawDrivetrainCommand(drive, 0, 0, 0).withTimeout(50),
-                new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(700),
-                new IntakePositionCommand(intake, Intake.state.TRANSFERRING).withTimeout(500),
-                new ParallelCommandGroup(
-                        new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(200),
-                        new StrafeToPositionCommand(new Pose2d(basketPos, Math.toRadians(45)), drive),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
-                ),
-                new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(500),
-                new ParallelCommandGroup(
-                        new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME)
-                ),
-                new InstantCommand(() -> Constants.pose = new Pose2d(basketPos, Math.toRadians(45)))
-        ));
+                new InstantCommand(() -> Constants.pose = drive.getCurrentPose())
+                )
+        );
         //.andThen(new TrajectoryGotoCommand(basketToObservation, drive)));
 
     }

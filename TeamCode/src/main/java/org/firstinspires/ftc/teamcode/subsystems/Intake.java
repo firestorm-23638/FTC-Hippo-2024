@@ -6,6 +6,7 @@ import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.CRServo;
 import com.arcrobotics.ftclib.util.Timing;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Const;
@@ -50,8 +51,18 @@ public class Intake extends SubsystemBase {
     public boolean ejecting = false;
     public Timing.Timer ejectTimer;
     public boolean extended = false;
+    public Gamepad gamepad;
+    public boolean isGamepad = false;
+    public double trim = 0;
+    public color currentColor = color.NONE;
+    public boolean updatingColor = false;
 
     public Intake(HardwareMap hardwareMap, Telemetry telemetry, color colorToIgnore) {
+        this(hardwareMap, telemetry, colorToIgnore, null);
+        isGamepad = false;
+    };
+
+    public Intake(HardwareMap hardwareMap, Telemetry telemetry, color colorToIgnore, Gamepad gamepad) {
         leftHorizontal = new SimpleServo(hardwareMap, Constants.intakeLeftHorizontalConfig, 0, 180, AngleUnit.DEGREES);
         rightHorizontal = new SimpleServo(hardwareMap, Constants.intakeRightHorizontalConfig, 0, 180, AngleUnit.DEGREES);
         pivot = new SimpleServo(hardwareMap, Constants.intakePivotConfig, 0, 220, AngleUnit.DEGREES);
@@ -59,10 +70,13 @@ public class Intake extends SubsystemBase {
         rightVacuum = new CRServo(hardwareMap, Constants.intakeRightVacuumConfig);
         colorSensor = hardwareMap.get(ColorSensor.class, "intakeColor");
 
+        isGamepad = true;
+        this.gamepad = gamepad;
+
         this.colorToIgnore = colorToIgnore;
 
         this.telemetry = telemetry;
-    };
+    }
 
     // These functions directly command the vacuum to run. They are (and should) only be used internally.
     private void runVacuumEject() {
@@ -84,11 +98,34 @@ public class Intake extends SubsystemBase {
         return (val > min) && (val < max);
     }
 
+    public void setTrim(double val) {
+        trim = val;
+    }
+
+    public void updateColorSensor(boolean val) {
+        updatingColor = val;
+    }
+
     // The vacuum will only run if the color sensor detects nothing. Otherwise, it will either eject or stop and bring the intake back.
     @Override
     public void periodic() {
+        if (updatingColor) {
+            currentColor = getCurrentColor();
+        }
+
+        if (isGamepad) {
+            trim = (gamepad.left_trigger * 65);
+        }
+        else {
+            trim = 20;
+        }
+        telemetry.addData("Intake Trim", trim);
         telemetry.addData("ALLIANCE", Constants.isRed ? "RED" : "BLUE");
-        telemetry.addData("Current Color", getCurrentColor());
+        telemetry.addData("Current Color", currentColor);
+
+        if (intakeState == state.INTAKING) {
+            horizontalOut();
+        }
 
         if (ejecting) {
             runVacuumEject();
@@ -101,7 +138,7 @@ public class Intake extends SubsystemBase {
             runVacuumEject();
         }
         else {
-            if (getCurrentColor() == color.NONE) {
+            if (currentColor == color.NONE) {
                 if (vacuumState == vacuum.SUCKING) {
                     runVacuumRun();
                 }
@@ -109,7 +146,7 @@ public class Intake extends SubsystemBase {
                     runVacuumStop();
                 }
             }
-            else if (getCurrentColor() == colorToIgnore) {
+            else if (currentColor == colorToIgnore) {
                 ejecting = true;
                 ejectTimer = new Timing.Timer(500, TimeUnit.MILLISECONDS);
                 ejectTimer.start();
@@ -139,7 +176,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void horizontalOut() {
-        horizontalToPos(Constants.intakeHorizontalToIntakePose);
+        horizontalToPos(Constants.intakeHorizontalToIntakePose + trim);
         intakeState = state.INTAKING;
     }
 
@@ -157,7 +194,7 @@ public class Intake extends SubsystemBase {
         if ((vacuumState == vacuum.SPEWING) && (intakeState == state.INTAKING)) {
             return;
         }
-        pivotToPos(Constants.intakePivotToBasket);
+        pivotToPos(Constants.intakePivotToRest);
     }
 
     // Vacuum: these functions set the vacuum mode. However, this mode may be overridden.
@@ -175,22 +212,22 @@ public class Intake extends SubsystemBase {
         vacuumState = vacuum.STATIONING;
     }
 
-    public color getCurrentColor() {
+    public color getCurrentColor() {//258 365 170
         double colRed = colorSensor.red();
-        double colGreen = colorSensor.green();
+        double colGreen = colorSensor.green();//878 1060 258
         double colBlue = colorSensor.blue();
 
         telemetry.addData("RED", colorSensor.red());
         telemetry.addData("GREEN", colorSensor.green());
         telemetry.addData("BLUE", colorSensor.blue());
 
-        if (withinRange(colRed, 940, 1500) && withinRange(colGreen, 950, 1250) && withinRange(colBlue, 220, 310)) {
+        if (withinRange(colRed, 750, 1500) && withinRange(colGreen, 800, 1400) && withinRange(colBlue, 150, 450)) {
             return color.YELLOW;
         }
-        else if (withinRange(colRed, 90, 150) && withinRange(colGreen, 220, 290) && withinRange(colBlue, 510, 650)) {
+        else if (withinRange(colRed, 90, 220) && withinRange(colGreen, 250, 400) && withinRange(colBlue, 550, 750)) {
             return color.BLUE;
         }
-        else if (withinRange(colRed, 480, 640) && withinRange(colGreen, 255, 340) && withinRange(colBlue, 130, 200)) {
+        else if (withinRange(colRed, 480, 660) && withinRange(colGreen, 300, 450) && withinRange(colBlue, 150, 300)) {
             return color.RED;
         }
         else {

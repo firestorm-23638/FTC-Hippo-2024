@@ -25,7 +25,7 @@ public class Basket extends SubsystemBase {
     private final Telemetry telemetry;     // Telemetry object, for printouts
 
     public Basket(HardwareMap hardwareMap, Telemetry telemetry) {
-        basket = new SimpleServo(hardwareMap, Constants.depositorBasketConfig, 0, 180, AngleUnit.DEGREES);
+        basket = new SimpleServo(hardwareMap, Constants.depositorBasketConfig, 0, 215, AngleUnit.DEGREES);
 
         this.telemetry = telemetry;
     };

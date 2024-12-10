@@ -11,6 +11,7 @@ public class IntakePositionCommand extends CommandBase {
     private final Intake m_intake;
     private Intake.state state = Intake.state.RESTING;
     private Timing.Timer extendTimer;
+    private boolean isTimer = false;
 
     public IntakePositionCommand(Intake intake, Intake.state state) {
         this(intake, state, 0);
@@ -20,6 +21,7 @@ public class IntakePositionCommand extends CommandBase {
         m_intake = intake;
         this.state = state;
         extendTimer = new Timing.Timer(ms, TimeUnit.MILLISECONDS);
+        isTimer =  true;
 
         addRequirements(m_intake);
     }
@@ -39,7 +41,7 @@ public class IntakePositionCommand extends CommandBase {
         else if (state == Intake.state.RESTING){
             m_intake.pivotHome();
             m_intake.horizontalIn();
-            m_intake.setVacuumRun();
+            m_intake.setVacuumStop();
        }
         else if (state == Intake.state.SLIGHTLY) {
             m_intake.pivotHome();
@@ -54,6 +56,9 @@ public class IntakePositionCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
+        if (!isTimer) {
+            return false;
+        }
         return extendTimer.done();
     }
 }

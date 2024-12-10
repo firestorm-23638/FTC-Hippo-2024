@@ -30,7 +30,7 @@ public class MeepMeepTesting {
                 .setConstraints(60, 120, Math.toRadians(500), Math.toRadians(720), 15)
                 // adjust this to be where the robot really starts
                 .setDimensions(17.8,17)
-                .setStartPose(new Pose2d(-0.4,-33, Math.toRadians(180)))
+                .setStartPose(new Pose2d(0, -61, Math.toRadians(180)))
                 .build();
         RoadRunnerBotEntity myBot2 = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
@@ -80,6 +80,17 @@ public class MeepMeepTesting {
 //                .strafeTo(new Vector2d(-36 + Math.cos(145) * -5, -35 + Math.sin(145) * 5))
 //                .build());
 
+        /* Red specimen to first sample */
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(Field.SPECIMEN_POS, Math.toRadians(180)))
+//                .strafeTo(Field.SPECIMEN_POS)
+                        .strafeTo(new Vector2d(Field.SPECIMEN_POS.x, Field.SPECIMEN_POS.y-7))
+                .strafeToLinearHeading(new Vector2d(-30, -42), Math.toRadians(140))
+//                .strafeToLinearHeading(Field.RED_BASKET, Math.toRadians(45))
+//                .splineToLinearHeading(new Pose2d(-56, -53, Math.toRadians(90)), Math.toRadians(90))
+//                .strafeToLinearHeading(Field.RED_BASKET, Math.toRadians(45))
+//                .strafeToLinearHeading(new Vector2d(-44, -37), Math.toRadians(150))
+//                .strafeToLinearHeading(Field.RED_BASKET, Math.toRadians(45))
+                .build());
 
         /* First Sample to Red Basket */
 //        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(new Vector2d(-36, -35), Math.toRadians(145)))
@@ -116,9 +127,9 @@ public class MeepMeepTesting {
 //            .strafeToLinearHeading(new Vector2d(30, -30), Math.toRadians(0))
 //            .build());
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(Field.RED_BASKET, Math.toRadians(45)))
-            .splineTo(new Vector2d(-30, -10), Math.toRadians(0))
-            .build());
+//        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(Field.RED_BASKET, Math.toRadians(45)))
+//                .splineTo(new Vector2d(-30, -10), Math.toRadians(0))
+//                .build());
 
         /* Third Sample to Red Basket */
 //        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(new Vector2d(-52.5, -34), Math.toRadians(145)))
@@ -141,54 +152,53 @@ public class MeepMeepTesting {
 //                .splineTo(forBlue(new Vector2d(46.9, -61)), forBlue(Math.toRadians(0)))
 //                .build());
         // start to specimen score
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, -61, Math.toRadians(180)))
-                        .strafeTo(new Vector2d(0, -33))
-                                .build());
+//        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, -61, Math.toRadians(180)))
+//                .strafeTo(new Vector2d(0, -33))
+//                .build());
         // specimen score to spike mark
-        myBot2.runAction(myBot2.getDrive().actionBuilder(new Pose2d(0, -33, Math.toRadians(180)))
-                .setReversed(true)
-                .waitSeconds(1.5)
-                // from specimen to first spike mark
-                .splineToConstantHeading(new Vector2d(10, -37), Math.toRadians(0))
-                .splineToSplineHeading(new Pose2d(35.5, -37, Math.toRadians(180)), Math.toRadians(90))
-                .splineToSplineHeading(new Pose2d(35.5, -10, Math.toRadians(180)), Math.toRadians(90))
-                .splineToSplineHeading(new Pose2d(47, -12, Math.toRadians(270)), Math.toRadians(270))
-                // from first spike to obs then back
-                .splineToConstantHeading(new Vector2d(47, -55), Math.toRadians(270))
-                .waitSeconds(0.1)
-                .setReversed(true)
-                .splineToConstantHeading(new Vector2d(47, -13), Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(57, -24), Math.toRadians(270))
-                // second spike to obs then back
-                .splineToConstantHeading(new Vector2d(57, -55), Math.toRadians(270))
-                .waitSeconds(0.1)
-                .setReversed(true)
-                .splineToConstantHeading(new Vector2d(57, -13), Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(61, -24), Math.toRadians(270))
-                // third spike to obs
-                .splineToConstantHeading(new Vector2d(61, -55), Math.toRadians(270))
-                .build()
-        );
-
-        myBot3.runAction(myBot3.getDrive().actionBuilder(new Pose2d(60, -55, Math.toRadians(90)))
-                .waitSeconds(9.2)
-                .strafeToSplineHeading(new Vector2d(37, -57), Math.toRadians(0))
-                .strafeTo(new Vector2d(37, -60))
-                .strafeToSplineHeading(new Vector2d(8, -33), Math.toRadians(180))
-                .waitSeconds(0.5)
-                .strafeToSplineHeading(new Vector2d(37, -57), Math.toRadians(0))
-                .strafeTo(new Vector2d(37, -60))
-                .strafeToSplineHeading(new Vector2d(6, -33), Math.toRadians(180))
-                .waitSeconds(0.5)
-                .strafeToSplineHeading(new Vector2d(37, -57), Math.toRadians(0))
-                .strafeTo(new Vector2d(37, -60))
-                .strafeToSplineHeading(new Vector2d(4, -33), Math.toRadians(180))
-                .waitSeconds(0.5)
-                .strafeToSplineHeading(new Vector2d(37, -57), Math.toRadians(0))
-                .strafeTo(new Vector2d(37, -60))
-                .strafeToSplineHeading(new Vector2d(2, -33), Math.toRadians(180))
-                .build()
-        );
+//        myBot2.runAction(myBot2.getDrive().actionBuilder(new Pose2d(0, -33, Math.toRadians(180)))
+//                .setReversed(true)
+//                // from specimen to first spike mark
+//                .splineToConstantHeading(new Vector2d(10, -37), Math.toRadians(0))
+//                .splineToSplineHeading(new Pose2d(30.5, -37, Math.toRadians(180)), Math.toRadians(90))
+//                .splineToSplineHeading(new Pose2d(30.5, -10, Math.toRadians(180)), Math.toRadians(90))
+//                .splineToSplineHeading(new Pose2d(44, -12, Math.toRadians(270)), Math.toRadians(270))
+//                // from first spike to obs then back
+//                .splineToConstantHeading(new Vector2d(44, -55), Math.toRadians(270))
+//                .waitSeconds(0.1)
+//                .setReversed(true)
+//                .splineToConstantHeading(new Vector2d(44, -13), Math.toRadians(90))
+//                .strafeTo(new Vector2d(56, -13))
+//                // second spike to obs then back
+//                .strafeTo(new Vector2d(56, -55))
+//                .waitSeconds(0.1)
+//                .setReversed(true)
+//                .strafeTo(new Vector2d(56, -13))
+//                .strafeTo(new Vector2d(64, -13))
+//                // third spike to obs
+//                .strafeTo(new Vector2d(64, -55))
+//                .build()
+//        );
+//
+//        myBot3.runAction(myBot3.getDrive().actionBuilder(new Pose2d(60, -55, Math.toRadians(90)))
+//                .waitSeconds(9.2)
+//                .strafeToSplineHeading(new Vector2d(37, -57), Math.toRadians(0))
+//                .strafeTo(new Vector2d(37, -60))
+//                .strafeToSplineHeading(new Vector2d(8, -33), Math.toRadians(180))
+//                .waitSeconds(0.5)
+//                .strafeToSplineHeading(new Vector2d(37, -57), Math.toRadians(0))
+//                .strafeTo(new Vector2d(37, -60))
+//                .strafeToSplineHeading(new Vector2d(6, -33), Math.toRadians(180))
+//                .waitSeconds(0.5)
+//                .strafeToSplineHeading(new Vector2d(37, -57), Math.toRadians(0))
+//                .strafeTo(new Vector2d(37, -60))
+//                .strafeToSplineHeading(new Vector2d(4, -33), Math.toRadians(180))
+//                .waitSeconds(0.5)
+//                .strafeToSplineHeading(new Vector2d(37, -57), Math.toRadians(0))
+//                .strafeTo(new Vector2d(37, -60))
+//                .strafeToSplineHeading(new Vector2d(2, -33), Math.toRadians(180))
+//                .build()
+//        );
         meepMeep.setBackground(MeepMeep.Background.FIELD_INTO_THE_DEEP_OFFICIAL)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)

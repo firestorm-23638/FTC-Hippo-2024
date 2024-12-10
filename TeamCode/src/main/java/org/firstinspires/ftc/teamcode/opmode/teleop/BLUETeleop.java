@@ -6,10 +6,11 @@ package org.firstinspires.ftc.teamcode.opmode.teleop;
 //0 left
 //2 right
 //1 bucket
+
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
-import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -18,7 +19,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.commands.DrivetrainCommand;
-import org.firstinspires.ftc.teamcode.commands.IntakePositionCommand;
 import org.firstinspires.ftc.teamcode.commands.StrafeToPositionCommand;
 import org.firstinspires.ftc.teamcode.subsystems.Basket;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
@@ -27,7 +27,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Limelight;
 
 @TeleOp
-public class MainTeleop extends CommandOpMode {
+public class BLUETeleop extends CommandOpMode {
     private GamepadEx driver;
     private GamepadEx operator;
 
@@ -47,9 +47,9 @@ public class MainTeleop extends CommandOpMode {
         operator = new GamepadEx(this.gamepad2);
 
         drive = new Drivetrain(hardwareMap, new Pose2d(0, 0, 0), telemetry);
-        intake = new Intake(hardwareMap, telemetry,  Constants.isRed ? Intake.color.BLUE : Intake.color.RED);
+        intake = new Intake(hardwareMap, telemetry,  Intake.color.RED, gamepad1);
         basket = new Basket(hardwareMap, telemetry);
-        elevator = new Elevator(hardwareMap, telemetry);
+        elevator = new Elevator(hardwareMap, telemetry, gamepad1);
         //specimen = new SpecimenClaw(hardwareMap, telemetry);
         limelight = new Limelight(hardwareMap, telemetry);
 
@@ -75,6 +75,7 @@ public class MainTeleop extends CommandOpMode {
         GamepadButton depositorUp = new GamepadButton(operator, GamepadKeys.Button.DPAD_UP);
         GamepadButton depositorDown = new GamepadButton(operator, GamepadKeys.Button.DPAD_DOWN);
         GamepadButton depositorSlight = new GamepadButton(operator, GamepadKeys.Button.DPAD_RIGHT);
+        //GamepadButton elevatorTrim = new GamepadButton(driver, )
 
         GamepadButton elevUp = new GamepadButton(driver, GamepadKeys.Button.DPAD_UP);
         GamepadButton elevDown = new GamepadButton(driver, GamepadKeys.Button.DPAD_DOWN);
@@ -102,6 +103,7 @@ public class MainTeleop extends CommandOpMode {
             intake.pivotDown();
             intake.horizontalOut();
             intake.setVacuumRun();
+            intake.updateColorSensor(true);
 
             // Slow down the drivetrain when the intake is out
             drive.forwardSpeedlimit = 0.3;
@@ -111,6 +113,7 @@ public class MainTeleop extends CommandOpMode {
             intake.pivotHome();
             intake.horizontalIn();
             intake.setVacuumStop();
+            intake.updateColorSensor(false);
 
             drive.forwardSpeedlimit = 0.65;
             drive.strafeSpeedlimit = 0.65;
@@ -162,22 +165,9 @@ public class MainTeleop extends CommandOpMode {
         basketOut.whenHeld(new InstantCommand(() -> basket.toDeposit()))
                 .whenReleased(new InstantCommand(() -> basket.toHome()));
 
-        depositorUp.whenPressed(new ConditionalCommand(
-                new IntakePositionCommand(intake, Intake.state.SLIGHTLY, 300)
-                        .andThen(new InstantCommand(() -> {
-                            elevator.increaseStage();
-                        })),
-                new InstantCommand(() -> {
-            elevator.increaseStage();
-        }),
-                () -> elevator.currentStage == Elevator.basketState.HOME));
+        depositorUp.whenPressed(new InstantCommand(() -> {elevator.increaseStage(); elevator.isZeroed = false;}));
+        depositorDown.whenPressed(new InstantCommand(() -> elevator.decreaseStage()));
 
-        depositorDown.whenPressed(new InstantCommand(() -> {
-            elevator.decreaseStage();
-            if (elevator.isAtPos() && (elevator.currentStage == Elevator.basketState.HOME)) {
-                intake.horizontalIn();
-            }
-        }));
         depositorSlight.whenHeld(new InstantCommand(() -> elevator.isSlightState = true))
                 .whenReleased(new InstantCommand(() -> elevator.isSlightState = false));
 
@@ -196,11 +186,23 @@ public class MainTeleop extends CommandOpMode {
 
         waitForStart();
         // Put game start code here. i.e home everything
-        schedule(new InstantCommand(() -> {
-            intake.horizontalIn();
-            basket.toHome();
-            elevator.currentStage = Elevator.basketState.HOME;
-            intake.pivotHome();
-        }));
+        schedule(
+                new ParallelCommandGroup(
+                        new InstantCommand(() -> {
+                            intake.horizontalIn();
+                            basket.toHome();
+                            elevator.currentStage = Elevator.basketState.HOME;
+                            intake.pivotHome();
+                        }),
+                        new RunCommand(() -> {
+                            elevator.setTrim(this.gamepad1.right_trigger * 15.0);
+                            if ((elevator.currentStage != Elevator.basketState.HOME) && (intake.intakeState == Intake.state.RESTING)) {
+                                intake.intakeState = Intake.state.SLIGHTLY;
+                            }
+                            else if ((elevator.currentStage == Elevator.basketState.HOME) && (intake.intakeState == Intake.state.SLIGHTLY)) {
+                                intake.intakeState = Intake.state.RESTING;
+                            }
+                        })
+                ));
     }
 }

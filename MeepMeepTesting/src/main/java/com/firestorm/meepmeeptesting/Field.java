@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 public class Field {
 
     public static final Vector2d RED_BASKET = new Vector2d(-56.1923881554, -55.5502525317);
+    public static final Vector2d SPECIMEN_POS = new Vector2d(-7, -31.5);
     public static final Vector2d[] RED_BASKET_YELLOW_SAMPLES = {
             new Vector2d(-48, -25.5),
             new Vector2d(-57, -25.5),
