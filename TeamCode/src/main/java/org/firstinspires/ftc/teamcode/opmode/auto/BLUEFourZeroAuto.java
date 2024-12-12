@@ -60,8 +60,8 @@ public class BLUEFourZeroAuto extends CommandOpMode {
         drive.strafeSpeedlimit = 1;
         drive.rotSpeedLimit = 1;
 
-        final Vector2d specimenPos = new Vector2d(0, -31.5);
-        final Vector2d pickupPos = new Vector2d(50, -66);
+        final Vector2d specimenPos = new Vector2d(6, -31.5);
+        final Vector2d pickupPos = new Vector2d(50, -64);
 
         final Pose2d firstSample = new Pose2d(new Vector2d(-36, -35), Math.toRadians(100));
         final Pose2d inchToFirstSamplePose = addPoses(shiftForward(5, Math.toRadians(100)), firstSample);
@@ -75,21 +75,22 @@ public class BLUEFourZeroAuto extends CommandOpMode {
                 // from specimen to first spike mark
                 .splineToConstantHeading(new Vector2d(10, -37), Math.toRadians(0))
                 .splineToSplineHeading(new Pose2d(30.5, -37, Math.toRadians(180)), Math.toRadians(90))
-                .splineToSplineHeading(new Pose2d(30.5, -10, Math.toRadians(180)), Math.toRadians(90))
+                .splineToSplineHeading(new Pose2d(30.5, -15, Math.toRadians(180)), Math.toRadians(90))
                 .splineToSplineHeading(new Pose2d(49.5, -12, Math.toRadians(270)), Math.toRadians(270))
                 // from first spike to obs then back
                 .splineToConstantHeading(new Vector2d(49.5, -55), Math.toRadians(270))
-                .waitSeconds(0.1)
+                .strafeTo(new Vector2d(49.5, -40))
+                //.waitSeconds(0.1)
                 .setReversed(true)
-                .splineToConstantHeading(new Vector2d(49.5, -13), Math.toRadians(90))
+                //.splineToConstantHeading(new Vector2d(49.5, -13), Math.toRadians(90))
 //                .strafeTo(new Vector2d(60, -13))
 //                // second spike to obs then back
 //                .strafeTo(new Vector2d(60, -55))
-                .waitSeconds(0.1)
+                //.waitSeconds(0.1)
                 .setReversed(true)
                 .build();
 
-        Action observationToPickup = drive.getTrajectoryBuilder(new Pose2d(new Vector2d(48, -55), Math.toRadians(270)))
+        Action observationToPickup = drive.getTrajectoryBuilder(new Pose2d(new Vector2d(49.5, -40), Math.toRadians(270)))
                 .waitSeconds(1)
                 .strafeToSplineHeading(new Vector2d(50, -57), Math.toRadians(0))
                 .strafeTo(pickupPos)
@@ -97,7 +98,7 @@ public class BLUEFourZeroAuto extends CommandOpMode {
 
         Action specimenToPickup = drive.getTrajectoryBuilder(new Pose2d(specimenPos, Math.toRadians(180)))
                 .strafeToSplineHeading(new Vector2d(50, -57), Math.toRadians(0))
-                .strafeTo(pickupPos)
+                .strafeTo(new Vector2d(pickupPos.x, pickupPos.y-2))
                 .build();
 
         register(drive);
@@ -116,9 +117,9 @@ public class BLUEFourZeroAuto extends CommandOpMode {
                         new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET, 100)
                 ),
                 new ParallelCommandGroup(
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.MIDDLE_BASKET, 50),
+                        new ElevatorPositionCommand(elevator, Elevator.basketState.MIDDLE_BASKET, 75),
                         new SequentialCommandGroup(
-                                new WaitCommand(300),
+                                new WaitCommand(100),
                                 new TrajectoryGotoCommand(specimenToPushAll, drive),
                                 new TrajectoryGotoCommand(observationToPickup, drive)
                         )
@@ -127,11 +128,12 @@ public class BLUEFourZeroAuto extends CommandOpMode {
                         new ElevatorPositionCommand(elevator, Elevator.basketState.SPECIMEN),
                         new SequentialCommandGroup(
                                 new WaitCommand(300),
-                                new StrafeToPositionCommand(new Pose2d(specimenPos, Math.toRadians(180)), drive)
+                                new StrafeToPositionCommand(new Pose2d(new Vector2d(specimenPos.x, specimenPos.y-7), Math.toRadians(180)), drive),
+        new StrafeToPositionCommand(new Pose2d(new Vector2d(specimenPos.x, specimenPos.y + 1.75), Math.toRadians(180)), drive)
                         )
                 ),
                 new ParallelCommandGroup(
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.MIDDLE_BASKET, 50),
+                        new ElevatorPositionCommand(elevator, Elevator.basketState.MIDDLE_BASKET, 75),
                         new SequentialCommandGroup(
                                 new WaitCommand(300),
                                 new TrajectoryGotoCommand(specimenToPickup, drive)
@@ -141,23 +143,19 @@ public class BLUEFourZeroAuto extends CommandOpMode {
                         new ElevatorPositionCommand(elevator, Elevator.basketState.SPECIMEN),
                         new SequentialCommandGroup(
                                 new WaitCommand(300),
-                                new StrafeToPositionCommand(new Pose2d(specimenPos, Math.toRadians(180)), drive)
+                                new StrafeToPositionCommand(new Pose2d(new Vector2d(specimenPos.x-7, specimenPos.y-7), Math.toRadians(180)), drive),
+                                new StrafeToPositionCommand(new Pose2d(new Vector2d(specimenPos.x-7, specimenPos.y + 8.25), Math.toRadians(170)), drive)
                         )
                 ),
-                new ParallelCommandGroup(
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.MIDDLE_BASKET, 50),
-                        new SequentialCommandGroup(
-                                new WaitCommand(300),
-                                new TrajectoryGotoCommand(specimenToPickup, drive)
-                        )
-                ),
+                new ElevatorPositionCommand(elevator, Elevator.basketState.MIDDLE_BASKET, 75),
+                /*
                 new ParallelCommandGroup(
                         new ElevatorPositionCommand(elevator, Elevator.basketState.SPECIMEN),
                         new SequentialCommandGroup(
                                 new WaitCommand(300),
                                 new StrafeToPositionCommand(new Pose2d(specimenPos, Math.toRadians(180)), drive)
                         )
-                ),
+                ),*/
                 /*new ParallelCommandGroup(
                         new ElevatorPositionCommand(elevator, Elevator.basketState.MIDDLE_BASKET, 50),
                         new SequentialCommandGroup(

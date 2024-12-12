@@ -172,6 +172,7 @@ public class BLUEOneThreeAuto extends CommandOpMode {
                         new RawDrivetrainCommand(drive,.2, 0, 0).withTimeout(1000),
                         new IntakeHasSampleCommand(intake)
                 ),
+                new RawDrivetrainCommand(drive, -.2, 0, 0).withTimeout(500),
                 new RawDrivetrainCommand(drive, 0, 0, 0).withTimeout(50),
                 new IntakePositionCommand(intake, Intake.state.RESTING, 700),
                 new IntakePositionCommand(intake, Intake.state.TRANSFERRING, 500),
@@ -184,8 +185,7 @@ public class BLUEOneThreeAuto extends CommandOpMode {
                 new ParallelCommandGroup(
                         new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
                         new SequentialCommandGroup(
-                                new RawDrivetrainCommand(drive, .15, 0, 0),
-                                new WaitCommand(500),
+                                new RawDrivetrainCommand(drive, .3, 0, 0).withTimeout(400),
                                 new RawDrivetrainCommand(drive, 0, 0, 0).withTimeout(50),
                                 new ElevatorPositionCommand(elevator, Elevator.basketState.HOME)
                         )
