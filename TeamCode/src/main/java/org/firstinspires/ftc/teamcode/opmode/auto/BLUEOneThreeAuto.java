@@ -59,7 +59,7 @@ public class BLUEOneThreeAuto extends CommandOpMode {
         drive.strafeSpeedlimit = 1;
         drive.rotSpeedLimit = 1;
 
-        final Vector2d specimenPos = new Vector2d(-16, -31);
+        final Vector2d specimenPos = new Vector2d(-16, -30.25);
         final Vector2d basketPos = new Vector2d(-58.023881554, -54.02525317);
         final Pose2d firstSample = new Pose2d(new Vector2d(-36, -35), Math.toRadians(100));
         final Pose2d inchToFirstSamplePose = addPoses(shiftForward(5, Math.toRadians(100)), firstSample);

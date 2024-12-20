@@ -76,7 +76,7 @@ public class BLUEZeroFourAuto extends CommandOpMode {
                 .build();
 
         Action basketToThirdSample = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
-                .strafeToLinearHeading(new Vector2d(-44, -37), Math.toRadians(150))
+                .strafeToLinearHeading(new Vector2d(-44, -37), Math.toRadians(152))
                 .build();
 
         Action basketToFourthSample = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
@@ -169,9 +169,10 @@ public class BLUEZeroFourAuto extends CommandOpMode {
                 ),
 
                 new ParallelRaceGroup(
-                        new RawDrivetrainCommand(drive,.2, 0, 0).withTimeout(1500),
+                        new RawDrivetrainCommand(drive,.2, 0, 0).withTimeout(2000),
                         new IntakeHasSampleCommand(intake)
                 ),
+                new RawDrivetrainCommand(drive, -.2, 0, 0).withTimeout(1000),
                 new RawDrivetrainCommand(drive, 0, 0, 0).withTimeout(50),
                 new IntakePositionCommand(intake, Intake.state.RESTING, 700),
                 new IntakePositionCommand(intake, Intake.state.TRANSFERRING, 500),
@@ -184,7 +185,8 @@ public class BLUEZeroFourAuto extends CommandOpMode {
                 new ParallelCommandGroup(
                         new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
                         new SequentialCommandGroup(
-                                new WaitCommand(500),
+                                new RawDrivetrainCommand(drive, .3, 0, 0).withTimeout(400),
+                                new RawDrivetrainCommand(drive, 0, 0, 0).withTimeout(50),
                                 new ElevatorPositionCommand(elevator, Elevator.basketState.HOME)
                         )
                 ),

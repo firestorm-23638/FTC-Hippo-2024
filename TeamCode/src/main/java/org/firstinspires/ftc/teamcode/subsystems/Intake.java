@@ -126,39 +126,22 @@ public class Intake extends SubsystemBase {
         if (intakeState == state.INTAKING) {
             horizontalOut();
         }
-
-        if (ejecting) {
-            runVacuumEject();
-
-            if (ejectTimer.done()) {
-                ejecting = false;
-            }
-        }
-        else if (vacuumState == vacuum.SPEWING) {
-            runVacuumEject();
-        }
-        else {
-            if (currentColor == color.NONE) {
-                if (vacuumState == vacuum.SUCKING) {
-                    runVacuumRun();
-                }
-                else {
-                    runVacuumStop();
-                }
-            }
-            else if (currentColor == colorToIgnore) {
-                ejecting = true;
-                ejectTimer = new Timing.Timer(500, TimeUnit.MILLISECONDS);
-                ejectTimer.start();
+        if ((currentColor == color.NONE) || (currentColor == colorToIgnore)) {
+            if (vacuumState == vacuum.SUCKING) {
+                runVacuumRun();
             }
             else {
                 runVacuumStop();
-                vacuumState = vacuum.STATIONING;
-                intakeState = state.RESTING;
-                horizontalIn();
-                pivotHome();
             }
         }
+        else {
+            runVacuumStop();
+            vacuumState = vacuum.STATIONING;
+            intakeState = state.RESTING;
+            horizontalIn();
+            pivotHome();
+        }
+
     }
 
     private void horizontalToPos(double targetPos) {
