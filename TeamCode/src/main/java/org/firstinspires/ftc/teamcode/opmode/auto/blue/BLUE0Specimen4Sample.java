@@ -1,8 +1,7 @@
-package org.firstinspires.ftc.teamcode.opmode.auto;
+package org.firstinspires.ftc.teamcode.opmode.auto.blue;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
@@ -14,7 +13,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.commands.BasketPositionCommand;
-import org.firstinspires.ftc.teamcode.commands.BlankCommand;
 import org.firstinspires.ftc.teamcode.commands.ElevatorPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeHasSampleCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakePositionCommand;
@@ -28,20 +26,12 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Limelight;
 
 @Autonomous
-public class BLUEZeroFourAuto extends CommandOpMode {
+public class BLUE0Specimen4Sample extends CommandOpMode {
     private Drivetrain drive;
     private Basket basket;
     private Elevator elevator;
     private Intake intake;
     private Limelight limelight;
-
-    private Pose2d shiftForward(double inches, double currentAngle) {
-        return new Pose2d(new Vector2d(Math.cos(currentAngle) * -inches, Math.sin(currentAngle) * inches), currentAngle);
-    }
-
-    private Pose2d addPoses(Pose2d first, Pose2d second) {
-        return new Pose2d(first.position.x + second.position.x, first.position.y + second.position.y, first.heading.log());
-    }
 
     @Override
     public void initialize() {
@@ -59,37 +49,10 @@ public class BLUEZeroFourAuto extends CommandOpMode {
         drive.strafeSpeedlimit = 1;
         drive.rotSpeedLimit = 1;
 
-        final Vector2d basketPos = new Vector2d(-58.023881554, -54.02525317);
-        final Pose2d firstSample = new Pose2d(new Vector2d(-36, -35), Math.toRadians(100));
-        final Pose2d inchToFirstSamplePose = addPoses(shiftForward(5, Math.toRadians(100)), firstSample);
-
-        Action startToBasket = drive.getTrajectoryBuilder(home)
-                .strafeToLinearHeading(basketPos, Math.toRadians(45))
-                .build();
-
-        Action basketToFirstSample = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
-                .strafeToLinearHeading(new Vector2d(-48, -52), Math.toRadians(90))
-                .build();
-
-        Action basketToSecondSample = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
-                .splineToLinearHeading(new Pose2d(-55.5, -53, Math.toRadians(90)), Math.toRadians(90))
-                .build();
-
-        Action basketToThirdSample = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
-                .strafeToLinearHeading(new Vector2d(-44, -37), Math.toRadians(152))
-                .build();
-
-        Action basketToFourthSample = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
-                .splineTo(new Vector2d(-24, -37), Math.toRadians(0))
-                .splineTo(new Vector2d(10, -37), Math.toRadians(0))
-                .splineTo(new Vector2d(30, -35), Math.toRadians(30))
-                .build();
-
-        Action basketToObservation = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
-                .splineTo(new Vector2d(-24, -35), Math.toRadians(0))
-                .splineTo(new Vector2d(30, -35), Math.toRadians(0))
-                .splineTo(new Vector2d(55, -61), Math.toRadians(0))
-                .build();
+        Action startToBasket = BlueActions.startToBasket(drive, home);
+        Action basketToFirstSample = BlueActions.basketToFirstSample(drive);
+        Action basketToSecondSample = BlueActions.basketToSecondSample(drive);
+        Action basketToThirdSample = BlueActions.basketToThirdSample(drive);
 
         register(drive);
         schedule(new RunCommand(telemetry::update));
@@ -127,7 +90,7 @@ public class BLUEZeroFourAuto extends CommandOpMode {
                 new IntakePositionCommand(intake, Intake.state.RESTING, 700),
                 new IntakePositionCommand(intake, Intake.state.TRANSFERRING, 700),
                 new ParallelCommandGroup(
-                        new StrafeToPositionCommand(new Pose2d(basketPos, Math.toRadians(45)), drive),
+                        new StrafeToPositionCommand(new Pose2d(BlueActions.basketPos, Math.toRadians(45)), drive),
                         new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET),
                         new IntakePositionCommand(intake, Intake.state.RESTING, 200)
                 ),
@@ -152,7 +115,7 @@ public class BLUEZeroFourAuto extends CommandOpMode {
                 new IntakePositionCommand(intake, Intake.state.TRANSFERRING, 500),
                 new ParallelCommandGroup(
                         new IntakePositionCommand(intake, Intake.state.RESTING, 200),
-                        new StrafeToPositionCommand(new Pose2d(basketPos, Math.toRadians(45)), drive),
+                        new StrafeToPositionCommand(new Pose2d(BlueActions.basketPos, Math.toRadians(45)), drive),
                         new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
                 ),
                 new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(700),
@@ -178,7 +141,7 @@ public class BLUEZeroFourAuto extends CommandOpMode {
                 new IntakePositionCommand(intake, Intake.state.TRANSFERRING, 500),
                 new ParallelCommandGroup(
                         new IntakePositionCommand(intake, Intake.state.RESTING, 200),
-                        new StrafeToPositionCommand(new Pose2d(basketPos, Math.toRadians(45)), drive),
+                        new StrafeToPositionCommand(new Pose2d(BlueActions.basketPos, Math.toRadians(45)), drive),
                         new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
                 ),
                 new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(500),

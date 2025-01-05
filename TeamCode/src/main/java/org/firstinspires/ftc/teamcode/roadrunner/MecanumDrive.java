@@ -82,9 +82,9 @@ public final class MecanumDrive {
 //        // turn profile parameters (in radians)
 //        public double maxAngVel = Math.toRadians(360); // shared with path
 //        public double maxAngAccel = Math.toRadians(360);
-        public double maxWheelVel = 50;
-        public double minProfileAccel = -30;
-        public double maxProfileAccel = 30;
+        public double maxWheelVel = 60;
+        public double minProfileAccel = -40;
+        public double maxProfileAccel = 40;
 
         // turn profile parameters (in radians)
         public double maxAngVel = Math.toRadians(100); // shared with path

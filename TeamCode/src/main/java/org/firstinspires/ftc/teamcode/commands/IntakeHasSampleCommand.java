@@ -17,7 +17,7 @@ public class IntakeHasSampleCommand extends CommandBase {
 
     @Override
     public void execute() {
-        hasPiece = m_intake.getCurrentColor() != Intake.color.NONE;
+        hasPiece = m_intake.currentColor != Intake.color.NONE;
     }
 
     @Override

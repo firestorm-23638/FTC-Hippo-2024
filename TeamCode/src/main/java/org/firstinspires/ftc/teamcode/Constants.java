@@ -36,12 +36,11 @@ public class Constants {
     public static final String intakeRightVacuumConfig = "rightVacuum";
 
     public static final double intakeHorizontalToIntakePose = 30;
-    public static final double intakeHorizontalToHomePose = 0;
+    public static final double intakeHorizontalToHomePose = 15;
 
-    public static final double intakePivotToBasket = 230;
+    public static final double intakePivotToBasket = 210;
     public static final double intakePivotToDown = 95;
     public static final double intakePivotToRest = 200;
-
 
     public static final double intakeRestingSpeed = 0.05;
     public static final double intakeVacuumSpeed = -.3;
@@ -51,8 +50,14 @@ public class Constants {
     public static final double intakeHorizontalKP = .05;
 
     public static final String specimenClawConfig = "specimen";
+    public static final String kickerConfig = "kicker";
 
-    public static final double specimenOpenAngle = 90;
+    public static final String intakeBeamBreakConfig = "intakeBeam";
+    public static final String horizontalEncoderConfig = "extensionEncoder";
+    public static final String intakeWristEncoder = "intakeEncoder";
+
+
+    public static final double specimenOpenAngle = 70;
     public static final double specimenCloseAngle = 0;
 
     public static final short limelightApriltagPipeline = 1;

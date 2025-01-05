@@ -22,7 +22,7 @@ public class Elevator extends SubsystemBase {
     public enum basketState {    // The current "state" or position of the elevator
         HOME((int)Constants.depositorVerticalToBottomPose),
         MIDDLE_BASKET((int)Constants.depositorVerticalToMidPose),
-        SPECIMEN((int)Constants.depositorVerticalToTopPose-100),
+        SPECIMEN((int)Constants.depositorVerticalToTopPose-240),
         HIGH_BASKET((int)Constants.depositorVerticalToTopPose);
 
         public final int pos;
@@ -39,6 +39,7 @@ public class Elevator extends SubsystemBase {
     public final Motor vertical;     // The motor for the elevator
     private final Telemetry telemetry;    // Telemetry class for printouts
     private final DigitalChannel limitSwitch;
+    private final SpecimenClaw claw;
     private Gamepad gamepad;
 
     public basketState currentStage = basketState.HOME;
@@ -49,6 +50,7 @@ public class Elevator extends SubsystemBase {
     public Elevator(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad) {
         vertical = new Motor(hardwareMap, Constants.depositorVerticalConfig);
         limitSwitch = hardwareMap.get(DigitalChannel.class, "elevatorLimit");
+        claw = new SpecimenClaw(hardwareMap, telemetry);
         this.gamepad = gamepad;
         isGamepad = true;
 
@@ -113,10 +115,11 @@ public class Elevator extends SubsystemBase {
         //else {
         pidTarget = currentStage.pos;
         //}
-
-
         if (isGamepad) {
-                trim = (gamepad.right_trigger * 275);
+            trim = (gamepad.right_trigger * 275);
+        }
+        if (trim > 150) {
+            claw.open();
         }
         telemetry.addData("Trim", trim);
 

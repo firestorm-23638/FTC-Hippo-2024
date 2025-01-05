@@ -19,12 +19,16 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.commands.DrivetrainCommand;
+import org.firstinspires.ftc.teamcode.commands.KickerCommand;
+import org.firstinspires.ftc.teamcode.commands.SpecimenClawCommand;
 import org.firstinspires.ftc.teamcode.commands.StrafeToPositionCommand;
 import org.firstinspires.ftc.teamcode.subsystems.Basket;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.Elevator;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.Kicker;
 import org.firstinspires.ftc.teamcode.subsystems.Limelight;
+import org.firstinspires.ftc.teamcode.subsystems.SpecimenClaw;
 
 @TeleOp
 public class BLUETeleop extends CommandOpMode {
@@ -35,7 +39,8 @@ public class BLUETeleop extends CommandOpMode {
     private Intake intake;
     private Basket basket;
     private Elevator elevator;
-    //private SpecimenClaw specimen;
+    private Kicker kicker;
+    private SpecimenClaw specimen;
 
     private Limelight limelight;
 
@@ -50,8 +55,9 @@ public class BLUETeleop extends CommandOpMode {
         intake = new Intake(hardwareMap, telemetry,  Intake.color.RED, gamepad1);
         basket = new Basket(hardwareMap, telemetry);
         elevator = new Elevator(hardwareMap, telemetry, gamepad1);
-        //specimen = new SpecimenClaw(hardwareMap, telemetry);
         limelight = new Limelight(hardwareMap, telemetry);
+        kicker = new Kicker(hardwareMap, telemetry);
+        specimen = new SpecimenClaw(hardwareMap, telemetry);
 
         drive.forwardSpeedlimit = 0.675;
         drive.strafeSpeedlimit = 0.675;
@@ -68,6 +74,7 @@ public class BLUETeleop extends CommandOpMode {
         GamepadButton intakeOut = new GamepadButton(driver, GamepadKeys.Button.RIGHT_BUMPER);
         GamepadButton toBasket = new GamepadButton(driver, GamepadKeys.Button.A);
         GamepadButton zoomZoom = new GamepadButton(driver, GamepadKeys.Button.LEFT_BUMPER);
+        GamepadButton kickerButton = new GamepadButton(driver, GamepadKeys.Button.X);
 
         GamepadButton basketTrajectoryButton = new GamepadButton(driver, GamepadKeys.Button.Y);
 
@@ -80,21 +87,23 @@ public class BLUETeleop extends CommandOpMode {
         GamepadButton elevUp = new GamepadButton(driver, GamepadKeys.Button.DPAD_UP);
         GamepadButton elevDown = new GamepadButton(driver, GamepadKeys.Button.DPAD_DOWN);
 
-        //GamepadButton specimenClaw = new GamepadButton(operator, GamepadKeys.Button.RIGHT_BUMPER);
+        GamepadButton specimenClaw = new GamepadButton(operator, GamepadKeys.Button.RIGHT_BUMPER);
         GamepadButton depositorBar = new GamepadButton(operator, GamepadKeys.Button.LEFT_BUMPER);
 
-        GamepadButton resetGyro = new GamepadButton(driver, GamepadKeys.Button.X);
-
         // experimental
-        basketTrajectoryButton.whenHeld(new StrafeToPositionCommand(basketPose, drive))
-                .whenReleased(new RunCommand(() -> drive.driveFieldCentric(-this.gamepad1.left_stick_y, -this.gamepad1.left_stick_x, -this.gamepad1.right_stick_x)));
+        //basketTrajectoryButton.whenHeld(new StrafeToPositionCommand(basketPose, drive))
+        //        .whenReleased(new RunCommand(() -> drive.driveFieldCentric(-this.gamepad1.left_stick_y, -this.gamepad1.left_stick_x, -this.gamepad1.right_stick_x)));
 
-        resetGyro.whenHeld(new InstantCommand(() -> drive.setCurrentPose(new Pose2d(0, 0, Math.toRadians(270)))));
+        kickerButton.whenPressed(new InstantCommand(() -> kicker.currentState = Kicker.state.OPEN))
+                .whenReleased(new InstantCommand(() -> kicker.currentState = Kicker.state.CLOSE));
 
         drive.setDefaultCommand(new DrivetrainCommand(drive,
                 ()->(double)-this.gamepad1.left_stick_y,
                 ()->(double)-this.gamepad1.left_stick_x,
                 ()->(double)-this.gamepad1.right_stick_x));
+
+        specimenClaw.whenHeld(new SpecimenClawCommand(specimen, true))
+                .whenReleased(new SpecimenClawCommand(specimen, false));
 
         // Reads limelight position for now
         //limelight.setDefaultCommand(new LimelightCommand(limelight, drive));
@@ -123,6 +132,7 @@ public class BLUETeleop extends CommandOpMode {
         toBasket.whenHeld(new InstantCommand(() -> {
             intake.pivotBasket();
             intake.setVacuumEject();
+
         })).whenReleased(new InstantCommand(() -> {
             intake.pivotHome();
             intake.setVacuumStop();
@@ -166,7 +176,8 @@ public class BLUETeleop extends CommandOpMode {
                 .whenReleased(new InstantCommand(() -> basket.toHome()));
 
         depositorUp.whenPressed(new InstantCommand(() -> {elevator.increaseStage(); elevator.isZeroed = false;}));
-        depositorDown.whenPressed(new InstantCommand(() -> elevator.decreaseStage()));
+        depositorDown.whenPressed(new InstantCommand(() -> {
+            elevator.decreaseStage();}));
 
         depositorSlight.whenHeld(new InstantCommand(() -> elevator.isSlightState = true))
                 .whenReleased(new InstantCommand(() -> elevator.isSlightState = false));
@@ -188,6 +199,8 @@ public class BLUETeleop extends CommandOpMode {
         // Put game start code here. i.e home everything
         schedule(
                 new ParallelCommandGroup(
+                        new SpecimenClawCommand(specimen, false),
+                        new InstantCommand(() -> kicker.close()),
                         new InstantCommand(() -> {
                             intake.horizontalIn();
                             basket.toHome();
@@ -196,6 +209,9 @@ public class BLUETeleop extends CommandOpMode {
                         }),
                         new RunCommand(() -> {
                             elevator.setTrim(this.gamepad1.right_trigger * 15.0);
+                            if ((this.gamepad1.right_trigger * 15.0) > 7) {
+                                specimen.open();
+                            }
                             if ((elevator.currentStage != Elevator.basketState.HOME) && (intake.intakeState == Intake.state.RESTING)) {
                                 intake.intakeState = Intake.state.SLIGHTLY;
                             }

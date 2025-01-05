@@ -128,7 +128,7 @@ public class MeepMeepTesting {
 //            .build());
 
 //        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(Field.RED_BASKET, Math.toRadians(45)))
-//                .splineTo(new Vector2d(-30, -10), Math.toRadians(0))
+//                .splineTo(new Vector2d(-24, -10), Math.toRadians(0))
 //                .build());
 
         /* Third Sample to Red Basket */
@@ -156,27 +156,111 @@ public class MeepMeepTesting {
 //                .strafeTo(new Vector2d(0, -33))
 //                .build());
 //         specimen score to spike mark
-        myBot2.runAction(myBot2.getDrive().actionBuilder(new Pose2d(0, -33, Math.toRadians(180)))
+
+//        myBot2.runAction(myBot2.getDrive().actionBuilder(new Pose2d(0, -33, Math.toRadians(180)))
+//                .setReversed(true)
+//                // from specimen to first spike mark
+//                .splineToLinearHeading(new Pose2d(30, -45, Math.toRadians(0)), Math.toRadians(0))
+//                .splineToLinearHeading(new Pose2d(39, -20, Math.toRadians(0)), Math.toRadians(90))
+//                .waitSeconds(1)
+//                .splineToSplineHeading(new Pose2d(30.5, -37, Math.toRadians(180)), Math.toRadians(90))
+//                .waitSeconds(1)
+//                .strafeToLinearHeading(new Vector2d(30.5, -20), Math.toRadians(90))
+//                .splineToSplineHeading(new Pose2d(30.5, -20, Math.toRadians(90)), Math.toRadians(90))
+//                //.waitSeconds(1)
+//                .splineToSplineHeading(new Pose2d(36, -18, Math.toRadians(0)), Math.toRadians(270))
+//                .strafeToLinearHeading(new Vector2d(36, -18), Math.toRadians(0))
+//                .waitSeconds(1)
+//                // from first spike to obs then back
+//                .strafeTo(new Vector2d(36, -55))
+//                .waitSeconds(1)
+//                //.waitSeconds(0.1)
+//                .setReversed(true)
+//                .strafeTo(new Vector2d(44, -20))
+//                .waitSeconds(1)
+//                .strafeTo(new Vector2d(56, -20))
+//                .waitSeconds(1)
+//                // second spike to obs then back
+//                .strafeTo(new Vector2d(44, -62))
+//                .waitSeconds(1)
+//                //.waitSeconds(0.1)
+//                //.setReversed(true)
+//                .strafeTo(new Vector2d(52, -20))
+//                .waitSeconds(1)
+//                .waitSeconds(1)
+//                // third spike to obs
+//                .strafeTo(new Vector2d(52, -55))
+//                .build()
+//        );
+
+//        myBot2.runAction(myBot2.getDrive().actionBuilder(new Pose2d(-8, 61, Math.toRadians(0)))
+//                        // place first specimen
+//                        .strafeTo(new Vector2d(-8, 30.25))
+//                        .waitSeconds(0.2)
+//
+//                        // to first sample
+//                        .setReversed(true)
+//                        .strafeTo(new Vector2d(-8, 38))
+//                        .splineToLinearHeading(new Pose2d(-30, 45, Math.toRadians(180)), Math.toRadians(180))
+//                        .splineToLinearHeading(new Pose2d(-39, 20, Math.toRadians(180)), Math.toRadians(270))
+//                        .waitSeconds(0.050)
+//                        .build()
+//        );
+        myBot2.runAction(myBot2.getDrive().actionBuilder(new Pose2d(8, -61, Math.toRadians(180)))
+                // place first specimen
+                .strafeTo(new Vector2d(8, -30.25))
+                .waitSeconds(0.2)
+
+                // to first sample
                 .setReversed(true)
-                // from specimen to first spike mark
-                .splineToConstantHeading(new Vector2d(10, -37), Math.toRadians(0))
-                .splineToSplineHeading(new Pose2d(30.5, -37, Math.toRadians(180)), Math.toRadians(90))
-                .splineToSplineHeading(new Pose2d(30.5, -20, Math.toRadians(180)), Math.toRadians(90))
-                .splineToSplineHeading(new Pose2d(44, -10, Math.toRadians(270)), Math.toRadians(270))
-                // from first spike to obs then back
-                .splineToConstantHeading(new Vector2d(44, -55), Math.toRadians(270))
-                .waitSeconds(0.1)
+                .strafeTo(new Vector2d(8, -38))
+                .splineToLinearHeading(new Pose2d(30, -45, Math.toRadians(0)), Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(39, -20, Math.toRadians(0)), Math.toRadians(90))
+                .waitSeconds(0.050)
+
+                // push first sample
+                .strafeTo(new Vector2d(39, -60))
+
+                // to second sample
                 .setReversed(true)
-                .splineToConstantHeading(new Vector2d(44, -20), Math.toRadians(90))
-                .strafeTo(new Vector2d(56, -20))
-                // second spike to obs then back
-                .strafeTo(new Vector2d(56, -55))
-                .waitSeconds(0.1)
+                .strafeTo(new Vector2d(39, -20))
+                .waitSeconds(0.050)
+
+                // push second sample / pickup second specimen
+                .strafeTo(new Vector2d(49, -20))
+                .strafeTo(new Vector2d(49, -62))
+                .waitSeconds(0.200)
+
+                // drive and place second specimen
                 .setReversed(true)
-                .strafeTo(new Vector2d(56, -20))
-                .strafeTo(new Vector2d(64, -20))
-                // third spike to obs
-                .strafeTo(new Vector2d(64, -55))
+                .splineToLinearHeading(new Pose2d(23, -46, Math.toRadians(90)), Math.toRadians(180))
+                .splineToLinearHeading(new Pose2d(5, -30.25, Math.toRadians(180)), Math.toRadians(90))
+                .waitSeconds(0.200)
+
+                // pickup third specimen
+                .setReversed(true)
+                .strafeTo(new Vector2d(5, -35))
+                .splineToLinearHeading(new Pose2d(49, -62, Math.toRadians(0)), Math.toRadians(270))
+                .waitSeconds(0.200)
+
+                // place third specimen
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(23, -46, Math.toRadians(90)), Math.toRadians(180))
+                .splineToLinearHeading(new Pose2d(2, -30.25, Math.toRadians(180)), Math.toRadians(90))
+                .waitSeconds(0.200)
+
+                // pickup fourth specimen
+                .setReversed(true)
+                .strafeTo(new Vector2d(2, -35))
+                .splineToLinearHeading(new Pose2d(49, -62, Math.toRadians(0)), Math.toRadians(270))
+                .waitSeconds(0.200)
+
+                // place fourth specimen
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(23, -46, Math.toRadians(90)), Math.toRadians(180))
+                .splineToLinearHeading(new Pose2d(-1, -30.25, Math.toRadians(180)), Math.toRadians(90))
+                .waitSeconds(0.200)
+                .strafeTo(new Vector2d(-1, -35))
                 .build()
         );
 //

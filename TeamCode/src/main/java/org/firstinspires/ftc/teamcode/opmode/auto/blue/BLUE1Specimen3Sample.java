@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmode.auto;
+package org.firstinspires.ftc.teamcode.opmode.auto.blue;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -14,7 +14,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.commands.BasketPositionCommand;
-import org.firstinspires.ftc.teamcode.commands.BlankCommand;
 import org.firstinspires.ftc.teamcode.commands.ElevatorPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeHasSampleCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakePositionCommand;
@@ -28,7 +27,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Limelight;
 
 @Autonomous
-public class BLUEOneThreeAuto extends CommandOpMode {
+public class BLUE1Specimen3Sample extends CommandOpMode {
     private Drivetrain drive;
     private Basket basket;
     private Elevator elevator;
@@ -59,43 +58,11 @@ public class BLUEOneThreeAuto extends CommandOpMode {
         drive.strafeSpeedlimit = 1;
         drive.rotSpeedLimit = 1;
 
-        final Vector2d specimenPos = new Vector2d(-16, -30.25);
-        final Vector2d basketPos = new Vector2d(-58.023881554, -54.02525317);
-        final Pose2d firstSample = new Pose2d(new Vector2d(-36, -35), Math.toRadians(100));
-        final Pose2d inchToFirstSamplePose = addPoses(shiftForward(5, Math.toRadians(100)), firstSample);
+        Action startToSpecimen = BlueActions.startToSpecimen(drive, home, BlueActions.leftSpecimenPos);
 
-        Action startToSpecimen = drive.getTrajectoryBuilder(home)
-                .strafeTo(specimenPos)
-                .build();
-
-        Action startToBasket = drive.getTrajectoryBuilder(home)
-                .strafeToLinearHeading(basketPos, Math.toRadians(45))
-                .build();
-
-        Action specimenToFirstSample = drive.getTrajectoryBuilder(new Pose2d(specimenPos, Math.toRadians(180)))
-                .strafeTo(new Vector2d(specimenPos.x, specimenPos.y-7))
-                .strafeToLinearHeading(new Vector2d(-30, -42), Math.toRadians(133))
-                .build();
-
-        Action basketToSecondSample = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
-                .splineToLinearHeading(new Pose2d(-55.25, -53, Math.toRadians(90)), Math.toRadians(90))
-                .build();
-
-        Action basketToThirdSample = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
-                .strafeToLinearHeading(new Vector2d(-44, -37), Math.toRadians(150))
-                .build();
-
-        Action basketToFourthSample = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
-                .splineTo(new Vector2d(-24, -37), Math.toRadians(0))
-                .splineTo(new Vector2d(10, -37), Math.toRadians(0))
-                .splineTo(new Vector2d(30, -35), Math.toRadians(30))
-                .build();
-
-        Action basketToObservation = drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
-                .splineTo(new Vector2d(-24, -35), Math.toRadians(0))
-                .splineTo(new Vector2d(30, -35), Math.toRadians(0))
-                .splineTo(new Vector2d(55, -61), Math.toRadians(0))
-                .build();
+        Action specimenToFirstSample = BlueActions.specimenToFirstSample(drive);
+        Action basketToSecondSample = BlueActions.basketToSecondSample(drive);
+        Action basketToThirdSample = BlueActions.basketToThirdSample(drive);
 
         register(drive);
         schedule(new RunCommand(telemetry::update));
@@ -110,9 +77,9 @@ public class BLUEOneThreeAuto extends CommandOpMode {
         schedule(new SequentialCommandGroup(
                 new ParallelCommandGroup( // drive to specimen, raise elevator
                         new TrajectoryGotoCommand(startToSpecimen, drive),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET, 100)
+                        new ElevatorPositionCommand(elevator, Elevator.basketState.SPECIMEN, -20)
                 ),
-                new ElevatorPositionCommand(elevator, Elevator.basketState.HOME), // place specimen
+                new ElevatorPositionCommand(elevator, Elevator.basketState.SPECIMEN, 250), // place specimen
                 new ParallelCommandGroup(  // drive to first sample, intake out
                         new TrajectoryGotoCommand(specimenToFirstSample, drive),
                         new IntakePositionCommand(intake, Intake.state.INTAKING, 600)
@@ -127,7 +94,7 @@ public class BLUEOneThreeAuto extends CommandOpMode {
                 new IntakePositionCommand(intake, Intake.state.RESTING, 700),
                 new IntakePositionCommand(intake, Intake.state.TRANSFERRING, 700),
                 new ParallelCommandGroup(
-                        new StrafeToPositionCommand(new Pose2d(basketPos, Math.toRadians(45)), drive),
+                        new StrafeToPositionCommand(new Pose2d(BlueActions.basketPos, Math.toRadians(45)), drive),
                         new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET),
                         new IntakePositionCommand(intake, Intake.state.RESTING, 200)
                 ),
@@ -152,7 +119,7 @@ public class BLUEOneThreeAuto extends CommandOpMode {
                 new IntakePositionCommand(intake, Intake.state.TRANSFERRING, 500),
                 new ParallelCommandGroup(
                         new IntakePositionCommand(intake, Intake.state.RESTING, 200),
-                        new StrafeToPositionCommand(new Pose2d(basketPos, Math.toRadians(45)), drive),
+                        new StrafeToPositionCommand(new Pose2d(BlueActions.basketPos, Math.toRadians(45)), drive),
                         new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
                 ),
                 new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(700),
@@ -178,7 +145,7 @@ public class BLUEOneThreeAuto extends CommandOpMode {
                 new IntakePositionCommand(intake, Intake.state.TRANSFERRING, 500),
                 new ParallelCommandGroup(
                         new IntakePositionCommand(intake, Intake.state.RESTING, 200),
-                        new StrafeToPositionCommand(new Pose2d(basketPos, Math.toRadians(45)), drive),
+                        new StrafeToPositionCommand(new Pose2d(BlueActions.basketPos, Math.toRadians(45)), drive),
                         new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
                 ),
                 new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(500),

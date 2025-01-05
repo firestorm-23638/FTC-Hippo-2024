@@ -6,6 +6,7 @@ import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.CRServo;
 import com.arcrobotics.ftclib.util.Timing;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -24,6 +25,7 @@ public class Intake extends SubsystemBase {
     private final CRServo rightVacuum;
     private final Telemetry telemetry;
     private final ColorSensor colorSensor;
+    private final DigitalChannel beamBrake;
 
     public enum state {
         INTAKING,
@@ -49,13 +51,15 @@ public class Intake extends SubsystemBase {
     public vacuum vacuumState = vacuum.STATIONING;
     public color colorToIgnore;
     public boolean ejecting = false;
-    public Timing.Timer ejectTimer;
+    public Timing.Timer ejectTimer = new Timing.Timer(150, TimeUnit.MILLISECONDS);
     public boolean extended = false;
     public Gamepad gamepad;
     public boolean isGamepad = false;
-    public double trim = 0;
+    public double trim = 20;
     public color currentColor = color.NONE;
     public boolean updatingColor = false;
+    public boolean colorDetected = false;
+    public boolean hasTheRightColor = false;
 
     public Intake(HardwareMap hardwareMap, Telemetry telemetry, color colorToIgnore) {
         this(hardwareMap, telemetry, colorToIgnore, null);
@@ -69,6 +73,7 @@ public class Intake extends SubsystemBase {
         leftVacuum = new CRServo(hardwareMap, Constants.intakeLeftVacuumConfig);
         rightVacuum = new CRServo(hardwareMap, Constants.intakeRightVacuumConfig);
         colorSensor = hardwareMap.get(ColorSensor.class, "intakeColor");
+        beamBrake = hardwareMap.get(DigitalChannel.class, Constants.intakeBeamBreakConfig);
 
         isGamepad = true;
         this.gamepad = gamepad;
@@ -109,37 +114,53 @@ public class Intake extends SubsystemBase {
     // The vacuum will only run if the color sensor detects nothing. Otherwise, it will either eject or stop and bring the intake back.
     @Override
     public void periodic() {
-        if (updatingColor) {
-            currentColor = getCurrentColor();
-        }
-
         if (isGamepad) {
-            trim = (gamepad.left_trigger * 65);
+            trim = (gamepad.left_trigger * 80);
         }
-        else {
-            trim = 20;
-        }
-        telemetry.addData("Intake Trim", trim);
-        telemetry.addData("ALLIANCE", Constants.isRed ? "RED" : "BLUE");
+        telemetry.addData("BEAM BREAK", beamBrake.getState());
+        telemetry.addData("EXTENSION POS", rightHorizontal.getAngle());
+        telemetry.addData("WRIST POS", pivot.getAngle());
+
         telemetry.addData("Current Color", currentColor);
+        currentColor = getCurrentColor();
 
         if (intakeState == state.INTAKING) {
             horizontalOut();
-        }
-        if ((currentColor == color.NONE) || (currentColor == colorToIgnore)) {
-            if (vacuumState == vacuum.SUCKING) {
+            if (((intakeState == state.INTAKING) && (!beamBrake.getState() && (!colorDetected)))) {   // if it has a piece and it doesn't know the color yet
+                hasTheRightColor = false;
+                leftVacuum.set(.2);
+                rightVacuum.set(-.2);
+                if (currentColor != color.NONE) {
+                    colorDetected = true;
+                }
+            }
+            else if ((colorDetected)) {
+                if (currentColor == color.NONE) {
+                    colorDetected = false;
+                }
+                else if (currentColor == colorToIgnore) {
+                    runVacuumRun();
+                }
+                else {
+                    hasTheRightColor = true;
+                    runVacuumStop();
+                    horizontalIn();
+                    pivotHome();
+                }
+            }
+            else if (vacuumState == vacuum.SUCKING) {
                 runVacuumRun();
             }
-            else {
-                runVacuumStop();
+            else if (vacuumState == vacuum.SPEWING) {
+                runVacuumEject();
             }
+        }
+        else if (vacuumState == vacuum.SPEWING) {
+            runVacuumEject();
         }
         else {
             runVacuumStop();
-            vacuumState = vacuum.STATIONING;
-            intakeState = state.RESTING;
             horizontalIn();
-            pivotHome();
         }
 
     }
@@ -158,9 +179,22 @@ public class Intake extends SubsystemBase {
         intakeState = state.RESTING;
     }
 
+    public void horizontalTransfer() {
+        horizontalToPos(Constants.intakeHorizontalToHomePose - 10);
+    }
+
     public void horizontalOut() {
         horizontalToPos(Constants.intakeHorizontalToIntakePose + trim);
         intakeState = state.INTAKING;
+    }
+
+    public void horizontalOut(double t) {
+        horizontalToPos(Constants.intakeHorizontalToIntakePose + t);
+        intakeState = state.INTAKING;
+    }
+
+    public double getPivotPos() {
+        return pivot.getAngle();
     }
 
     public void pivotDown() {
@@ -204,13 +238,13 @@ public class Intake extends SubsystemBase {
         telemetry.addData("GREEN", colorSensor.green());
         telemetry.addData("BLUE", colorSensor.blue());
 
-        if (withinRange(colRed, 750, 1500) && withinRange(colGreen, 800, 1400) && withinRange(colBlue, 150, 450)) {
+        if (withinRange(colRed, 500, 1500) && withinRange(colGreen, 800, 1400) && withinRange(colBlue, 120, 450)) {
             return color.YELLOW;
         }
-        else if (withinRange(colRed, 90, 220) && withinRange(colGreen, 250, 400) && withinRange(colBlue, 550, 750)) {
+        else if (withinRange(colRed, 80, 220) && withinRange(colGreen, 180, 400) && withinRange(colBlue, 450, 750)) {
             return color.BLUE;
         }
-        else if (withinRange(colRed, 480, 660) && withinRange(colGreen, 300, 450) && withinRange(colBlue, 150, 300)) {
+        else if (withinRange(colRed, 400, 660) && withinRange(colGreen, 180, 450) && withinRange(colBlue, 80, 300)) {
             return color.RED;
         }
         else {

@@ -12,16 +12,22 @@ public class IntakePositionCommand extends CommandBase {
     private Intake.state state = Intake.state.RESTING;
     private Timing.Timer extendTimer;
     private boolean isTimer = false;
+    double trim = 0;
 
     public IntakePositionCommand(Intake intake, Intake.state state) {
-        this(intake, state, 0);
+        this(intake, state, 0, 0);
     }
 
     public IntakePositionCommand(Intake intake, Intake.state state, long ms) {
+        this(intake, state, ms, 0);
+    }
+
+    public IntakePositionCommand(Intake intake, Intake.state state, long ms, double trim) {
         m_intake = intake;
         this.state = state;
         extendTimer = new Timing.Timer(ms, TimeUnit.MILLISECONDS);
         isTimer =  true;
+        this.trim = trim;
 
         addRequirements(m_intake);
     }
@@ -29,6 +35,7 @@ public class IntakePositionCommand extends CommandBase {
     @Override
     public void initialize() {
         extendTimer.start();
+        m_intake.trim = trim;
     }
 
     @Override
@@ -51,6 +58,7 @@ public class IntakePositionCommand extends CommandBase {
         else {
             m_intake.pivotBasket();
             m_intake.setVacuumEject();
+            m_intake.horizontalTransfer();
         }
     }
 
