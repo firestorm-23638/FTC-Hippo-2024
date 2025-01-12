@@ -31,7 +31,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Limelight;
 import org.firstinspires.ftc.teamcode.subsystems.SpecimenClaw;
 
 @TeleOp
-public class REDTeleop extends CommandOpMode {
+public class FIELDREDTeleop extends CommandOpMode {
     private GamepadEx driver;
     private GamepadEx operator;
 
@@ -59,9 +59,9 @@ public class REDTeleop extends CommandOpMode {
         kicker = new Kicker(hardwareMap, telemetry);
         specimen = new SpecimenClaw(hardwareMap, telemetry);
 
-        drive.forwardSpeedlimit = 0.675;
-        drive.strafeSpeedlimit = 0.675;
-        drive.rotSpeedLimit = 0.4;
+        drive.forwardSpeedlimit = 0.9;
+        drive.strafeSpeedlimit = 0.9;
+        drive.rotSpeedLimit = 0.7;
 
         // Change the basket goal based on the alliance
         if (Constants.isRed) {
@@ -76,7 +76,7 @@ public class REDTeleop extends CommandOpMode {
         GamepadButton zoomZoom = new GamepadButton(driver, GamepadKeys.Button.LEFT_BUMPER);
         GamepadButton kickerButton = new GamepadButton(driver, GamepadKeys.Button.X);
 
-        GamepadButton basketTrajectoryButton = new GamepadButton(driver, GamepadKeys.Button.Y);
+        GamepadButton zeroButton = new GamepadButton(driver, GamepadKeys.Button.Y);
 
         GamepadButton basketOut = new GamepadButton(operator, GamepadKeys.Button.A);
         GamepadButton depositorUp = new GamepadButton(operator, GamepadKeys.Button.DPAD_UP);
@@ -97,11 +97,13 @@ public class REDTeleop extends CommandOpMode {
         kickerButton.whenPressed(new InstantCommand(() -> kicker.currentState = Kicker.state.OPEN))
                 .whenReleased(new InstantCommand(() -> kicker.currentState = Kicker.state.CLOSE));
 
+        zeroButton.whenHeld(new InstantCommand(() -> drive.setCurrentPose(new Pose2d(0, 0, Math.toRadians(270)))));
+
         drive.setDefaultCommand(new DrivetrainCommand(drive,
                 ()->(double)-this.gamepad1.left_stick_y,
                 ()->(double)-this.gamepad1.left_stick_x,
                 ()->(double)-this.gamepad1.right_stick_x,
-                false));
+                true));
 
         specimenClaw.whenHeld(new SpecimenClawCommand(specimen, true))
                 .whenReleased(new SpecimenClawCommand(specimen, false));
@@ -125,9 +127,9 @@ public class REDTeleop extends CommandOpMode {
             intake.setVacuumStop();
             intake.updateColorSensor(false);
 
-            drive.forwardSpeedlimit = 0.65;
-            drive.strafeSpeedlimit = 0.65;
-            drive.rotSpeedLimit = 0.45;
+            drive.forwardSpeedlimit = 0.9;
+            drive.strafeSpeedlimit = 0.9;
+            drive.rotSpeedLimit = 0.7;
         }));
 
         toBasket.whenHeld(new InstantCommand(() -> {
@@ -144,9 +146,9 @@ public class REDTeleop extends CommandOpMode {
             drive.strafeSpeedlimit = 1;
             drive.forwardSpeedlimit = 1;
         })).whenReleased(new InstantCommand(() -> {
-            drive.forwardSpeedlimit = 0.675;
-            drive.strafeSpeedlimit = 0.675;
-            drive.rotSpeedLimit = 0.4;
+            drive.forwardSpeedlimit = 0.9;
+            drive.strafeSpeedlimit = 0.9;
+            drive.rotSpeedLimit = 0.7;
         }));
 
         // Manual test elevator

@@ -22,7 +22,6 @@ import org.firstinspires.ftc.teamcode.commands.RawDrivetrainCommand;
 import org.firstinspires.ftc.teamcode.commands.SlideUntilHasPieceCommand;
 import org.firstinspires.ftc.teamcode.commands.StrafeToPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.TrajectoryGotoCommand;
-import org.firstinspires.ftc.teamcode.commands.TurnToNearestSampleCommand;
 import org.firstinspires.ftc.teamcode.subsystems.Basket;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.Elevator;
@@ -31,7 +30,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Kicker;
 import org.firstinspires.ftc.teamcode.subsystems.Limelight;
 
 @Autonomous
-public class BLUE0Specimen5SampleLIMELIGHT extends CommandOpMode {
+public class BLUE0Specimen5SampleDONTUSE extends CommandOpMode {
     private Drivetrain drive;
     private Basket basket;
     private Elevator elevator;
@@ -73,12 +72,15 @@ public class BLUE0Specimen5SampleLIMELIGHT extends CommandOpMode {
             intake.horizontalIn();
         }));
 
+        final int basketDepositLen = 600;
+        final int intakeRestingLen = 300;
+
         schedule(new SequentialCommandGroup(
                         new ParallelCommandGroup(
                                 new TrajectoryGotoCommand(startToBasket, drive),
                                 new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
                         ),
-                        new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(700),
+                        new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(basketDepositLen),
                         new ParallelCommandGroup(
                                 new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
                                 new SequentialCommandGroup(
@@ -86,17 +88,16 @@ public class BLUE0Specimen5SampleLIMELIGHT extends CommandOpMode {
                                         new ElevatorPositionCommand(elevator, Elevator.basketState.HOME)
                                 ),
                                 new TrajectoryGotoCommand(basketToFirstSample, drive),
-                                new IntakePositionCommand(intake, Intake.state.INTAKING, 700, 15)
+                                new IntakePositionCommand(intake, Intake.state.INTAKING, 700, 40)
                         ),
-                        new TurnToNearestSampleCommand(limelight, drive).withTimeout(1000),
+                        //new TurnToNearestSampleCommand(limelight, drive),
                         // First Sample
-                        new IntakePositionCommand(intake, Intake.state.INTAKING, 100, 40),
-                        new ParallelRaceGroup(
-                                new RawDrivetrainCommand(drive, .3, 0, 0).withTimeout(1500),
-                                new IntakeHasSampleCommand(intake)
-                        ),
-                        new RawDrivetrainCommand(drive, 0, 0, 0).withTimeout(50),
-                        new IntakePositionCommand(intake, Intake.state.RESTING, 500),
+                        new SlideUntilHasPieceCommand(intake, Intake.color.BLUE, 40),
+                        new IntakePositionCommand(intake, Intake.state.RESTING, intakeRestingLen),
+//                        new ParallelRaceGroup(
+//                                new IntakePositionCommand(intake, Intake.state.INTAKING, 700, 55).withTimeout(1500),
+//                                new IntakeHasSampleCommand(intake)
+//                        ),
                         new ParallelCommandGroup(
                                 new StrafeToPositionCommand(new Pose2d(BlueActions.basketPos, Math.toRadians(45)), drive),
                                 new SequentialCommandGroup(
@@ -108,27 +109,25 @@ public class BLUE0Specimen5SampleLIMELIGHT extends CommandOpMode {
                                         new IntakePositionCommand(intake, Intake.state.RESTING, 200)
                                 )
                         ),
-                        new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(700),
                         new ParallelCommandGroup(
-                                new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
+                                new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(basketDepositLen),
+                                new IntakePositionCommand(intake, Intake.state.INTAKING, 500, 40)
+                        ),
+                        new ParallelCommandGroup(
+                                new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(500),
                                 new SequentialCommandGroup(
                                         new WaitCommand(500),
-                                        new ParallelCommandGroup(
-                                                new ElevatorPositionCommand(elevator, Elevator.basketState.HOME)
-                                        )
+                                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME)
                                 ),
                                 // Second Sample
-                                new IntakePositionCommand(intake, Intake.state.INTAKING, 500, 15),
                                 new TrajectoryGotoCommand(basketToSecondSample, drive)
                         ),
-                        new TurnToNearestSampleCommand(limelight, drive).withTimeout(1000),
-                        new IntakePositionCommand(intake, Intake.state.INTAKING, 100, 40),
-                        new ParallelRaceGroup(
-                                new RawDrivetrainCommand(drive, .3, 0, 0).withTimeout(1500),
-                                new IntakeHasSampleCommand(intake)
-                        ),
-                        new RawDrivetrainCommand(drive, 0, 0, 0).withTimeout(50),
-                        new IntakePositionCommand(intake, Intake.state.RESTING, 500),
+                        new SlideUntilHasPieceCommand(intake, Intake.color.BLUE, 40),
+//                        new ParallelRaceGroup(
+//                                new IntakePositionCommand(intake, Intake.state.INTAKING, 500, 55),
+//                                new IntakeHasSampleCommand(intake)
+//                        ),
+                        new IntakePositionCommand(intake, Intake.state.RESTING, intakeRestingLen),
                         new ParallelCommandGroup(
                                 new SequentialCommandGroup(
                                         new IntakePositionCommand(intake, Intake.state.TRANSFERRING, 500),
@@ -140,7 +139,7 @@ public class BLUE0Specimen5SampleLIMELIGHT extends CommandOpMode {
                                         new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
                                 )
                         ),
-                        new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(700),
+                        new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(basketDepositLen),
                         new ParallelCommandGroup(
                                 new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
                                 new SequentialCommandGroup(
@@ -150,19 +149,14 @@ public class BLUE0Specimen5SampleLIMELIGHT extends CommandOpMode {
 
                                 // Third Sample
                                 new TrajectoryGotoCommand(basketToThirdSample, drive),
-                                new IntakePositionCommand(intake, Intake.state.INTAKING, 700, 20)
+                                new IntakePositionCommand(intake, Intake.state.INTAKING, 700, 40)
                         ),
-                        new TurnToNearestSampleCommand(limelight, drive).withTimeout(1000),
-                        new IntakePositionCommand(intake, Intake.state.INTAKING, 100, 40),
                         new ParallelRaceGroup(
-                                new RawDrivetrainCommand(drive,.2, 0, 0).withTimeout(2000),
+                                new RawDrivetrainCommand(drive,.15, 0, 0).withTimeout(2000),
                                 new IntakeHasSampleCommand(intake)
                         ),
-                        new ParallelCommandGroup(
-                                new IntakePositionCommand(intake, Intake.state.RESTING, 100),
-                                new RawDrivetrainCommand(drive, -.2, 0, 0).withTimeout(700)
-                        ),
-                        new RawDrivetrainCommand(drive, 0, 0, 0).withTimeout(50),
+                        new RawDrivetrainCommand(drive, -.3, 0, 0).withTimeout(300),
+                        new RawDrivetrainCommand(drive, 0, 0, 0).withTimeout(10),
                         //new IntakePositionCommand(intake, Intake.state.RESTING, 500),
                         new ParallelCommandGroup(
                                 new SequentialCommandGroup(
@@ -175,7 +169,7 @@ public class BLUE0Specimen5SampleLIMELIGHT extends CommandOpMode {
                                         new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
                                 )
                         ),
-                        new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(500),
+                        new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(basketDepositLen),
                         new ParallelCommandGroup(
                                 new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
                                 new SequentialCommandGroup(
@@ -188,15 +182,15 @@ public class BLUE0Specimen5SampleLIMELIGHT extends CommandOpMode {
                         new KickerCommand(kicker, 500, Kicker.state.OPEN),
                         new ParallelCommandGroup(
                                 new SequentialCommandGroup(
-                                        new WaitCommand(300),
-                                        new IntakePositionCommand(intake, Intake.state.INTAKING, 400, 0),
+                                        new WaitCommand(200),
+                                        new IntakePositionCommand(intake, Intake.state.INTAKING, 300, 0),
                                         new SlideUntilHasPieceCommand(intake, Intake.color.BLUE)
                                 ),
                                 new KickerCommand(kicker, 500, Kicker.state.CLOSE)
                         ),
-                        new RawDrivetrainCommand(drive, -.3, 0, 0).withTimeout(50),
-                        new IntakePositionCommand(intake, Intake.state.RESTING, 700),
-                        new RawDrivetrainCommand(drive, 0, 0, 0).withTimeout(50),
+                        new RawDrivetrainCommand(drive, -.4, 0, 0).withTimeout(10),
+                        new IntakePositionCommand(intake, Intake.state.RESTING, intakeRestingLen),
+                        new RawDrivetrainCommand(drive, 0, 0, 0).withTimeout(10),
 
                         new ParallelCommandGroup(
                                 new SequentialCommandGroup(
@@ -209,7 +203,7 @@ public class BLUE0Specimen5SampleLIMELIGHT extends CommandOpMode {
                                         new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET)
                                 )
                         ),
-                        new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(700),
+                        new BasketPositionCommand(basket, Basket.state.BUCKET).withTimeout(basketDepositLen),
                         new ParallelCommandGroup(
                                 new BasketPositionCommand(basket, Basket.state.HOME).withTimeout(1000),
                                 new SequentialCommandGroup(

@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.commands.ElevatorPositionCommand;
+import org.firstinspires.ftc.teamcode.commands.IntakePositionCommand;
 import org.firstinspires.ftc.teamcode.commands.KickerCommand;
 import org.firstinspires.ftc.teamcode.commands.SpecimenClawCommand;
 import org.firstinspires.ftc.teamcode.commands.TrajectoryGotoCommand;
@@ -100,33 +101,40 @@ public class BLUE4Specimen0Sample extends CommandOpMode {
         }));
 
         schedule(new SequentialCommandGroup(
+                new IntakePositionCommand(intake, Intake.state.RESTING),
                 new ParallelCommandGroup(
                         new TrajectoryGotoCommand(startToSpecimen, drive),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.SPECIMEN, -20)
+                        new ElevatorPositionCommand(elevator, Elevator.basketState.SPECIMEN)
                 ),
-                new ParallelCommandGroup(
-                        new SequentialCommandGroup(
-                                new ElevatorPositionCommand(elevator, Elevator.basketState.SPECIMEN, 250),
-                                new ElevatorPositionCommand(elevator, Elevator.basketState.HOME)
-                        ),
-                        new SequentialCommandGroup(
-                                new WaitCommand(200),
-                                new TrajectoryGotoCommand(toFirstSample, drive),
-                                new KickerCommand(kicker, 50, Kicker.state.PUSH),
-                                new TrajectoryGotoCommand(pushFirstSample, drive),
-                                new ParallelCommandGroup(
-                                        new TrajectoryGotoCommand(toSecondSample, drive)
+                new SequentialCommandGroup(
+                        new ElevatorPositionCommand(elevator, Elevator.basketState.SPECIMEN, 250),
+                        new WaitCommand(500),
+                        new ParallelCommandGroup(
+                                new SequentialCommandGroup(
+                                        new WaitCommand(200),
+                                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME)
                                 ),
-                                new KickerCommand(kicker, 50, Kicker.state.PUSH),
-                                new TrajectoryGotoCommand(pushSecondSample, drive)
-                        )
+                                new TrajectoryGotoCommand(toFirstSample, drive)
+                        ),
+                        new KickerCommand(kicker, 50, Kicker.state.PUSH),
+                        new TrajectoryGotoCommand(pushFirstSample, drive),
+                        new ParallelCommandGroup(
+                                new TrajectoryGotoCommand(toSecondSample, drive)
+                        ),
+                        new KickerCommand(kicker, 50, Kicker.state.PUSH),
+                        new TrajectoryGotoCommand(pushSecondSample, drive)
+
                 ),
                 // both samples are pushed in
                 new SpecimenClawCommand(claw, false),
                 new WaitCommand(200),
                 new ParallelCommandGroup(
                         new ElevatorPositionCommand(elevator, Elevator.basketState.SPECIMEN),
-                        new TrajectoryGotoCommand(placeSecondSpecimen, drive)
+                        new TrajectoryGotoCommand(placeSecondSpecimen, drive),
+                        new SequentialCommandGroup(
+                                new WaitCommand(1000),
+                                new KickerCommand(kicker, 100, Kicker.state.CLOSE)
+                        )
                 ),
                 new ParallelCommandGroup(
                         new SequentialCommandGroup(

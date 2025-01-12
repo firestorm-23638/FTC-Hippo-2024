@@ -22,7 +22,7 @@ public class Elevator extends SubsystemBase {
     public enum basketState {    // The current "state" or position of the elevator
         HOME((int)Constants.depositorVerticalToBottomPose),
         MIDDLE_BASKET((int)Constants.depositorVerticalToMidPose),
-        SPECIMEN((int)Constants.depositorVerticalToTopPose-240),
+        SPECIMEN((int)Constants.depositorVerticalToTopPose-225),
         HIGH_BASKET((int)Constants.depositorVerticalToTopPose);
 
         public final int pos;
@@ -118,7 +118,7 @@ public class Elevator extends SubsystemBase {
         if (isGamepad) {
             trim = (gamepad.right_trigger * 275);
         }
-        if (trim > 150) {
+        if (trim > 175) {
             claw.open();
         }
         telemetry.addData("Trim", trim);

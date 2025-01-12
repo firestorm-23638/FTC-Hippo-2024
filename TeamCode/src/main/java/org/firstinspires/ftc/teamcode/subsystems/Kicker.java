@@ -64,6 +64,6 @@ public class Kicker extends SubsystemBase {
     }
 
     public void push() {
-        servo.turnToAngle(75);
+        servo.turnToAngle(65);
     }
 }

@@ -85,16 +85,13 @@ public class NEUTRALTeleop extends CommandOpMode {
 
         GamepadButton resetGyro = new GamepadButton(driver, GamepadKeys.Button.X);
 
-        // experimental
-        basketTrajectoryButton.whenHeld(new StrafeToPositionCommand(basketPose, drive))
-                .whenReleased(new RunCommand(() -> drive.driveFieldCentric(-this.gamepad1.left_stick_y, -this.gamepad1.left_stick_x, -this.gamepad1.right_stick_x)));
-
         resetGyro.whenHeld(new InstantCommand(() -> drive.setCurrentPose(new Pose2d(0, 0, Math.toRadians(270)))));
 
         drive.setDefaultCommand(new DrivetrainCommand(drive,
                 ()->(double)-this.gamepad1.left_stick_y,
                 ()->(double)-this.gamepad1.left_stick_x,
-                ()->(double)-this.gamepad1.right_stick_x));
+                ()->(double)-this.gamepad1.right_stick_x,
+                false));
 
         // Reads limelight position for now
         //limelight.setDefaultCommand(new LimelightCommand(limelight, drive));

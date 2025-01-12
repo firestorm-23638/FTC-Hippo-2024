@@ -23,6 +23,11 @@ public class ElevatorPositionCommand extends CommandBase {
     }
 
     @Override
+    public void initialize() {
+        elevator.isZeroed = false;
+    }
+
+    @Override
     public void execute() {
         elevator.currentStage = state;
         isFinished = elevator.isAtPos();

@@ -85,8 +85,8 @@ public class Intake extends SubsystemBase {
 
     // These functions directly command the vacuum to run. They are (and should) only be used internally.
     private void runVacuumEject() {
-        leftVacuum.set(-Constants.intakeVacuumSpeed);
-        rightVacuum.set(Constants.intakeVacuumSpeed);
+        leftVacuum.set(Constants.intakeEjectSpeed);
+        rightVacuum.set(-Constants.intakeEjectSpeed);
     }
 
     private void runVacuumRun() {
@@ -128,8 +128,8 @@ public class Intake extends SubsystemBase {
             horizontalOut();
             if (((intakeState == state.INTAKING) && (!beamBrake.getState() && (!colorDetected)))) {   // if it has a piece and it doesn't know the color yet
                 hasTheRightColor = false;
-                leftVacuum.set(.2);
-                rightVacuum.set(-.2);
+                leftVacuum.set(.3);
+                rightVacuum.set(-.3);
                 if (currentColor != color.NONE) {
                     colorDetected = true;
                 }
@@ -155,6 +155,9 @@ public class Intake extends SubsystemBase {
                 runVacuumEject();
             }
         }
+        else if ((trim > 50) && (vacuumState == vacuum.SPEWING)) {
+            runVacuumRun();
+        }
         else if (vacuumState == vacuum.SPEWING) {
             runVacuumEject();
         }
@@ -175,7 +178,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void horizontalIn() {
-        horizontalToPos(Constants.intakeHorizontalToHomePose);
+        horizontalToPos(Constants.intakeHorizontalToHomePose + trim);
         intakeState = state.RESTING;
     }
 
@@ -238,13 +241,13 @@ public class Intake extends SubsystemBase {
         telemetry.addData("GREEN", colorSensor.green());
         telemetry.addData("BLUE", colorSensor.blue());
 
-        if (withinRange(colRed, 500, 1500) && withinRange(colGreen, 800, 1400) && withinRange(colBlue, 120, 450)) {
+        if (withinRange(colRed, 500, 1500) && withinRange(colGreen, 750, 1400) && withinRange(colBlue, 100, 450)) {
             return color.YELLOW;
         }
-        else if (withinRange(colRed, 80, 220) && withinRange(colGreen, 180, 400) && withinRange(colBlue, 450, 750)) {
+        else if (withinRange(colRed, 50, 150) && withinRange(colGreen, 150, 300) && withinRange(colBlue, 400, 650)) { //98 204 516   89 182 461   89 182 457
             return color.BLUE;
         }
-        else if (withinRange(colRed, 400, 660) && withinRange(colGreen, 180, 450) && withinRange(colBlue, 80, 300)) {
+        else if (withinRange(colRed, 350, 550) && withinRange(colGreen, 150, 400) && withinRange(colBlue, 60, 200)) {  //456 226 114
             return color.RED;
         }
         else {

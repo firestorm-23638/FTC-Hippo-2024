@@ -13,17 +13,20 @@ public class DrivetrainCommand extends CommandBase {
     private final Supplier<Double> strafeSupplier;
     private final Supplier<Double> turnSupplier;
 
-    public DrivetrainCommand(Drivetrain drive, Supplier<Double> forward, Supplier<Double> strafe, Supplier<Double> turn) {
+    private boolean isFieldCentric = false;
+
+    public DrivetrainCommand(Drivetrain drive, Supplier<Double> forward, Supplier<Double> strafe, Supplier<Double> turn, boolean isFieldCentric) {
         m_drivetrain = drive;
         forwardSupplier = forward;
         strafeSupplier = strafe;
         turnSupplier = turn;
+        this.isFieldCentric = isFieldCentric;
 
         addRequirements(m_drivetrain);
     }
 
     @Override
     public void execute() {
-        m_drivetrain.driveFieldCentric(forwardSupplier.get(), -strafeSupplier.get(), -turnSupplier.get());
+        m_drivetrain.driveFieldCentric(forwardSupplier.get(), -strafeSupplier.get(), -turnSupplier.get(), this.isFieldCentric);
     }
 }

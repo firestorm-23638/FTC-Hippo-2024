@@ -232,9 +232,7 @@ public class MeepMeepTesting {
                 .waitSeconds(0.200)
 
                 // drive and place second specimen
-                .setReversed(true)
-                .splineToLinearHeading(new Pose2d(23, -46, Math.toRadians(90)), Math.toRadians(180))
-                .splineToLinearHeading(new Pose2d(5, -30.25, Math.toRadians(180)), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(5, -30.25), Math.toRadians(180))
                 .waitSeconds(0.200)
 
                 // pickup third specimen
@@ -245,8 +243,7 @@ public class MeepMeepTesting {
 
                 // place third specimen
                 .setReversed(true)
-                .splineToLinearHeading(new Pose2d(23, -46, Math.toRadians(90)), Math.toRadians(180))
-                .splineToLinearHeading(new Pose2d(2, -30.25, Math.toRadians(180)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(5, -30.25, Math.toRadians(180)), Math.toRadians(90))
                 .waitSeconds(0.200)
 
                 // pickup fourth specimen

@@ -46,6 +46,7 @@ public class IntakePositionCommand extends CommandBase {
             m_intake.setVacuumRun();
         }
         else if (state == Intake.state.RESTING){
+            m_intake.trim = 0;
             m_intake.pivotHome();
             m_intake.horizontalIn();
             m_intake.setVacuumStop();
@@ -56,6 +57,7 @@ public class IntakePositionCommand extends CommandBase {
             m_intake.setVacuumStop();
         }
         else {
+            m_intake.trim = 0;
             m_intake.pivotBasket();
             m_intake.setVacuumEject();
             m_intake.horizontalTransfer();

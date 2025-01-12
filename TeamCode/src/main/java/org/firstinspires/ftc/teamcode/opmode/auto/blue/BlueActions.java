@@ -8,12 +8,12 @@ import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 
 // This class is all the actions used in autonomous. They are all in one file so you only have to change one action to affect all autos.
 public class BlueActions {
-    public static final Vector2d basketPos = new Vector2d(-58.523881554, -54.02525317);
-    public static final double specimenPlaceY = -30.25;
+    public static final Vector2d basketPos = new Vector2d(-58.523881554, -55.2525317);
+    public static final double specimenPlaceY = -32.25;
 
     public static final Vector2d leftSpecimenPos = new Vector2d(-12, specimenPlaceY);
-    public static final Vector2d rightSpecimenPos = new Vector2d(16, specimenPlaceY);
-    public static final Pose2d pickupSpecimenPos = new Pose2d(49, -62, Math.toRadians(0));
+    public static final Vector2d rightSpecimenPos = new Vector2d(4, specimenPlaceY);
+    public static final Pose2d pickupSpecimenPos = new Pose2d(45, -66, Math.toRadians(0));
 
 
     public static Action startToBasket(Drivetrain drive, Pose2d home) {
@@ -89,7 +89,7 @@ public class BlueActions {
         return drive.getTrajectoryBuilder(new Pose2d(39, -20, Math.toRadians(0)))
                 //.waitSeconds(1)
                 // from first spike to obs then back
-                .strafeTo(new Vector2d(39, -60))
+                .strafeTo(new Vector2d(39, -66))
                 .build();
     }
 
@@ -111,25 +111,21 @@ public class BlueActions {
 
     public static Action placeSecondSpecimen(Drivetrain drive) {
         return drive.getTrajectoryBuilder(pickupSpecimenPos)
-                .setReversed(true)
-                .splineToLinearHeading(new Pose2d(23, -46, Math.toRadians(90)), Math.toRadians(180))
-                .splineToLinearHeading(new Pose2d(8, specimenPlaceY, Math.toRadians(180)), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(5, specimenPlaceY), Math.toRadians(180))
                 .build();
     }
 
     public static Action pickupThirdSpecimen(Drivetrain drive) {
         return drive.getTrajectoryBuilder(new Pose2d(8, specimenPlaceY, Math.toRadians(180)))
                 .setReversed(true)
-                .strafeTo(new Vector2d(0, specimenPlaceY-5))
+                .strafeTo(new Vector2d(8, specimenPlaceY-5))
                 .splineToLinearHeading(pickupSpecimenPos, Math.toRadians(270))
                 .build();
     }
 
     public static Action placeThirdSpecimen(Drivetrain drive) {
         return drive.getTrajectoryBuilder(pickupSpecimenPos)
-                .setReversed(true)
-                .splineToLinearHeading(new Pose2d(23, -46, Math.toRadians(90)), Math.toRadians(180))
-                .splineToLinearHeading(new Pose2d(5, specimenPlaceY, Math.toRadians(180)), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(5, specimenPlaceY), Math.toRadians(180))
                 .build();
     }
 
@@ -143,9 +139,7 @@ public class BlueActions {
 
     public static Action placeFourthSpecimen(Drivetrain drive) {
         return drive.getTrajectoryBuilder(pickupSpecimenPos)
-                .setReversed(true)
-                .splineToLinearHeading(new Pose2d(23, -46, Math.toRadians(90)), Math.toRadians(180))
-                .splineToLinearHeading(new Pose2d(2, specimenPlaceY, Math.toRadians(180)), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(5, specimenPlaceY), Math.toRadians(180))
                 .build();
     }
 }

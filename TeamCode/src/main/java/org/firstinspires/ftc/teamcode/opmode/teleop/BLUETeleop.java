@@ -100,7 +100,8 @@ public class BLUETeleop extends CommandOpMode {
         drive.setDefaultCommand(new DrivetrainCommand(drive,
                 ()->(double)-this.gamepad1.left_stick_y,
                 ()->(double)-this.gamepad1.left_stick_x,
-                ()->(double)-this.gamepad1.right_stick_x));
+                ()->(double)-this.gamepad1.right_stick_x,
+                false));
 
         specimenClaw.whenHeld(new SpecimenClawCommand(specimen, true))
                 .whenReleased(new SpecimenClawCommand(specimen, false));

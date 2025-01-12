@@ -84,7 +84,7 @@ public class Drivetrain extends SubsystemBase {
         this.mecanumDrive.updatePoseEstimate();
         telemetry.addData("Robot X", this.mecanumDrive.pose.position.x);
         telemetry.addData("Robot Y", this.mecanumDrive.pose.position.y);
-        telemetry.addData("Robot Heading", this.mecanumDrive.pose.heading.log());
+        telemetry.addData("Robot Heading", Math.toDegrees(this.mecanumDrive.pose.heading.log()));
     }
 
     public void driveArcade(double forwardSpeed, double strafeSpeed, double turnSpeed) {
@@ -99,9 +99,14 @@ public class Drivetrain extends SubsystemBase {
         return this.mecanumDrive.pose;
     }
 
-    public void driveFieldCentric(double forwardSpeed, double strafeSpeed, double turnSpeed) {
+    public void driveFieldCentric(double forwardSpeed, double strafeSpeed, double turnSpeed, boolean isFieldCentric) {
+        if (isFieldCentric) {
+            this.fieldCentricDrive(forwardSpeed, strafeSpeed, turnSpeed,Math.toDegrees(mecanumDrive.pose.heading.log()) + 90);
+        }
+        else {
+            this.fieldCentricDrive(forwardSpeed, strafeSpeed, turnSpeed, 0);
+        }
 
-        this.fieldCentricDrive(forwardSpeed, strafeSpeed, turnSpeed, 0);//Math.toDegrees(mecanumDrive.pose.heading.log()) + 90);
     }
 
     private void fieldCentricDrive(double forwardSpeed, double strafeSpeed, double turnSpeed, double gyroAngle) {

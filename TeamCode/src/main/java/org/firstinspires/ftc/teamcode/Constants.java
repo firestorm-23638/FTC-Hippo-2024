@@ -17,7 +17,7 @@ public class Constants {
     public static final String depositorVerticalConfig = "vertical";
 
     public static final String depositorBasketConfig = "basketServo";
-    public static final double depositorVerticalToTopPose = 740;//2700;
+    public static final double depositorVerticalToTopPose = 780;//2700;
     public static final double depositorVerticalToMidPose = 180;
     public static final double depositorVerticalToBottomPose = 0;
     public static final double depositorVerticalKP = .01;
@@ -44,8 +44,8 @@ public class Constants {
 
     public static final double intakeRestingSpeed = 0.05;
     public static final double intakeVacuumSpeed = -.3;
-            ;
-    public static final double intakeEjectSpeed = .3;
+
+    public static final double intakeEjectSpeed = .8;
 
     public static final double intakeHorizontalKP = .05;
 

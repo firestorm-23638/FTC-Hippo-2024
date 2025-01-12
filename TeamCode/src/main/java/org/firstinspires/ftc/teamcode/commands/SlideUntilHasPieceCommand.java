@@ -51,6 +51,6 @@ public class SlideUntilHasPieceCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return (intake.trim == 100) || ((intake.getCurrentColor() == colorToReceive) || intake.getCurrentColor() == Intake.color.YELLOW) || (intake.hasTheRightColor);
+        return (intake.trim == 110) || ((intake.getCurrentColor() == colorToReceive) || intake.getCurrentColor() == Intake.color.YELLOW) || (intake.hasTheRightColor);
     }
 }
