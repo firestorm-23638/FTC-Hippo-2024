@@ -19,7 +19,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.commands.DrivetrainCommand;
-import org.firstinspires.ftc.teamcode.commands.StrafeToPositionCommand;
 import org.firstinspires.ftc.teamcode.subsystems.Basket;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.Elevator;
@@ -193,11 +192,11 @@ public class NEUTRALTeleop extends CommandOpMode {
                         }),
                         new RunCommand(() -> {
                             elevator.setTrim(this.gamepad1.right_trigger * 15.0);
-                            if ((elevator.currentStage != Elevator.basketState.HOME) && (intake.intakeState == Intake.state.RESTING)) {
-                                intake.intakeState = Intake.state.SLIGHTLY;
+                            if ((elevator.currentStage != Elevator.basketState.HOME) && (intake.currentState == Intake.state.RESTING)) {
+                                intake.currentState = Intake.state.SLIGHTLY;
                             }
-                            else if ((elevator.currentStage == Elevator.basketState.HOME) && (intake.intakeState == Intake.state.SLIGHTLY)) {
-                                intake.intakeState = Intake.state.RESTING;
+                            else if ((elevator.currentStage == Elevator.basketState.HOME) && (intake.currentState == Intake.state.SLIGHTLY)) {
+                                intake.currentState = Intake.state.RESTING;
                             }
                         })
                 ));

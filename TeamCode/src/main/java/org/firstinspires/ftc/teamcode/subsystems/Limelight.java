@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
@@ -8,8 +7,6 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.Constants;
 
 import java.util.List;
@@ -32,7 +29,7 @@ public class Limelight extends SubsystemBase {
 
     @Override
     public void periodic() {
-        lookForYellowSample(); // for now
+        lookForSamples(); // for now
 //        if (currResult != null) {
 //            telemetry.addData("Limelight X", currResult.getTx() * 39.26);
 //            telemetry.addData("Limelight Y",  currResult.getTy() * 39.26);
@@ -59,7 +56,11 @@ public class Limelight extends SubsystemBase {
         limelight.pipelineSwitch(2);
     }
 
-    public List<LLResultTypes.ColorResult> lookForYellowSample() {
+    public void toBlueSample() {
+        limelight.pipelineSwitch(0);
+    }
+
+    public List<LLResultTypes.ColorResult> lookForSamples() {
         LLResult result = limelight.getLatestResult();
         if (result != null && result.isValid()) {
             List<LLResultTypes.ColorResult> colorResults = result.getColorResults();

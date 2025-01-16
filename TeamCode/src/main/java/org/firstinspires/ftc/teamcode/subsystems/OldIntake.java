@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.Constants;
 
 import java.util.concurrent.TimeUnit;
 
-public class Intake extends SubsystemBase {
+public class OldIntake extends SubsystemBase {
     private final ServoEx leftHorizontal;
     private final ServoEx rightHorizontal;
     private final ServoEx pivot;
@@ -30,7 +30,6 @@ public class Intake extends SubsystemBase {
         INTAKING,
         RESTING,
         TRANSFERRING,
-        BARFING,
         SLIGHTLY
     }
 
@@ -47,7 +46,7 @@ public class Intake extends SubsystemBase {
         NONE
     }
 
-    public state currentState = state.RESTING;
+    public state intakeState = state.RESTING;
     public vacuum vacuumState = vacuum.STATIONING;
     public color colorToIgnore;
     public boolean ejecting = false;
@@ -61,12 +60,12 @@ public class Intake extends SubsystemBase {
     public boolean colorDetected = false;
     public boolean hasTheRightColor = false;
 
-    public Intake(HardwareMap hardwareMap, Telemetry telemetry, color colorToIgnore) {
+    public OldIntake(HardwareMap hardwareMap, Telemetry telemetry, color colorToIgnore) {
         this(hardwareMap, telemetry, colorToIgnore, null);
         isGamepad = false;
     };
 
-    public Intake(HardwareMap hardwareMap, Telemetry telemetry, color colorToIgnore, Gamepad gamepad) {
+    public OldIntake(HardwareMap hardwareMap, Telemetry telemetry, color colorToIgnore, Gamepad gamepad) {
         leftHorizontal = new SimpleServo(hardwareMap, Constants.intakeLeftHorizontalConfig, 0, 180, AngleUnit.DEGREES);
         rightHorizontal = new SimpleServo(hardwareMap, Constants.intakeRightHorizontalConfig, 0, 180, AngleUnit.DEGREES);
         pivot = new SimpleServo(hardwareMap, Constants.intakePivotConfig, 0, 220, AngleUnit.DEGREES);
@@ -99,11 +98,6 @@ public class Intake extends SubsystemBase {
         rightVacuum.set(0);
     }
 
-    public void runVacuumInch() {
-        leftVacuum.set(Constants.intakeInchingSpeed);
-        rightVacuum.set(-Constants.intakeInchingSpeed);
-    }
-
     private boolean withinRange(double val, double min, double max) {
         return (val > min) && (val < max);
     }
@@ -123,16 +117,14 @@ public class Intake extends SubsystemBase {
             trim = (gamepad.left_trigger * 80);
         }
         telemetry.addData("BEAM BREAK", beamBrake.getState());
-        telemetry.addData("INTAKE POSITION", currentState);
         telemetry.addData("EXTENSION POS", rightHorizontal.getAngle());
         telemetry.addData("WRIST POS", pivot.getAngle());
 
         currentColor = getCurrentColor();
 
-        if (currentState == state.INTAKING) {
-            pivotDown();
+        if (intakeState == state.INTAKING) {
             horizontalOut();
-            if ((!beamBrake.getState() && (!colorDetected))) {   // if it has a piece and it doesn't know the color yet
+            if (((intakeState == state.INTAKING) && (!beamBrake.getState() && (!colorDetected)))) {   // if it has a piece and it doesn't know the color yet
                 hasTheRightColor = false;
                 leftVacuum.set(.3);
                 rightVacuum.set(-.3);
@@ -149,31 +141,32 @@ public class Intake extends SubsystemBase {
                 }
                 else {
                     hasTheRightColor = true;
-                    currentState = state.RESTING;
+                    runVacuumStop();
+                    horizontalIn();
+                    pivotHome();
                 }
             }
-            else {
+            else if (vacuumState == vacuum.SUCKING) {
                 runVacuumRun();
             }
+            else if (vacuumState == vacuum.SPEWING) {
+                runVacuumEject();
+            }
         }
-        else if (currentState == state.RESTING) {
-            pivotHome();
+        else if (vacuumState == vacuum.SPEWING) {
+            runVacuumEject();
+        }
+        else {
             horizontalIn();
             if (!beamBrake.getState()) {
-                runVacuumInch();
+                leftVacuum.set(.1);
+                rightVacuum.set(-.1);
             }
             else {
                 runVacuumStop();
             }
         }
-        else if (currentState == state.TRANSFERRING) {
-            runVacuumEject();
-        }
-        else if (currentState == state.BARFING) {
-            horizontalOut();
-            pivotEject();
-            runVacuumRun();
-        }
+
     }
 
     private void horizontalToPos(double targetPos) {
@@ -187,6 +180,7 @@ public class Intake extends SubsystemBase {
 
     public void horizontalIn() {
         horizontalToPos(Constants.intakeHorizontalToHomePose + trim);
+        intakeState = state.RESTING;
     }
 
     public void horizontalTransfer() {
@@ -195,10 +189,12 @@ public class Intake extends SubsystemBase {
 
     public void horizontalOut() {
         horizontalToPos(Constants.intakeHorizontalToIntakePose + trim);
+        intakeState = state.INTAKING;
     }
 
     public void horizontalOut(double t) {
         horizontalToPos(Constants.intakeHorizontalToIntakePose + t);
+        intakeState = state.INTAKING;
     }
 
     public double getPivotPos() {
@@ -214,12 +210,15 @@ public class Intake extends SubsystemBase {
     }
 
     public void pivotBasket() {
-        if (currentState == state.RESTING) {
+        if (intakeState == state.RESTING) {
             pivotToPos(Constants.intakePivotToBasket);
         }
     }
 
     public void pivotHome() {
+        if ((vacuumState == vacuum.SPEWING) && (intakeState == state.INTAKING)) {
+            return;
+        }
         pivotToPos(Constants.intakePivotToRest);
     }
 
@@ -248,15 +247,15 @@ public class Intake extends SubsystemBase {
     public boolean isAtPos(state state) {
         double hPose = 0;
         double pPose = 0;
-        if (state == Intake.state.INTAKING) {
+        if (state == OldIntake.state.INTAKING) {
             hPose = Constants.intakeHorizontalToIntakePose + trim;
             pPose = Constants.intakePivotToDown;
         }
-        else if (state == Intake.state.RESTING){
+        else if (state == OldIntake.state.RESTING){
             hPose = Constants.intakeHorizontalToHomePose;
             pPose = Constants.intakePivotToRest;
         }
-        else if (state == Intake.state.TRANSFERRING){
+        else if (state == OldIntake.state.TRANSFERRING){
             hPose = Constants.intakeHorizontalToHomePose;
             pPose = Constants.intakePivotToBasket;
         }

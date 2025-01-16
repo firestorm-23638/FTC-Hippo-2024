@@ -3,121 +3,63 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Constants;
 
-
 /*
- DEPRECATED. Use Basket and Elevator separate subsystems instead
- */
+Basket Class: Controls the Basket section of the depositor
+*/
+
 public class Depositor extends SubsystemBase {
-    public enum state {
-            HOME((int)Constants.depositorVerticalToBottomPose),
-            MIDDLE_BASKET((int)Constants.depositorVerticalToMidPose),
-            HIGH_BASKET((int)Constants.depositorVerticalToTopPose);
-
-            public final int pos;
-            private state(int pos) {
-                this.pos = pos;
-            }
-    }
-
-    public enum basketState {
+    public enum state {     // The state that the basket is currently in. Home = in, bucket = deposit. Used in BasketPositionCommand
         HOME,
-        BUCKET
+        TRANSITIONING,
+        SPECIMEN,
+        BUCKET,
+        CLAWOPEN,
+        CLAWCLOSE
     };
 
-    private final Motor vertical;
-    private final ServoEx basket;
-    private final Telemetry telemetry;
+    private final ServoEx pivot;     // Servo object
+    private final ServoEx claw;     // Servo object
 
-    public state currentStage = state.HOME;
-    private double pidTarget = 0;
-    private double basketTime = -1;
-
-    private final double[] stageTargets = {Constants.depositorVerticalToBottomPose, Constants.depositorVerticalToMidPose, Constants.depositorVerticalToTopPose};
+    private final Telemetry telemetry;     // Telemetry object, for printouts
 
     public Depositor(HardwareMap hardwareMap, Telemetry telemetry) {
-        vertical = new Motor(hardwareMap, Constants.depositorVerticalConfig);
-        basket = new SimpleServo(hardwareMap, Constants.depositorBasketConfig, 0, 180, AngleUnit.DEGREES);
+        pivot = new SimpleServo(hardwareMap, Constants.depositorBasketConfig, 0, 282.35, AngleUnit.DEGREES);
+        claw = new SimpleServo(hardwareMap, Constants.specimenClawConfig, 0, 180, AngleUnit.DEGREES);
 
         this.telemetry = telemetry;
     };
 
-    public void increaseStage() {
-        if (currentStage == state.HIGH_BASKET) {
-            return;
-        }
-        if (currentStage == state.HOME) {
-            currentStage = state.MIDDLE_BASKET;
-        }
-        else {
-            currentStage = state.HIGH_BASKET;
-        }
-    }
-
-    public void decreaseStage() {
-        if (currentStage == state.HOME) {
-            return;
-        }
-        if (currentStage == state.HIGH_BASKET) {
-            currentStage = state.MIDDLE_BASKET;
-        }
-        else {
-            currentStage = state.HOME;
-        }
-    }
-
     @Override
     public void periodic() {
-        telemetry.addData("Vertical Position", vertical.getCurrentPosition());
-        telemetry.addData("Basket Position", basket.getAngle());
-        telemetry.addData("Current Stage", currentStage);
-
-
-        pidTarget = currentStage.pos;
-        verticalToPos(pidTarget);
 
     }
 
-    private void verticalToPos(double targetPos) {
-        vertical.setRunMode(Motor.RunMode.RawPower);
-        double kP = Constants.depositorVerticalKP;
-        double kConstant = .1;
-        //double kTolerance = 10;
-
-        double currPos = vertical.getCurrentPosition();
-        double error = targetPos - currPos;
-        //if (error > kTolerance || error < -kTolerance) {
-        vertical.set(error * kP);
-        //}
-        //else {
-        //vertical.set(kConstant);
-        //}
-
+    public void toHome() {
+        pivot.turnToAngle(Constants.depositorBasketToHomeAngle);
     }
 
-    public boolean isAtPos() {
-        telemetry.addData("At target", (vertical.getCurrentPosition() >= currentStage.pos - 150) && (vertical.getCurrentPosition() <= currentStage.pos + 150));
-        return (vertical.getCurrentPosition() >= currentStage.pos - 150) && (vertical.getCurrentPosition() <= currentStage.pos + 150);
+    public void toTransition() {
+        pivot.turnToAngle(Constants.depositorBasketToTransitionAngle);
     }
 
-    public void rawVertical(double speed) {
-        vertical.setRunMode(Motor.RunMode.RawPower);
-        vertical.set(speed);
+    public void toBasket() {
+        pivot.turnToAngle(Constants.depositorBasketToDepositAngle);
     }
 
-    public boolean basketToDeposit() {
-        basket.turnToAngle(Constants.depositorBasketToDepositAngle);
-        return false;
+    public void clawOpen() {
+        claw.turnToAngle(Constants.specimenOpenAngle);
+    }
+    public void clawClose() {
+        claw.turnToAngle(Constants.specimenCloseAngle);
     }
 
-    public boolean basketToHome() {
-        basket.turnToAngle(Constants.depositorBasketToHomeAngle);
-        return false;
+    public void toSpecimen() {
+        pivot.turnToAngle(Constants.depositorBasketToSpecimenAngle);
     }
 }

@@ -142,11 +142,6 @@ public class Drivetrain extends SubsystemBase {
         this.mecanumDrive.rightFront.setPower(wheelSpeeds[frontRight]);
         this.mecanumDrive.leftBack.setPower(wheelSpeeds[backLeft]);
         this.mecanumDrive.rightBack.setPower(wheelSpeeds[backRight]);
-
-        telemetry.addData("Front Left", wheelSpeeds[frontLeft]);
-        telemetry.addData("Front Right", wheelSpeeds[frontRight]);
-        telemetry.addData("Back Left", wheelSpeeds[backLeft]);
-        telemetry.addData("Back Right", wheelSpeeds[backRight]);
     }
 
     public TrajectoryActionBuilder getTrajectoryBuilder(Pose2d initalPose) {

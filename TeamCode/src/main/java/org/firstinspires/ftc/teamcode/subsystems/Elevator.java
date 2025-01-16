@@ -81,7 +81,7 @@ public class Elevator extends SubsystemBase {
     }
 
     public void decreaseStage() {      // Decreases the stage of the elevator
-        if (currentStage == basketState.HOME) {
+        if (currentStage == basketState.MIDDLE_BASKET) {
             return;
         }
         if (currentStage == basketState.HIGH_BASKET) {
@@ -91,7 +91,7 @@ public class Elevator extends SubsystemBase {
             currentStage = basketState.MIDDLE_BASKET;
         }
         else {
-            currentStage = basketState.HOME;
+            currentStage = basketState.MIDDLE_BASKET;
         }
     }
 

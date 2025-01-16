@@ -8,25 +8,23 @@ import org.firstinspires.ftc.teamcode.subsystems.Limelight;
 
 import java.util.List;
 
-public class ForwardAndTurnToNearestSampleCommand extends CommandBase {
+public class TurnToNearestYellowSampleCommand extends CommandBase {
     private final Limelight limelight;
     private final Drivetrain drivetrain;
 
     double currentAngle;
-    double turnSpeed = 0;
-    double speed = 0;
+    double startingSpeed = 0;
     boolean hasTarget = false;
     boolean isAligned = false;
 
-    public ForwardAndTurnToNearestSampleCommand(Limelight limelight, Drivetrain drivetrain, double speed) {
-        this(limelight, drivetrain, speed, 0);
+    public TurnToNearestYellowSampleCommand(Limelight limelight, Drivetrain drivetrain) {
+        this(limelight, drivetrain, 0);
     }
 
-    public ForwardAndTurnToNearestSampleCommand(Limelight limelight, Drivetrain drivetrain, double speed, double turnSpeed) {
+    public TurnToNearestYellowSampleCommand(Limelight limelight, Drivetrain drivetrain, double startingSpeed) {
         this.limelight = limelight;
         this.drivetrain = drivetrain;
-        this.speed = speed;
-        this.turnSpeed = turnSpeed;
+        this.startingSpeed = startingSpeed;
 
         addRequirements(limelight, drivetrain);
 
@@ -41,16 +39,16 @@ public class ForwardAndTurnToNearestSampleCommand extends CommandBase {
             hasTarget = true;
         }
         if (hasTarget) {
-            drivetrain.driveArcade(speed, 0, currentAngle * 0.025);
+            drivetrain.driveArcade(0, 0, currentAngle * 0.05);
             isAligned = (currentAngle > -1) && (currentAngle < 1);
         }
         else {
-            drivetrain.driveArcade(speed, 0, turnSpeed);
+            drivetrain.driveArcade(0, 0, startingSpeed);
         }
     }
 
     @Override
     public boolean isFinished() {
-        return false;
+        return isAligned;
     }
 }

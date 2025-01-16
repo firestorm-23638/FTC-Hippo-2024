@@ -3,21 +3,27 @@ package org.firstinspires.ftc.teamcode.opmode.auto.blue;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
+import com.arcrobotics.ftclib.command.ParallelRaceGroup;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Constants;
+import org.firstinspires.ftc.teamcode.commands.DepositorCommand;
 import org.firstinspires.ftc.teamcode.commands.ElevatorPositionCommand;
+import org.firstinspires.ftc.teamcode.commands.IntakeHasSampleCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakePositionCommand;
-import org.firstinspires.ftc.teamcode.commands.KickerCommand;
-import org.firstinspires.ftc.teamcode.commands.SpecimenClawCommand;
+import org.firstinspires.ftc.teamcode.commands.RawDrivetrainCommand;
 import org.firstinspires.ftc.teamcode.commands.TrajectoryGotoCommand;
+import org.firstinspires.ftc.teamcode.commands.TurnToNearestBlueSampleCommand;
+import org.firstinspires.ftc.teamcode.commands.TurnToNearestYellowSampleCommand;
 import org.firstinspires.ftc.teamcode.subsystems.Basket;
+import org.firstinspires.ftc.teamcode.subsystems.Depositor;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.Elevator;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
@@ -32,46 +38,31 @@ public class BLUE4Specimen0Sample extends CommandOpMode {
     private Elevator elevator;
     private Intake intake;
     private Limelight limelight;
-    private Kicker kicker;
-    private SpecimenClaw claw;
-
-    private Pose2d shiftForward(double inches, double currentAngle) {
-        return new Pose2d(new Vector2d(Math.cos(currentAngle) * -inches, Math.sin(currentAngle) * inches), currentAngle);
-    }
-
-    private Pose2d addPoses(Pose2d first, Pose2d second) {
-        return new Pose2d(first.position.x + second.position.x, first.position.y + second.position.y, first.heading.log());
-    }
+    private Depositor depositor;
 
     @Override
     public void initialize() {
         Constants.isRed = false;
 
-        Pose2d home = new Pose2d(12, -61, Math.toRadians(180));
+        Pose2d home = new Pose2d(12, -61, Math.toRadians(270));
 
         drive = new Drivetrain(hardwareMap, home, telemetry);
         basket = new Basket(hardwareMap, telemetry);
         elevator = new Elevator(hardwareMap, telemetry);
         intake = new Intake(hardwareMap, telemetry, Intake.color.RED);
         limelight = new Limelight(hardwareMap, telemetry);
-        kicker = new Kicker(hardwareMap, telemetry);
-        claw = new SpecimenClaw(hardwareMap, telemetry);
+        depositor = new Depositor(hardwareMap, telemetry);
 
         drive.forwardSpeedlimit = 1;
         drive.strafeSpeedlimit = 1;
         drive.rotSpeedLimit = 1;
 
         Action startToSpecimen = BlueActions.startToSpecimen(drive, home, BlueActions.rightSpecimenPos);
-        Action toFirstSample = BlueActions.toFirstSample(drive);
-        Action pushFirstSample = BlueActions.pushFirstSample(drive);
+        Action pushBothSamples = BlueActions.pushTwoSamples(drive);
 
-        Action toSecondSample = BlueActions.toSecondSample(drive);
-        Action pushSecondSample = BlueActions.pushSecondSample(drive);
         Action placeSecondSpecimen = BlueActions.placeSecondSpecimen(drive);
-
         Action pickupThirdSpecimen = BlueActions.pickupThirdSpecimen(drive);
         Action placeThirdSpecimen = BlueActions.placeThirdSpecimen(drive);
-
         Action pickupFourthSpecimen = BlueActions.pickupFourthSpecimen(drive);
         Action placeFourthSpecimen = BlueActions.placeFourthSpecimen(drive);
 
@@ -96,25 +87,109 @@ public class BLUE4Specimen0Sample extends CommandOpMode {
         schedule(new InstantCommand(() -> {
             basket.toHome();
             elevator.currentStage = Elevator.basketState.HOME;
-            intake.pivotHome();
-            intake.horizontalIn();
+            intake.currentState = Intake.state.RESTING;
+            depositor.toHome();
+            depositor.clawClose();
         }));
 
+        Command retractAndTransfer = new SequentialCommandGroup(
+                new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(700),
+                new ElevatorPositionCommand(elevator, Elevator.basketState.HOME),
+                new WaitCommand(100),
+                new DepositorCommand(depositor, Depositor.state.CLAWCLOSE).withTimeout(300),
+                new IntakePositionCommand(intake, Intake.state.TRANSFERRING).withTimeout(100),
+                new DepositorCommand(depositor, Depositor.state.HOME)
+        );
+
+        Command depositorRetract = new SequentialCommandGroup(
+                new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(Constants.depositorClawOpenTimeMs),
+                new DepositorCommand(depositor, Depositor.state.HOME).withTimeout(Constants.depositorArmSpecimenTimeMs)
+        );
+
+        Command alignAndIntake = new ParallelCommandGroup(
+                new TurnToNearestBlueSampleCommand(limelight, drive),
+                new IntakePositionCommand(intake, Intake.state.INTAKING, 700, 20)
+        );
+
+        Command forwardUntilHasSample = new ParallelRaceGroup(
+                new RawDrivetrainCommand(drive, .2, 0, 0).withTimeout(1500),
+                new IntakeHasSampleCommand(intake)
+        );
+
         schedule(new SequentialCommandGroup(
-                new IntakePositionCommand(intake, Intake.state.RESTING),
+                new TrajectoryGotoCommand(startToSpecimen, drive),
+                new DepositorCommand(depositor, Depositor.state.SPECIMEN).withTimeout(Constants.depositorArmSpecimenTimeMs),
                 new ParallelCommandGroup(
-                        new TrajectoryGotoCommand(startToSpecimen, drive),
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.SPECIMEN)
+                        depositorRetract,
+                        new TrajectoryGotoCommand(pushBothSamples, drive)
                 ),
+                alignAndIntake,
+                forwardUntilHasSample,
+                new ParallelCommandGroup(
+                        retractAndTransfer,
+                        new TrajectoryGotoCommand(placeSecondSpecimen, drive)
+                ),
+                // Place 2nd Specimen
+                new DepositorCommand(depositor, Depositor.state.SPECIMEN).withTimeout(Constants.depositorArmSpecimenTimeMs),
+                new ParallelCommandGroup(
+                        depositorRetract,
+                        new TrajectoryGotoCommand(pickupThirdSpecimen, drive)
+                ),
+                alignAndIntake,
+                forwardUntilHasSample,
+                new ParallelCommandGroup(
+                        retractAndTransfer,
+                        new TrajectoryGotoCommand(placeThirdSpecimen, drive)
+                ),
+                // Place 3rd Specimen
+                new DepositorCommand(depositor, Depositor.state.SPECIMEN).withTimeout(Constants.depositorArmSpecimenTimeMs),
+                new ParallelCommandGroup(
+                        depositorRetract,
+                        new TrajectoryGotoCommand(pickupFourthSpecimen, drive)
+                ),
+                alignAndIntake,
+                forwardUntilHasSample,
+                new ParallelCommandGroup(
+                        retractAndTransfer,
+                        new TrajectoryGotoCommand(placeFourthSpecimen, drive)
+                ),
+                // Place 3rd Specimen
+                new DepositorCommand(depositor, Depositor.state.SPECIMEN).withTimeout(Constants.depositorArmSpecimenTimeMs)
+                /*
+                // Drive to pickup 3rd Specimen
+                new ParallelCommandGroup(
+                        new SequentialCommandGroup(
+                                new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(Constants.depositorClawOpenTimeMs),
+                                new DepositorCommand(depositor, Depositor.state.HOME).withTimeout(Constants.depositorArmSpecimenTimeMs)
+                        ),
+                        new TrajectoryGotoCommand(pickupThirdSpecimen, drive)
+                ),
+                new ParallelCommandGroup(
+                        new TurnToNearestBlueSampleCommand(limelight, drive),
+                        new IntakePositionCommand(intake, Intake.state.INTAKING, 700, 20)
+                ),
+                new ParallelRaceGroup(
+                        new RawDrivetrainCommand(drive, .2, 0, 0).withTimeout(1500),
+                        new IntakeHasSampleCommand(intake)
+                ),
+                new ParallelCommandGroup(
+                        new IntakePositionCommand(intake, Intake.state.RESTING, 700),
+
+                        new TrajectoryGotoCommand(placeSecondSpecimen, drive)
+                ),
+                // Place 3rd Specimen
+                new DepositorCommand(depositor, Depositor.state.SPECIMEN).withTimeout(Constants.depositorArmSpecimenTimeMs),
+                */
+
+                /*
                 new SequentialCommandGroup(
-                        new ElevatorPositionCommand(elevator, Elevator.basketState.SPECIMEN, 250),
                         new WaitCommand(500),
                         new ParallelCommandGroup(
                                 new SequentialCommandGroup(
                                         new WaitCommand(200),
                                         new ElevatorPositionCommand(elevator, Elevator.basketState.HOME)
                                 ),
-                                new TrajectoryGotoCommand(toFirstSample, drive)
+
                         ),
                         new KickerCommand(kicker, 50, Kicker.state.PUSH),
                         new TrajectoryGotoCommand(pushFirstSample, drive),

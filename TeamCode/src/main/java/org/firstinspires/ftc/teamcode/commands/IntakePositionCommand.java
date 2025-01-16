@@ -12,6 +12,7 @@ public class IntakePositionCommand extends CommandBase {
     private Intake.state state = Intake.state.RESTING;
     private Timing.Timer extendTimer;
     private boolean isTimer = false;
+    private boolean isPos = false;
     double trim = 0;
 
     public IntakePositionCommand(Intake intake, Intake.state state) {
@@ -40,32 +41,14 @@ public class IntakePositionCommand extends CommandBase {
 
     @Override
     public void execute() {
-        if (state == Intake.state.INTAKING) {
-            m_intake.pivotDown();
-            m_intake.horizontalOut();
-            m_intake.setVacuumRun();
-        }
-        else if (state == Intake.state.RESTING){
-            m_intake.trim = 0;
-            m_intake.pivotHome();
-            m_intake.horizontalIn();
-            m_intake.setVacuumStop();
-       }
-        else if (state == Intake.state.SLIGHTLY) {
-            m_intake.pivotHome();
-            m_intake.extendSlightly();
-            m_intake.setVacuumStop();
-        }
-        else {
-            m_intake.trim = 0;
-            m_intake.pivotBasket();
-            m_intake.setVacuumEject();
-            m_intake.horizontalTransfer();
-        }
+        m_intake.currentState = state;
     }
 
     @Override
     public boolean isFinished() {
+        if (m_intake.isAtPos(state)) {
+            return true;
+        }
         if (!isTimer) {
             return false;
         }

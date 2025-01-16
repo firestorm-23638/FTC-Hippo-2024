@@ -17,8 +17,8 @@ public class Constants {
     public static final String depositorVerticalConfig = "vertical";
 
     public static final String depositorBasketConfig = "basketServo";
-    public static final double depositorVerticalToTopPose = 780;//2700;
-    public static final double depositorVerticalToMidPose = 180;
+    public static final double depositorVerticalToTopPose = 820;//2700;
+    public static final double depositorVerticalToMidPose = 120;
     public static final double depositorVerticalToBottomPose = 0;
     public static final double depositorVerticalKP = .01;
     public static final double depositorVerticalErrorRange = 10;
@@ -26,8 +26,13 @@ public class Constants {
     public static final double depositorVerticalToTopBar = 2000;
     public static final double depositorVerticalUpSlightly = 500;
 
-    public static final double depositorBasketToDepositAngle = 210;
-    public static final double depositorBasketToHomeAngle = 0;
+    public static final double depositorBasketToDepositAngle = 230;
+    public static final double depositorBasketToSpecimenAngle = 260;
+    public static final double depositorBasketToTransitionAngle = 14;
+    public static final double depositorBasketToHomeAngle = 14;
+
+    public static final long depositorArmSpecimenTimeMs = 700;
+    public static final long depositorClawOpenTimeMs = 350;
 
     public static final String intakeLeftHorizontalConfig = "leftHorizontal";
     public static final String intakeRightHorizontalConfig = "rightHorizontal";
@@ -36,13 +41,14 @@ public class Constants {
     public static final String intakeRightVacuumConfig = "rightVacuum";
 
     public static final double intakeHorizontalToIntakePose = 30;
-    public static final double intakeHorizontalToHomePose = 15;
+    public static final double intakeHorizontalToHomePose = 2;
 
-    public static final double intakePivotToBasket = 210;
-    public static final double intakePivotToDown = 95;
-    public static final double intakePivotToRest = 200;
+    public static final double intakePivotToBasket = 212;
+    public static final double intakePivotToDown = 90;
+    public static final double intakePivotToRest = 212;
+    public static final double intakePivotToEject = 190;
 
-    public static final double intakeRestingSpeed = 0.05;
+    public static final double intakeInchingSpeed = 0.1;
     public static final double intakeVacuumSpeed = -.3;
 
     public static final double intakeEjectSpeed = .8;
@@ -65,4 +71,5 @@ public class Constants {
     public static boolean isRed = false;
 
     public static Pose2d pose;
+
 }

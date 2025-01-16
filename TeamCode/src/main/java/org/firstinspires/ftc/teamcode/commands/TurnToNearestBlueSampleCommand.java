@@ -1,17 +1,14 @@
 package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
-import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
-import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Limelight;
 
 import java.util.List;
 
-public class TurnToNearestSampleCommand extends CommandBase {
+public class TurnToNearestBlueSampleCommand extends CommandBase {
     private final Limelight limelight;
     private final Drivetrain drivetrain;
 
@@ -20,23 +17,23 @@ public class TurnToNearestSampleCommand extends CommandBase {
     boolean hasTarget = false;
     boolean isAligned = false;
 
-    public TurnToNearestSampleCommand(Limelight limelight, Drivetrain drivetrain) {
+    public TurnToNearestBlueSampleCommand(Limelight limelight, Drivetrain drivetrain) {
         this(limelight, drivetrain, 0);
     }
 
-    public TurnToNearestSampleCommand(Limelight limelight, Drivetrain drivetrain, double startingSpeed) {
+    public TurnToNearestBlueSampleCommand(Limelight limelight, Drivetrain drivetrain, double startingSpeed) {
         this.limelight = limelight;
         this.drivetrain = drivetrain;
         this.startingSpeed = startingSpeed;
 
         addRequirements(limelight, drivetrain);
 
-        limelight.toYellowSample();
+        limelight.toBlueSample();
     }
 
     @Override
     public void execute() {
-        List<LLResultTypes.ColorResult> results = limelight.lookForYellowSample();
+        List<LLResultTypes.ColorResult> results = limelight.lookForSamples();
         if (results != null) {
             currentAngle = results.get(0).getTargetXDegrees();
             hasTarget = true;

@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.commands.RawDrivetrainCommand;
 import org.firstinspires.ftc.teamcode.commands.SlideUntilHasPieceCommand;
 import org.firstinspires.ftc.teamcode.commands.StrafeToPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.TrajectoryGotoCommand;
-import org.firstinspires.ftc.teamcode.commands.TurnToNearestSampleCommand;
+import org.firstinspires.ftc.teamcode.commands.TurnToNearestYellowSampleCommand;
 import org.firstinspires.ftc.teamcode.subsystems.Basket;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.Elevator;
@@ -88,7 +88,7 @@ public class RED0Specimen5SampleLIMELIGHT extends CommandOpMode {
                                 new TrajectoryGotoCommand(basketToFirstSample, drive),
                                 new IntakePositionCommand(intake, Intake.state.INTAKING, 700, 15)
                         ),
-                        new TurnToNearestSampleCommand(limelight, drive).withTimeout(1000),
+                        new TurnToNearestYellowSampleCommand(limelight, drive).withTimeout(1000),
                         // First Sample
                         new IntakePositionCommand(intake, Intake.state.INTAKING, 100, 40),
                         new ParallelRaceGroup(
@@ -121,7 +121,7 @@ public class RED0Specimen5SampleLIMELIGHT extends CommandOpMode {
                                 new IntakePositionCommand(intake, Intake.state.INTAKING, 500, 15),
                                 new TrajectoryGotoCommand(basketToSecondSample, drive)
                         ),
-                        new TurnToNearestSampleCommand(limelight, drive).withTimeout(1000),
+                        new TurnToNearestYellowSampleCommand(limelight, drive).withTimeout(1000),
                         new IntakePositionCommand(intake, Intake.state.INTAKING, 100, 40),
                         new ParallelRaceGroup(
                                 new RawDrivetrainCommand(drive, .3, 0, 0).withTimeout(1500),
@@ -152,7 +152,7 @@ public class RED0Specimen5SampleLIMELIGHT extends CommandOpMode {
                                 new TrajectoryGotoCommand(basketToThirdSample, drive),
                                 new IntakePositionCommand(intake, Intake.state.INTAKING, 700, 20)
                         ),
-                        new TurnToNearestSampleCommand(limelight, drive).withTimeout(1000),
+                        new TurnToNearestYellowSampleCommand(limelight, drive).withTimeout(1000),
                         new IntakePositionCommand(intake, Intake.state.INTAKING, 100, 40),
                         new ParallelRaceGroup(
                                 new RawDrivetrainCommand(drive,.2, 0, 0).withTimeout(2000),
