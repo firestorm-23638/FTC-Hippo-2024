@@ -34,5 +34,8 @@ public class DepositorCommand extends CommandBase {
         else if (state == Depositor.state.SPECIMEN) {
             depositor.toSpecimen();
         }
+        else if (state == Depositor.state.CLAWTIGHTEN) {
+            depositor.clawTighten();
+        }
     }
 }

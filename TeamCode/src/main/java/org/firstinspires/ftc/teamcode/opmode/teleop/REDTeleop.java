@@ -12,21 +12,24 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.RunCommand;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Constants;
+import org.firstinspires.ftc.teamcode.commands.DepositorCommand;
 import org.firstinspires.ftc.teamcode.commands.DrivetrainCommand;
-import org.firstinspires.ftc.teamcode.commands.SpecimenClawCommand;
-import org.firstinspires.ftc.teamcode.subsystems.Basket;
+import org.firstinspires.ftc.teamcode.commands.ElevatorPositionCommand;
+import org.firstinspires.ftc.teamcode.commands.IntakePositionCommand;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.Elevator;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Kicker;
 import org.firstinspires.ftc.teamcode.subsystems.Limelight;
-import org.firstinspires.ftc.teamcode.subsystems.SpecimenClaw;
+import org.firstinspires.ftc.teamcode.subsystems.Depositor;
 
 @TeleOp
 public class REDTeleop extends CommandOpMode {
@@ -34,11 +37,10 @@ public class REDTeleop extends CommandOpMode {
     private GamepadEx operator;
 
     private Drivetrain drive;
+    private Depositor depositor;
     private Intake intake;
-    private Basket basket;
     private Elevator elevator;
     private Kicker kicker;
-    private SpecimenClaw specimen;
 
     private Limelight limelight;
 
@@ -51,15 +53,14 @@ public class REDTeleop extends CommandOpMode {
 
         drive = new Drivetrain(hardwareMap, new Pose2d(0, 0, 0), telemetry);
         intake = new Intake(hardwareMap, telemetry,  Intake.color.BLUE, gamepad1);
-        basket = new Basket(hardwareMap, telemetry);
         elevator = new Elevator(hardwareMap, telemetry, gamepad1);
         limelight = new Limelight(hardwareMap, telemetry);
         kicker = new Kicker(hardwareMap, telemetry);
-        specimen = new SpecimenClaw(hardwareMap, telemetry);
+        depositor = new Depositor(hardwareMap, telemetry);
 
-        drive.forwardSpeedlimit = 0.675;
-        drive.strafeSpeedlimit = 0.675;
-        drive.rotSpeedLimit = 0.4;
+        drive.forwardSpeedlimit = 0.875;
+        drive.strafeSpeedlimit = 0.875;
+        drive.rotSpeedLimit = 0.6;
 
         // Change the basket goal based on the alliance
         if (Constants.isRed) {
@@ -70,27 +71,31 @@ public class REDTeleop extends CommandOpMode {
         }
 
         GamepadButton intakeOut = new GamepadButton(driver, GamepadKeys.Button.RIGHT_BUMPER);
-        GamepadButton toBasket = new GamepadButton(driver, GamepadKeys.Button.A);
-        GamepadButton zoomZoom = new GamepadButton(driver, GamepadKeys.Button.LEFT_BUMPER);
+        GamepadButton transition = new GamepadButton(driver, GamepadKeys.Button.LEFT_BUMPER);
+        GamepadButton zoomZoom = new GamepadButton(driver, GamepadKeys.Button.Y);
+        GamepadButton driverClaw = new GamepadButton(driver, GamepadKeys.Button.A);
         GamepadButton kickerButton = new GamepadButton(driver, GamepadKeys.Button.X);
+        GamepadButton ejectSample = new GamepadButton(driver, GamepadKeys.Button.B);
 
         GamepadButton basketTrajectoryButton = new GamepadButton(driver, GamepadKeys.Button.Y);
 
-        GamepadButton basketOut = new GamepadButton(operator, GamepadKeys.Button.A);
+        GamepadButton basketScore = new GamepadButton(operator, GamepadKeys.Button.A);
+        GamepadButton specimenScore = new GamepadButton(operator, GamepadKeys.Button.X);
         GamepadButton depositorUp = new GamepadButton(operator, GamepadKeys.Button.DPAD_UP);
         GamepadButton depositorDown = new GamepadButton(operator, GamepadKeys.Button.DPAD_DOWN);
+        GamepadButton depositorUpDriver = new GamepadButton(driver, GamepadKeys.Button.DPAD_UP);
+        GamepadButton depositorDownDriver = new GamepadButton(driver, GamepadKeys.Button.DPAD_DOWN);
         GamepadButton depositorSlight = new GamepadButton(operator, GamepadKeys.Button.DPAD_RIGHT);
         //GamepadButton elevatorTrim = new GamepadButton(driver, )
 
         GamepadButton elevUp = new GamepadButton(driver, GamepadKeys.Button.DPAD_UP);
         GamepadButton elevDown = new GamepadButton(driver, GamepadKeys.Button.DPAD_DOWN);
 
-        GamepadButton specimenClaw = new GamepadButton(operator, GamepadKeys.Button.RIGHT_BUMPER);
         GamepadButton depositorBar = new GamepadButton(operator, GamepadKeys.Button.LEFT_BUMPER);
 
         // experimental
-//        basketTrajectoryButton.whenHeld(new StrafeToPositionCommand(basketPose, drive))
-//                .whenReleased(new RunCommand(() -> drive.driveFieldCentric(-this.gamepad1.left_stick_y, -this.gamepad1.left_stick_x, -this.gamepad1.right_stick_x)));
+        //basketTrajectoryButton.whenHeld(new StrafeToPositionCommand(basketPose, drive))
+        //        .whenReleased(new RunCommand(() -> drive.driveFieldCentric(-this.gamepad1.left_stick_y, -this.gamepad1.left_stick_x, -this.gamepad1.right_stick_x)));
 
         kickerButton.whenPressed(new InstantCommand(() -> kicker.currentState = Kicker.state.OPEN))
                 .whenReleased(new InstantCommand(() -> kicker.currentState = Kicker.state.CLOSE));
@@ -101,41 +106,67 @@ public class REDTeleop extends CommandOpMode {
                 ()->(double)-this.gamepad1.right_stick_x,
                 false));
 
-        specimenClaw.whenHeld(new SpecimenClawCommand(specimen, true))
-                .whenReleased(new SpecimenClawCommand(specimen, false));
-
         // Reads limelight position for now
         //limelight.setDefaultCommand(new LimelightCommand(limelight, drive));
 
         intakeOut.whenHeld(new InstantCommand(() -> {
-            intake.pivotDown();
-            intake.horizontalOut();
-            intake.setVacuumRun();
+            intake.currentState = Intake.state.INTAKING;
             intake.updateColorSensor(true);
 
             // Slow down the drivetrain when the intake is out
-            drive.forwardSpeedlimit = 0.3;
-            drive.strafeSpeedlimit = 0.3;
-            drive.rotSpeedLimit = 0.3;
+            drive.forwardSpeedlimit = 0.4;
+            drive.strafeSpeedlimit = 0.4;
+            drive.rotSpeedLimit = 0.4;
         })).whenReleased(new InstantCommand(() -> {
-            intake.pivotHome();
-            intake.horizontalIn();
-            intake.setVacuumStop();
+            intake.currentState = Intake.state.RESTING;
             intake.updateColorSensor(false);
 
-            drive.forwardSpeedlimit = 0.65;
-            drive.strafeSpeedlimit = 0.65;
-            drive.rotSpeedLimit = 0.45;
+            drive.forwardSpeedlimit = 0.85;
+            drive.strafeSpeedlimit = 0.85;
+            drive.rotSpeedLimit = 0.6;
         }));
 
-        toBasket.whenHeld(new InstantCommand(() -> {
-            intake.pivotBasket();
-            intake.setVacuumEject();
-
+        ejectSample.whenHeld(new InstantCommand(() -> {
+            intake.currentState = Intake.state.BARFING;
         })).whenReleased(new InstantCommand(() -> {
-            intake.pivotHome();
-            intake.setVacuumStop();
+            intake.currentState = Intake.state.RESTING;
         }));
+
+        basketScore.whenHeld(new SequentialCommandGroup(
+                //new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(800),
+                new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(400)
+        )).whenReleased(new SequentialCommandGroup(
+                new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(100)
+                //new DepositorCommand(depositor, Depositor.state.HOME).withTimeout(800)
+        ));
+
+        driverClaw.whenHeld(new SequentialCommandGroup(
+                //new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(800),
+                new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(400)
+        )).whenReleased(new SequentialCommandGroup(
+                new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(100)
+                //new DepositorCommand(depositor, Depositor.state.HOME).withTimeout(800)
+        ));
+
+        specimenScore.whenHeld(new SequentialCommandGroup(
+                new DepositorCommand(depositor, Depositor.state.SPECIMEN).withTimeout(600),
+                new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(100)
+        )).whenReleased(new SequentialCommandGroup(
+                new DepositorCommand(depositor, Depositor.state.HOME).withTimeout(10)
+        ));
+
+        transition.whenHeld(new SequentialCommandGroup(
+                new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(100),
+                new ElevatorPositionCommand(elevator, Elevator.basketState.HOME),
+                new WaitCommand(100),
+                new DepositorCommand(depositor, Depositor.state.CLAWCLOSE).withTimeout(300),
+                new IntakePositionCommand(intake, Intake.state.TRANSFERRING).withTimeout(100),
+                new DepositorCommand(depositor, Depositor.state.HOME)
+        )).whenReleased(new SequentialCommandGroup(
+                new DepositorCommand(depositor, Depositor.state.CLAWTIGHTEN).withTimeout(100),
+                new ElevatorPositionCommand(elevator, Elevator.basketState.MIDDLE_BASKET),
+                new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(100)
+        ));
 
         zoomZoom.whenHeld(new InstantCommand(() -> {
             drive.rotSpeedLimit = .8;
@@ -146,6 +177,8 @@ public class REDTeleop extends CommandOpMode {
             drive.strafeSpeedlimit = 0.675;
             drive.rotSpeedLimit = 0.4;
         }));
+
+
 
         // Manual test elevator
 /*      elevUp.whenHeld(new InstantCommand(() -> {
@@ -171,18 +204,51 @@ public class REDTeleop extends CommandOpMode {
                     elevator.isBarState = false;
                 }));
 
-        basketOut.whenHeld(new InstantCommand(() -> basket.toDeposit()))
-                .whenReleased(new InstantCommand(() -> basket.toHome()));
+        depositorUp.whenPressed(new ParallelCommandGroup(
+                new InstantCommand(() -> {
+                    elevator.increaseStage();
+                    elevator.isZeroed = false;
+                }),
+                new SequentialCommandGroup(
+                        new WaitCommand(100),
+                        new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(10)
+                )
+        ));
+        depositorDown.whenPressed(new ParallelCommandGroup(
+                new InstantCommand(() -> {
+                    elevator.decreaseStage();
+                    if (elevator.currentStage == Elevator.basketState.MIDDLE_BASKET) {
+                        depositor.toHome();
+                    }
+                })
+                //new DepositorCommand(depositor, NewDepositor.state.HOME).withTimeout(10)
+        ));
 
-        depositorUp.whenPressed(new InstantCommand(() -> {elevator.increaseStage(); elevator.isZeroed = false;}));
-        depositorDown.whenPressed(new InstantCommand(() -> {
-            elevator.decreaseStage();}));
+        depositorUpDriver.whenPressed(new ParallelCommandGroup(
+                new InstantCommand(() -> {
+                    elevator.increaseStage();
+                    elevator.isZeroed = false;
+                }),
+                new SequentialCommandGroup(
+                        new WaitCommand(100),
+                        new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(10)
+                )
+        ));
+        depositorDownDriver.whenPressed(new ParallelCommandGroup(
+                new InstantCommand(() -> {
+                    elevator.decreaseStage();
+                    if (elevator.currentStage == Elevator.basketState.MIDDLE_BASKET) {
+                        depositor.toHome();
+                    }
+                })
+                //new DepositorCommand(depositor, NewDepositor.state.HOME).withTimeout(10)
+        ));
 
         depositorSlight.whenHeld(new InstantCommand(() -> elevator.isSlightState = true))
                 .whenReleased(new InstantCommand(() -> elevator.isSlightState = false));
 
         // If a subsystem has a default command, you don't need to register.
-        register(intake, basket, elevator, limelight);
+        register(intake, elevator, limelight, depositor);
         // Automatically updates telemetry
         schedule(new RunCommand(telemetry::update));
 
@@ -198,26 +264,27 @@ public class REDTeleop extends CommandOpMode {
         // Put game start code here. i.e home everything
         schedule(
                 new ParallelCommandGroup(
-                        new SpecimenClawCommand(specimen, false),
+                        new SequentialCommandGroup(
+                                new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(100),
+                                new DepositorCommand(depositor, Depositor.state.HOME).withTimeout(100)
+                        ),
                         new InstantCommand(() -> kicker.close()),
                         new InstantCommand(() -> {
-                            intake.horizontalIn();
-                            basket.toHome();
-                            elevator.currentStage = Elevator.basketState.HOME;
-                            intake.pivotHome();
+                            elevator.currentStage = Elevator.basketState.MIDDLE_BASKET;
                         }),
                         new RunCommand(() -> {
                             elevator.setTrim(this.gamepad1.right_trigger * 15.0);
-                            if ((this.gamepad1.right_trigger * 15.0) > 7) {
-                                specimen.open();
-                            }
-                            if ((elevator.currentStage != Elevator.basketState.HOME) && (intake.currentState == Intake.state.RESTING)) {
+                            /*if ((elevator.currentStage != Elevator.basketState.HOME) && (intake.currentState == Intake.state.RESTING)) {
                                 intake.currentState = Intake.state.SLIGHTLY;
                             }
                             else if ((elevator.currentStage == Elevator.basketState.HOME) && (intake.currentState == Intake.state.SLIGHTLY)) {
                                 intake.currentState = Intake.state.RESTING;
-                            }
+                            }*/
                         })
                 ));
+    }
+
+    public void transitionMacro() {
+
     }
 }

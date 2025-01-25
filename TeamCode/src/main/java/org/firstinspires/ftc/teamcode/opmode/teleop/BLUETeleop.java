@@ -58,9 +58,9 @@ public class BLUETeleop extends CommandOpMode {
         kicker = new Kicker(hardwareMap, telemetry);
         depositor = new Depositor(hardwareMap, telemetry);
 
-        drive.forwardSpeedlimit = 0.675;
-        drive.strafeSpeedlimit = 0.675;
-        drive.rotSpeedLimit = 0.4;
+        drive.forwardSpeedlimit = 0.875;
+        drive.strafeSpeedlimit = 0.875;
+        drive.rotSpeedLimit = 0.6;
 
         // Change the basket goal based on the alliance
         if (Constants.isRed) {
@@ -121,9 +121,9 @@ public class BLUETeleop extends CommandOpMode {
             intake.currentState = Intake.state.RESTING;
             intake.updateColorSensor(false);
 
-            drive.forwardSpeedlimit = 0.65;
-            drive.strafeSpeedlimit = 0.65;
-            drive.rotSpeedLimit = 0.45;
+            drive.forwardSpeedlimit = 0.85;
+            drive.strafeSpeedlimit = 0.85;
+            drive.rotSpeedLimit = 0.6;
         }));
 
         ejectSample.whenHeld(new InstantCommand(() -> {
@@ -152,6 +152,7 @@ public class BLUETeleop extends CommandOpMode {
                 new DepositorCommand(depositor, Depositor.state.SPECIMEN).withTimeout(800),
                 new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(100)
         )).whenReleased(new SequentialCommandGroup(
+                new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(300),
                 new DepositorCommand(depositor, Depositor.state.HOME).withTimeout(10)
         ));
 
@@ -163,6 +164,7 @@ public class BLUETeleop extends CommandOpMode {
                 new IntakePositionCommand(intake, Intake.state.TRANSFERRING).withTimeout(100),
                 new DepositorCommand(depositor, Depositor.state.HOME)
         )).whenReleased(new SequentialCommandGroup(
+                new DepositorCommand(depositor, Depositor.state.CLAWTIGHTEN).withTimeout(100),
                 new ElevatorPositionCommand(elevator, Elevator.basketState.MIDDLE_BASKET),
                 new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(100)
         ));

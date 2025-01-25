@@ -46,9 +46,9 @@ public class IntakePositionCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        if (m_intake.isAtPos(state)) {
-            return true;
-        }
+        //if (m_intake.isAtPos(state)) {
+        //    return true;
+        //}
         if (!isTimer) {
             return false;
         }

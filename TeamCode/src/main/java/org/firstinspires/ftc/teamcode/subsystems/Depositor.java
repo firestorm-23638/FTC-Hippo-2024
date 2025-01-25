@@ -20,7 +20,8 @@ public class Depositor extends SubsystemBase {
         SPECIMEN,
         BUCKET,
         CLAWOPEN,
-        CLAWCLOSE
+        CLAWCLOSE,
+        CLAWTIGHTEN
     };
 
     private final ServoEx pivot;     // Servo object
@@ -57,6 +58,9 @@ public class Depositor extends SubsystemBase {
     }
     public void clawClose() {
         claw.turnToAngle(Constants.specimenCloseAngle);
+    }
+    public void clawTighten() {
+        claw.turnToAngle(0);
     }
 
     public void toSpecimen() {

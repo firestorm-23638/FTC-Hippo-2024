@@ -156,7 +156,7 @@ public class Elevator extends SubsystemBase {
     }
 
     public boolean isAtPos() {     // Checks to see if the elevator is at a current position, with a 150 tick deadband.
-        return (vertical.getCurrentPosition() >= currentStage.pos - 150) && (vertical.getCurrentPosition() <= currentStage.pos + 150);
+        return (vertical.getCurrentPosition() >= currentStage.pos - 80) && (vertical.getCurrentPosition() <= currentStage.pos + 80);
     }
 
     public void moveVertical(double speed) {           // Runs elevator at raw speed. For testing purposes

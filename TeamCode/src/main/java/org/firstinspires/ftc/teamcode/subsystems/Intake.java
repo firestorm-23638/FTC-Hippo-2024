@@ -134,8 +134,8 @@ public class Intake extends SubsystemBase {
             horizontalOut();
             if ((!beamBrake.getState() && (!colorDetected))) {   // if it has a piece and it doesn't know the color yet
                 hasTheRightColor = false;
-                leftVacuum.set(.3);
-                rightVacuum.set(-.3);
+                leftVacuum.set(.2);
+                rightVacuum.set(-.2);
                 if (currentColor != color.NONE) {
                     colorDetected = true;
                 }
