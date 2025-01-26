@@ -152,6 +152,7 @@ public class REDTeleop extends CommandOpMode {
                 new DepositorCommand(depositor, Depositor.state.SPECIMEN).withTimeout(600),
                 new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(100)
         )).whenReleased(new SequentialCommandGroup(
+                new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(300),
                 new DepositorCommand(depositor, Depositor.state.HOME).withTimeout(10)
         ));
 
