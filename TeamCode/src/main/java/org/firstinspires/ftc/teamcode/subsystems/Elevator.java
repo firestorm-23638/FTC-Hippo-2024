@@ -155,6 +155,18 @@ public class Elevator extends SubsystemBase {
 
     }
 
+    public double getPosition() {
+        return vertical.getCurrentPosition();
+    }
+
+    public double getMaxRPM() {
+        return vertical.getMaxRPM();
+    }
+
+    public boolean getInverted() {
+        return vertical.getInverted();
+    }
+
     public boolean isAtPos() {     // Checks to see if the elevator is at a current position, with a 150 tick deadband.
         return (vertical.getCurrentPosition() >= currentStage.pos - 80) && (vertical.getCurrentPosition() <= currentStage.pos + 80);
     }

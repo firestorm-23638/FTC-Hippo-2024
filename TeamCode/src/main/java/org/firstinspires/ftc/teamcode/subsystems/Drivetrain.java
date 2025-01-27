@@ -87,6 +87,22 @@ public class Drivetrain extends SubsystemBase {
         telemetry.addData("Robot Heading", Math.toDegrees(this.mecanumDrive.pose.heading.log()));
     }
 
+    public void testFrontLeft(double amt) {
+        this.mecanumDrive.leftFront.setPower(amt);
+    }
+
+    public void testFrontRight(double amt) {
+        this.mecanumDrive.rightFront.setPower(amt);
+    }
+
+    public void testBackLeft(double amt) {
+        this.mecanumDrive.leftBack.setPower(amt);
+    }
+
+    public void testBackRight(double amt) {
+        this.mecanumDrive.rightBack.setPower(amt);
+    }
+
     public void driveArcade(double forwardSpeed, double strafeSpeed, double turnSpeed) {
         this.fieldCentricDrive(forwardSpeed, strafeSpeed, turnSpeed, 0.0);
     }

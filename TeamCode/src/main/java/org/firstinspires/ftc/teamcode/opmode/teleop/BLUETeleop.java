@@ -24,6 +24,7 @@ import org.firstinspires.ftc.teamcode.commands.DepositorCommand;
 import org.firstinspires.ftc.teamcode.commands.DrivetrainCommand;
 import org.firstinspires.ftc.teamcode.commands.ElevatorPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakePositionCommand;
+import org.firstinspires.ftc.teamcode.commands.TransitionCommand;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.Elevator;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
@@ -58,9 +59,9 @@ public class BLUETeleop extends CommandOpMode {
         kicker = new Kicker(hardwareMap, telemetry);
         depositor = new Depositor(hardwareMap, telemetry);
 
-        drive.forwardSpeedlimit = 0.875;
-        drive.strafeSpeedlimit = 0.875;
-        drive.rotSpeedLimit = 0.6;
+        drive.forwardSpeedlimit = 1;
+        drive.strafeSpeedlimit = 1;
+        drive.rotSpeedLimit = 1;
 
         // Change the basket goal based on the alliance
         if (Constants.isRed) {
@@ -76,6 +77,7 @@ public class BLUETeleop extends CommandOpMode {
         GamepadButton driverClaw = new GamepadButton(driver, GamepadKeys.Button.A);
         GamepadButton kickerButton = new GamepadButton(driver, GamepadKeys.Button.X);
         GamepadButton ejectSample = new GamepadButton(driver, GamepadKeys.Button.B);
+        GamepadButton TEST = new GamepadButton(operator, GamepadKeys.Button.Y);
 
         GamepadButton basketTrajectoryButton = new GamepadButton(driver, GamepadKeys.Button.Y);
 
@@ -109,6 +111,13 @@ public class BLUETeleop extends CommandOpMode {
         // Reads limelight position for now
         //limelight.setDefaultCommand(new LimelightCommand(limelight, drive));
 
+        TEST.whenHeld(new InstantCommand(() -> {
+
+            intake.blockerDown();
+        })).whenReleased(new InstantCommand(() -> {
+            intake.blockerUp();
+        }));
+
         intakeOut.whenHeld(new InstantCommand(() -> {
             intake.currentState = Intake.state.INTAKING;
             intake.updateColorSensor(true);
@@ -121,9 +130,9 @@ public class BLUETeleop extends CommandOpMode {
             intake.currentState = Intake.state.RESTING;
             intake.updateColorSensor(false);
 
-            drive.forwardSpeedlimit = 0.85;
-            drive.strafeSpeedlimit = 0.85;
-            drive.rotSpeedLimit = 0.6;
+            drive.forwardSpeedlimit = 1;
+            drive.strafeSpeedlimit = 1;
+            drive.rotSpeedLimit = 1;
         }));
 
         ejectSample.whenHeld(new InstantCommand(() -> {
@@ -156,14 +165,7 @@ public class BLUETeleop extends CommandOpMode {
                 new DepositorCommand(depositor, Depositor.state.HOME).withTimeout(10)
         ));
 
-        transition.whenHeld(new SequentialCommandGroup(
-                new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(100),
-                new ElevatorPositionCommand(elevator, Elevator.basketState.HOME),
-                new WaitCommand(100),
-                new DepositorCommand(depositor, Depositor.state.CLAWCLOSE).withTimeout(300),
-                new IntakePositionCommand(intake, Intake.state.TRANSFERRING).withTimeout(100),
-                new DepositorCommand(depositor, Depositor.state.HOME)
-        )).whenReleased(new SequentialCommandGroup(
+        transition.whenHeld(new TransitionCommand(depositor, intake, elevator)).whenReleased(new SequentialCommandGroup(
                 new DepositorCommand(depositor, Depositor.state.CLAWTIGHTEN).withTimeout(100),
                 new ElevatorPositionCommand(elevator, Elevator.basketState.MIDDLE_BASKET),
                 new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(100)

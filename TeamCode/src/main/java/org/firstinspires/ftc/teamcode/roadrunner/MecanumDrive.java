@@ -63,14 +63,14 @@ public final class MecanumDrive {
                 RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
 
         // drive model parameters
-        public double inPerTick = 0.002949;
-        public double lateralInPerTick = 0.0023479232196659252;
-        public double trackWidthTicks = 5061.873628355143;
+        public double inPerTick = 0.0029604192;
+        public double lateralInPerTick = 0.002188604152711534;
+        public double trackWidthTicks = 5048.984571964296;
 
         // feedforward parameters (in tick units)
-        public double kS = 1.0526355048022022;
-        public double kV = 0.0005222944067109868;
-        public double kA = 0.0000001;
+        public double kS = 1.4262138272597573;
+        public double kV = 0.000406539224554262;//0.000406539224554262
+        public double kA = 0.0001;
 
         // path profile parameters (in inches)
         //60, 120, Math.toRadians(500), Math.toRadians(720), 15)
@@ -82,13 +82,13 @@ public final class MecanumDrive {
 //        // turn profile parameters (in radians)
 //        public double maxAngVel = Math.toRadians(360); // shared with path
 //        public double maxAngAccel = Math.toRadians(360);
-        public double maxWheelVel = 60;
-        public double minProfileAccel = -40;
-        public double maxProfileAccel = 40;
+        public double maxWheelVel = 70;
+        public double minProfileAccel = -50;
+        public double maxProfileAccel = 60;
 
         // turn profile parameters (in radians)
-        public double maxAngVel = Math.toRadians(100); // shared with path
-        public double maxAngAccel = Math.toRadians(100);
+        public double maxAngVel = Math.toRadians(270); // shared with path
+        public double maxAngAccel = Math.toRadians(180);
 
         // path controller gains
         public double axialGain = 8.0;
@@ -226,10 +226,10 @@ public final class MecanumDrive {
 
         // TODO: make sure your config has motors with these names (or change them)
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        leftFront = hardwareMap.get(DcMotorEx.class, "frontLeft");//backLeft
-        leftBack = hardwareMap.get(DcMotorEx.class, "backLeft");//
-        rightBack = hardwareMap.get(DcMotorEx.class, "backRight");
-        rightFront = hardwareMap.get(DcMotorEx.class, "frontRight");
+        leftFront = hardwareMap.get(DcMotorEx.class, "backRight");//backLeft
+        leftBack = hardwareMap.get(DcMotorEx.class, "frontRight");//
+        rightBack = hardwareMap.get(DcMotorEx.class, "frontLeft");
+        rightFront = hardwareMap.get(DcMotorEx.class, "backLeft");
 
         rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
         rightBack.setDirection(DcMotorSimple.Direction.FORWARD);

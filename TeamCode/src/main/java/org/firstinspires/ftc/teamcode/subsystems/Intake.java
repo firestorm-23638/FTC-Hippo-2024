@@ -5,6 +5,7 @@ import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.CRServo;
 import com.arcrobotics.ftclib.util.Timing;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -20,11 +21,14 @@ public class Intake extends SubsystemBase {
     private final ServoEx leftHorizontal;
     private final ServoEx rightHorizontal;
     private final ServoEx pivot;
+    private final ServoEx blocker;
     private final CRServo leftVacuum;
     private final CRServo rightVacuum;
     private final Telemetry telemetry;
     private final ColorSensor colorSensor;
     private final DigitalChannel beamBrake;
+    private final AnalogInput pivotEncoder;
+    private final AnalogInput extensionEncoder;
 
     public enum state {
         INTAKING,
@@ -69,6 +73,9 @@ public class Intake extends SubsystemBase {
     public Intake(HardwareMap hardwareMap, Telemetry telemetry, color colorToIgnore, Gamepad gamepad) {
         leftHorizontal = new SimpleServo(hardwareMap, Constants.intakeLeftHorizontalConfig, 0, 180, AngleUnit.DEGREES);
         rightHorizontal = new SimpleServo(hardwareMap, Constants.intakeRightHorizontalConfig, 0, 180, AngleUnit.DEGREES);
+        blocker = new SimpleServo(hardwareMap, "blockerServo", 0, 180);
+        pivotEncoder = hardwareMap.get(AnalogInput.class, "pivotEncoder");
+        extensionEncoder = hardwareMap.get(AnalogInput.class, "extensionEncoder");
         pivot = new SimpleServo(hardwareMap, Constants.intakePivotConfig, 0, 220, AngleUnit.DEGREES);
         leftVacuum = new CRServo(hardwareMap, Constants.intakeLeftVacuumConfig);
         rightVacuum = new CRServo(hardwareMap, Constants.intakeRightVacuumConfig);
@@ -104,6 +111,14 @@ public class Intake extends SubsystemBase {
         rightVacuum.set(-Constants.intakeInchingSpeed);
     }
 
+    public void blockerUp() {
+        blocker.turnToAngle(20);
+    }
+
+    public void blockerDown() {
+        blocker.turnToAngle(45);
+    }
+
     private boolean withinRange(double val, double min, double max) {
         return (val > min) && (val < max);
     }
@@ -122,13 +137,9 @@ public class Intake extends SubsystemBase {
         if (isGamepad) {
             trim = (gamepad.left_trigger * 80);
         }
-        telemetry.addData("BEAM BREAK", beamBrake.getState());
-        telemetry.addData("INTAKE POSITION", currentState);
-        telemetry.addData("EXTENSION POS", rightHorizontal.getAngle());
-        telemetry.addData("WRIST POS", pivot.getAngle());
 
         currentColor = getCurrentColor();
-
+/* WITHOUT CATCHER
         if (currentState == state.INTAKING) {
             pivotDown();
             horizontalOut();
@@ -173,7 +184,51 @@ public class Intake extends SubsystemBase {
             horizontalOut();
             pivotEject();
             runVacuumRun();
+        }*/
+        //WITH CATCHER
+        if (currentState == state.INTAKING) {
+            pivotDown();
+            horizontalOut();
+
+            if (!beamBrake()) {
+                runVacuumStop();
+                if (currentColor == colorToIgnore) {
+                    blockerUp();
+                    runVacuumRun();
+                }
+                else if ((currentColor != colorToIgnore) && (currentColor != color.NONE)) {
+                    currentState = state.RESTING;
+                }
+            }
+            else {
+                blockerDown();
+                runVacuumRun();
+            }
         }
+        else if (currentState == state.RESTING) {
+            blockerDown();
+            pivotHome();
+            horizontalIn();
+            if (!beamBrake.getState()) {
+                runVacuumInch();
+            }
+            else {
+                runVacuumStop();
+            }
+        }
+        else if (currentState == state.TRANSFERRING) {
+            runVacuumEject();
+        }
+        else if (currentState == state.BARFING) {
+            horizontalOut();
+            pivotEject();
+            runVacuumRun();
+            blockerUp();
+        }
+    }
+
+    public boolean beamBrake() {
+        return beamBrake.getState();
     }
 
     private void horizontalToPos(double targetPos) {
@@ -199,10 +254,6 @@ public class Intake extends SubsystemBase {
 
     public void horizontalOut(double t) {
         horizontalToPos(Constants.intakeHorizontalToIntakePose + t);
-    }
-
-    public double getPivotPos() {
-        return pivot.getAngle();
     }
 
     public void pivotDown() {
@@ -285,6 +336,14 @@ public class Intake extends SubsystemBase {
         else {
             return color.NONE;
         }
+    }
+
+    public double getExtensionPos() {
+        return extensionEncoder.getVoltage() / 3.3 * 360;
+    }
+
+    public double getPivotPos() {
+        return pivotEncoder.getVoltage() / 3.3 * 360;
     }
 
     public void extendSlightly() {

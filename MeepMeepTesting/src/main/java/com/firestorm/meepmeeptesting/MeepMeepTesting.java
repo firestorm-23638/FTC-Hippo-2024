@@ -151,6 +151,9 @@ public class MeepMeepTesting {
 //                .splineTo(forBlue(new Vector2d(23, -40)), forBlue(Math.toRadians(0)))
 //                .splineTo(forBlue(new Vector2d(46.9, -61)), forBlue(Math.toRadians(0)))
 //                .build());
+        myBot2.runAction(myBot.getDrive().actionBuilder((new Pose2d(Field.RED_BASKET, Math.toRadians(45))))
+                .strafeToLinearHeading(new Vector2d(-58, -46), Math.toRadians(113))
+                .build());
         // start to specimen score
 //        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, -61, Math.toRadians(180)))
 //                .strafeTo(new Vector2d(0, -33))
@@ -261,55 +264,55 @@ public class MeepMeepTesting {
 //                .build()
 //        );
         // With Claw
-        myBot2.runAction(myBot2.getDrive().actionBuilder(new Pose2d(8, -61, Math.toRadians(270)))
-                // place first specimen
-                .strafeTo(new Vector2d(8, -30.25))
-                .waitSeconds(0.2)
-
-                // to first sample
-                .splineToLinearHeading(new Pose2d(30, -45, Math.toRadians(270)), Math.toRadians(0))
-                .splineToLinearHeading(new Pose2d(39, -20, Math.toRadians(270)), Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(44, -10, Math.toRadians(270)), Math.toRadians(0))
-
-//                .splineToLinearHeading(new Pose2d(44, -60, Math.toRadians(270)), Math.toRadians(270))
-               .strafeTo(new Vector2d(44, -60))
-                .waitSeconds(0.050)
-
-                // to second sample
-                .setReversed(true)
-                .waitSeconds(0.050)
-                .splineToLinearHeading(new Pose2d(55, -10, Math.toRadians(270)), Math.toRadians(0))
-
-                // push second sample / pickup second specimen
-                .strafeTo(new Vector2d(55, -62))
-                        .strafeTo(new Vector2d(55, -45))
-                .waitSeconds(0.200)
-
-                // drive and place second specimen
-                .splineToConstantHeading(new Vector2d(5, -30.25), Math.toRadians(90))
-                .waitSeconds(0.200)
-
-                // pickup third specimen
-                .setReversed(true)
-                .strafeToLinearHeading(new Vector2d(30, -50), Math.toRadians(330))
-                .waitSeconds(0.200)
-
-                // place third specimen
-                        .setReversed(true)
-                        .splineToLinearHeading(new Pose2d(5, -30.25, Math.toRadians(270)), Math.toRadians(90))
-                .waitSeconds(0.200)
-
-                // pickup fourth specimen
-                        .setReversed(true)
-                        .strafeToLinearHeading(new Vector2d(30, -50), Math.toRadians(330))
-                .waitSeconds(0.200)
-
-                // place fourth specimen
-                .setReversed(true)
-                .splineToLinearHeading(new Pose2d(5, -30.25, Math.toRadians(270)), Math.toRadians(90))
-                .waitSeconds(0.200)
-                .build()
-        );
+//        myBot2.runAction(myBot2.getDrive().actionBuilder(new Pose2d(8, -61, Math.toRadians(270)))
+//                // place first specimen
+//                .strafeTo(new Vector2d(8, -30.25))
+//                .waitSeconds(0.2)
+//
+//                // to first sample
+//                .splineToLinearHeading(new Pose2d(30, -45, Math.toRadians(270)), Math.toRadians(0))
+//                .splineToLinearHeading(new Pose2d(39, -20, Math.toRadians(270)), Math.toRadians(90))
+//                .splineToLinearHeading(new Pose2d(44, -10, Math.toRadians(270)), Math.toRadians(0))
+//
+////                .splineToLinearHeading(new Pose2d(44, -60, Math.toRadians(270)), Math.toRadians(270))
+//               .strafeTo(new Vector2d(44, -60))
+//                .waitSeconds(0.050)
+//
+//                // to second sample
+//                .setReversed(true)
+//                .waitSeconds(0.050)
+//                .splineToLinearHeading(new Pose2d(55, -10, Math.toRadians(270)), Math.toRadians(0))
+//
+//                // push second sample / pickup second specimen
+//                .strafeTo(new Vector2d(55, -62))
+//                        .strafeTo(new Vector2d(55, -45))
+//                .waitSeconds(0.200)
+//
+//                // drive and place second specimen
+//                .splineToConstantHeading(new Vector2d(5, -30.25), Math.toRadians(90))
+//                .waitSeconds(0.200)
+//
+//                // pickup third specimen
+//                .setReversed(true)
+//                .strafeToLinearHeading(new Vector2d(30, -50), Math.toRadians(330))
+//                .waitSeconds(0.200)
+//
+//                // place third specimen
+//                        .setReversed(true)
+//                        .splineToLinearHeading(new Pose2d(5, -30.25, Math.toRadians(270)), Math.toRadians(90))
+//                .waitSeconds(0.200)
+//
+//                // pickup fourth specimen
+//                        .setReversed(true)
+//                        .strafeToLinearHeading(new Vector2d(30, -50), Math.toRadians(330))
+//                .waitSeconds(0.200)
+//
+//                // place fourth specimen
+//                .setReversed(true)
+//                .splineToLinearHeading(new Pose2d(5, -30.25, Math.toRadians(270)), Math.toRadians(90))
+//                .waitSeconds(0.200)
+//                .build()
+//        );
 //
 //        myBot3.runAction(myBot3.getDrive().actionBuilder(new Pose2d(60, -55, Math.toRadians(90)))
 //                .waitSeconds(9.2)
