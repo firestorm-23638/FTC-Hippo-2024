@@ -39,7 +39,7 @@ public class BlueActions {
 
     public static Action basketToFirstSample(Drivetrain drive) {
         return drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
-                .turnTo(Math.toRadians(70))
+                .turnTo(Math.toRadians(75))
                 //.strafeToLinearHeading(new Vector2d(-48, -52), Math.toRadians(90))
                 .build();
     }
@@ -53,14 +53,14 @@ public class BlueActions {
 
     public static Action basketToSecondSample(Drivetrain drive) {
         return drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
-                .turnTo(Math.toRadians(90))
+                .turnTo(Math.toRadians(92))
                 //.splineToLinearHeading(new Pose2d(-55.5, -53, Math.toRadians(89)), Math.toRadians(90))
                 .build();
     }
 
     public static Action basketToThirdSample(Drivetrain drive) {
         return drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
-                .strafeToLinearHeading(new Vector2d(-58, -46), Math.toRadians(113))
+                .strafeToLinearHeading(new Vector2d(-58, -46), Math.toRadians(118))
                 //.strafeToLinearHeading(new Vector2d(-44, -37), Math.toRadians(152))
                 .build();
     }
@@ -87,9 +87,23 @@ public class BlueActions {
                 .build();
     }
 
+    public static Action submersibleToBasket(Drivetrain drive) {
+        return drive.getTrajectoryBuilder(new Pose2d(new Vector2d(-21, -7), Math.toRadians(0)))
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(basketPos, Math.toRadians(45)), Math.toRadians(180))
+                .build();
+    }
+
     public static Action basketToSubmersible2(Drivetrain drive) {
         return drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
                 .splineTo(new Vector2d(-21, -12), Math.toRadians(0))
+                .build();
+    }
+
+    public static Action submersible2ToBasket(Drivetrain drive) {
+        return drive.getTrajectoryBuilder(new Pose2d(new Vector2d(-21, -12), Math.toRadians(0)))
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(basketPos, Math.toRadians(45)), Math.toRadians(180))
                 .build();
     }
 
@@ -114,18 +128,18 @@ public class BlueActions {
     public static Action pushTwoSamples(Drivetrain drive) {
         return drive.getTrajectoryBuilder(new Pose2d(4, specimenPlaceY, Math.toRadians(270)))
                 .splineToLinearHeading(new Pose2d(30, -45, Math.toRadians(270)), Math.toRadians(0))
-                .splineToLinearHeading(new Pose2d(39, -20, Math.toRadians(270)), Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(44, -10, Math.toRadians(270)), Math.toRadians(0))
-
-                .strafeTo(new Vector2d(44, -60))
-
-                // to second sample
-                .setReversed(true)
-                .splineToLinearHeading(new Pose2d(55, -10, Math.toRadians(270)), Math.toRadians(0))
-
-                // push second sample / pickup second specimen
-                .strafeTo(new Vector2d(55, -62))
-                .strafeTo(new Vector2d(55, -45))
+                .splineToLinearHeading(new Pose2d(35, -20, Math.toRadians(270)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(41, -10, Math.toRadians(270)), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(46, -20), Math.toRadians(270))
+                .splineToConstantHeading(new Vector2d(46, -30), Math.toRadians(270))
+                .splineToConstantHeading(new Vector2d(46, -40), Math.toRadians(270))
+                .splineToConstantHeading(new Vector2d(46, -55), Math.toRadians(270))
+                .splineToLinearHeading(new Pose2d(53, -10, Math.toRadians(270)), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(55, -20), Math.toRadians(270))
+                .splineToConstantHeading(new Vector2d(55, -30), Math.toRadians(270))
+                .splineToConstantHeading(new Vector2d(55, -40), Math.toRadians(270))
+                .splineToConstantHeading(new Vector2d(55, -60), Math.toRadians(270))
+                .strafeTo(new Vector2d(45, -40))
                 .build();
     }
 

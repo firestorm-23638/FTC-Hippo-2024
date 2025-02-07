@@ -37,6 +37,7 @@ public class Elevator extends SubsystemBase {
     private double trim = 0;
 
     public final Motor vertical;     // The motor for the elevator
+    public final Motor secondVertical;
     private final Telemetry telemetry;    // Telemetry class for printouts
     private final DigitalChannel limitSwitch;
     private final SpecimenClaw claw;
@@ -49,10 +50,13 @@ public class Elevator extends SubsystemBase {
 
     public Elevator(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad) {
         vertical = new Motor(hardwareMap, Constants.depositorVerticalConfig);
+        secondVertical = new Motor(hardwareMap, Constants.depositor2ndVerticalConfig);
         limitSwitch = hardwareMap.get(DigitalChannel.class, "elevatorLimit");
         claw = new SpecimenClaw(hardwareMap, telemetry);
         this.gamepad = gamepad;
         isGamepad = true;
+
+        secondVertical.setInverted(true);
 
         this.telemetry = telemetry;
     };
@@ -123,11 +127,11 @@ public class Elevator extends SubsystemBase {
         }
         telemetry.addData("Trim", trim);
 
-        if (currentStage == basketState.HOME) {
+        if ((currentStage == basketState.HOME) || currentStage == basketState.MIDDLE_BASKET) {
             if (!isZeroed) {
                 if (!limitSwitch.getState()) {
                     moveVertical(0);
-                    vertical.resetEncoder();
+                    resetPosition();
                     isZeroed = true;
                 }
                 else {
@@ -144,11 +148,15 @@ public class Elevator extends SubsystemBase {
 
     }
 
+    private void resetPosition() {
+        vertical.resetEncoder();
+    }
+
     private void verticalToPos(double targetPos) {     // PID algorithm function. There is just a kP term for now
         vertical.setRunMode(Motor.RunMode.RawPower);
         double kP = Constants.depositorVerticalKP;
 
-        double currPos = vertical.getCurrentPosition();
+        double currPos = getPosition();
         double error = targetPos - currPos;
 
         moveVertical(error * kP);
@@ -167,12 +175,20 @@ public class Elevator extends SubsystemBase {
         return vertical.getInverted();
     }
 
-    public boolean isAtPos() {     // Checks to see if the elevator is at a current position, with a 150 tick deadband.
-        return (vertical.getCurrentPosition() >= currentStage.pos - 80) && (vertical.getCurrentPosition() <= currentStage.pos + 80);
+    public boolean isAtPos() {     // Checks to see if the elevator is at a current position, with an 80 tick deadband.
+        return (getPosition() >= currentStage.pos - 80) && (getPosition() <= currentStage.pos + 80);
     }
 
     public void moveVertical(double speed) {           // Runs elevator at raw speed. For testing purposes
         vertical.setRunMode(Motor.RunMode.RawPower);
+        secondVertical.setRunMode(Motor.RunMode.RawPower);
+        if (speed > 1) {
+            speed = 1;
+        }
+        if (speed < -1) {
+            speed = -1;
+        }
         vertical.set(speed);
+        secondVertical.set(speed);
     }
 }

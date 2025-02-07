@@ -56,6 +56,7 @@ public class Intake extends SubsystemBase {
     public color colorToIgnore;
     public boolean ejecting = false;
     public Timing.Timer ejectTimer = new Timing.Timer(150, TimeUnit.MILLISECONDS);
+    public Timing.Timer blockerTimer = new Timing.Timer(300, TimeUnit.MILLISECONDS);
     public boolean extended = false;
     public Gamepad gamepad;
     public boolean isGamepad = false;
@@ -112,11 +113,11 @@ public class Intake extends SubsystemBase {
     }
 
     public void blockerUp() {
-        blocker.turnToAngle(20);
+        blocker.turnToAngle(90);
     }
 
     public void blockerDown() {
-        blocker.turnToAngle(45);
+        blocker.turnToAngle(0);
     }
 
     private boolean withinRange(double val, double min, double max) {
@@ -135,7 +136,7 @@ public class Intake extends SubsystemBase {
     @Override
     public void periodic() {
         if (isGamepad) {
-            trim = (gamepad.left_trigger * 80);
+            trim = (gamepad.left_trigger * 70);
         }
 
         currentColor = getCurrentColor();
@@ -195,18 +196,22 @@ public class Intake extends SubsystemBase {
                 if (currentColor == colorToIgnore) {
                     blockerUp();
                     runVacuumRun();
+                    blockerTimer = new Timing.Timer(300, TimeUnit.MILLISECONDS);
+                    blockerTimer.start();
                 }
-                else if ((currentColor != colorToIgnore) && (currentColor != color.NONE)) {
+                else if ((currentColor != color.NONE)) {
                     currentState = state.RESTING;
                 }
             }
             else {
-                blockerDown();
+                if (blockerTimer.done() || (!blockerTimer.isTimerOn())) {
+                    blockerDown();
+                }
                 runVacuumRun();
             }
         }
         else if (currentState == state.RESTING) {
-            blockerDown();
+            blockerUp();
             pivotHome();
             horizontalIn();
             if (!beamBrake.getState()) {
@@ -225,6 +230,8 @@ public class Intake extends SubsystemBase {
             runVacuumRun();
             blockerUp();
         }
+
+        telemetry.addData("beam", beamBrake());
     }
 
     public boolean beamBrake() {

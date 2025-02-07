@@ -38,7 +38,7 @@ public class Depositor extends SubsystemBase {
 
     @Override
     public void periodic() {
-
+        telemetry.addData("CLAW SET POS", claw.getAngle());
     }
 
     public void toHome() {

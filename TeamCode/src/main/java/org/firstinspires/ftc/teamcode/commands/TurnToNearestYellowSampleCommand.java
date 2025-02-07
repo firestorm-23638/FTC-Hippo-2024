@@ -38,6 +38,9 @@ public class TurnToNearestYellowSampleCommand extends CommandBase {
             currentAngle = results.get(0).getTargetXDegrees();
             hasTarget = true;
         }
+        else {
+            currentAngle = 0;
+        }
         if (hasTarget) {
             drivetrain.driveArcade(0, 0, currentAngle * 0.05);
             isAligned = (currentAngle > -1) && (currentAngle < 1);

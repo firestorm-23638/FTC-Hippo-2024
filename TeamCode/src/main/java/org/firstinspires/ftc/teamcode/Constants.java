@@ -15,13 +15,14 @@ public class Constants {
     public static final String driveBackRightConfig = "backRight";   // Control Hub Port 3
 
     public static final String depositorVerticalConfig = "vertical";
+    public static final String depositor2ndVerticalConfig = "secondVertical";
 
     public static final String depositorBasketConfig = "basketServo";
     public static final double depositorVerticalToTopPose = 840
             ;//2700;
     public static final double depositorVerticalToMidPose = 120;
     public static final double depositorVerticalToBottomPose = 0;
-    public static final double depositorVerticalKP = .01;
+    public static final double depositorVerticalKP = .007;
     public static final double depositorVerticalErrorRange = 10;
 
     public static final double depositorVerticalToTopBar = 2000;
@@ -33,7 +34,7 @@ public class Constants {
     public static final double depositorBasketToHomeAngle = 20;
 
     public static final long depositorArmSpecimenTimeMs = 700;
-    public static final long depositorClawOpenTimeMs = 350;
+    public static final long depositorClawOpenTimeMs = 300;
 
     public static final String intakeLeftHorizontalConfig = "leftHorizontal";
     public static final String intakeRightHorizontalConfig = "rightHorizontal";
@@ -42,17 +43,17 @@ public class Constants {
     public static final String intakeRightVacuumConfig = "leftVacuum";
 
     public static final double intakeHorizontalToIntakePose = 30;
-    public static final double intakeHorizontalToHomePose = 2;
+    public static final double intakeHorizontalToHomePose = 0;
 
     public static final double intakePivotToBasket = 212;
-    public static final double intakePivotToDown = 75;
+    public static final double intakePivotToDown = 60;
     public static final double intakePivotToRest = 212;
     public static final double intakePivotToEject = 190;
 
     public static final double intakeInchingSpeed = 0.2;
     public static final double intakeVacuumSpeed = -.3;
 
-    public static final double intakeEjectSpeed = .8;
+    public static final double intakeEjectSpeed = .5;
 
     public static final double intakeHorizontalKP = .05;
 
@@ -64,8 +65,8 @@ public class Constants {
     public static final String intakeWristEncoder = "intakeEncoder";
 
 
-    public static final double specimenOpenAngle = 70;
-    public static final double specimenCloseAngle = 7;
+    public static final double specimenOpenAngle = 90;
+    public static final double specimenCloseAngle = 11;
 
     public static final short limelightApriltagPipeline = 1;
 

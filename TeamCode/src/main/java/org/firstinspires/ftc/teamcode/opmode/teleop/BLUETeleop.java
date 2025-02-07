@@ -111,12 +111,7 @@ public class BLUETeleop extends CommandOpMode {
         // Reads limelight position for now
         //limelight.setDefaultCommand(new LimelightCommand(limelight, drive));
 
-        TEST.whenHeld(new InstantCommand(() -> {
-
-            intake.blockerDown();
-        })).whenReleased(new InstantCommand(() -> {
-            intake.blockerUp();
-        }));
+        //TEST.whenHeld(new RunCommand(() -> intake.blockerDown())).whenReleased(new RunCommand(() -> intake.blockerUp()));
 
         intakeOut.whenHeld(new InstantCommand(() -> {
             intake.currentState = Intake.state.INTAKING;
