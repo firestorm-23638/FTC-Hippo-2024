@@ -263,7 +263,7 @@ public class BLUETeleop extends CommandOpMode {
         schedule(
                 new ParallelCommandGroup(
                         new SequentialCommandGroup(
-                                new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(100),
+                                new DepositorCommand(depositor, Depositor.state.CLAWTIGHTEN).withTimeout(100),
                                 new DepositorCommand(depositor, Depositor.state.HOME).withTimeout(100)
                         ),
                         new InstantCommand(() -> kicker.close()),

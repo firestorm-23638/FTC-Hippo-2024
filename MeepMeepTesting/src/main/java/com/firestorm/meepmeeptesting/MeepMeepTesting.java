@@ -122,7 +122,7 @@ public class MeepMeepTesting {
 
         /* Submersible Zone to Basket */
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(new Vector2d(-24, -10), Math.toRadians(0)))
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(new Vector2d(-24, -7), Math.toRadians(0)))
                         .setReversed(true)
                 .splineToLinearHeading(new Pose2d(Field.RED_BASKET, Math.toRadians(45)), Math.toRadians(180))
                 .build());

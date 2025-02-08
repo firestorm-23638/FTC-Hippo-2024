@@ -14,6 +14,7 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Constants;
+import org.firstinspires.ftc.teamcode.commands.CalculateAndTurnLimelightCommand;
 import org.firstinspires.ftc.teamcode.commands.DepositorCommand;
 import org.firstinspires.ftc.teamcode.commands.ElevatorPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeHasAnySampleCommand;
@@ -112,6 +113,7 @@ public class TESTAuto0_6Limelight extends CommandOpMode {
                                 )
                         ),
                         new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(Constants.depositorClawOpenTimeMs),
+                        //new WaitCommand(20000),
                         new ParallelCommandGroup(
                                 new DepositorCommand(depositor, Depositor.state.TRANSITIONING).withTimeout(500),
                                 new SequentialCommandGroup(
@@ -120,15 +122,19 @@ public class TESTAuto0_6Limelight extends CommandOpMode {
                                 ),
                                 //FIRST SAMPLE
                                 new SequentialCommandGroup(
-                                        new ParallelCommandGroup(
-                                                new TrajectoryGotoCommand(basketToFirstSample, drive),
-                                                new IntakePositionCommand(intake, Intake.state.INTAKING, 700, 30)
-                                        ),
+                                        new TrajectoryGotoCommand(basketToFirstSample, drive),
+                                        //new IntakePositionCommand(intake, Intake.state.INTAKING, 500, 15),
                                         //new TurnToNearestYellowSampleCommand(limelight, drive).withTimeout(1000),
-                                        new IntakePositionCommand(intake, Intake.state.INTAKING, 100, 50),
-                                        new ParallelRaceGroup(
-                                                new RawDrivetrainCommand(drive, .25, 0, 0).withTimeout(1000),
-                                                new IntakeHasSampleCommand(intake)
+                                        new SequentialCommandGroup(
+                                                new ParallelCommandGroup(
+                                                        new ParallelRaceGroup(
+                                                                new CalculateAndTurnLimelightCommand(limelight, drive, telemetry, 0.25).withTimeout(1500),
+                                                                new SequentialCommandGroup(
+                                                                        new WaitCommand(300),
+                                                                        new SlideUntilHasPieceCommand(intake, Intake.color.YELLOW)
+                                                                )
+                                                        )
+                                                )
                                         ),
                                         new RawDrivetrainCommand(drive, 0, 0, 0).withTimeout(50)
                                 )

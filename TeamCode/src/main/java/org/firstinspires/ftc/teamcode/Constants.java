@@ -42,7 +42,7 @@ public class Constants {
     public static final String intakeLeftVacuumConfig = "rightVacuum";
     public static final String intakeRightVacuumConfig = "leftVacuum";
 
-    public static final double intakeHorizontalToIntakePose = 30;
+    public static final double intakeHorizontalToIntakePose = 25;
     public static final double intakeHorizontalToHomePose = 0;
 
     public static final double intakePivotToBasket = 212;

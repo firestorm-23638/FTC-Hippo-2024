@@ -31,7 +31,7 @@ public class SlideUntilHasPieceCommand extends CommandBase {
     public void initialize() {
         intake.hasTheRightColor = false;
         intake.trim = startTrim;
-        timer = new Timing.Timer(100, TimeUnit.MILLISECONDS);
+        timer = new Timing.Timer(120, TimeUnit.MILLISECONDS);
         timer.start();
     }
 
@@ -43,7 +43,7 @@ public class SlideUntilHasPieceCommand extends CommandBase {
         if (intake.getPivotPos() > (Constants.intakePivotToDown - 5)) {
             if (timer.done()) {
                 intake.trim += 5;
-                timer = new Timing.Timer(150, TimeUnit.MILLISECONDS);
+                timer = new Timing.Timer(120, TimeUnit.MILLISECONDS);
                 timer.start();
             }
         }
@@ -51,6 +51,6 @@ public class SlideUntilHasPieceCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return (intake.trim == 110) || ((intake.getCurrentColor() == colorToReceive) || intake.getCurrentColor() == Intake.color.YELLOW) || (intake.hasTheRightColor);
+        return (intake.trim == 100) || ((intake.getCurrentColor() == colorToReceive) || intake.getCurrentColor() == Intake.color.YELLOW) || (intake.hasTheRightColor);
     }
 }

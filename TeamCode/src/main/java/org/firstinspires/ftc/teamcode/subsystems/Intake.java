@@ -117,7 +117,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void blockerDown() {
-        blocker.turnToAngle(0);
+        blocker.turnToAngle(45);
     }
 
     private boolean withinRange(double val, double min, double max) {

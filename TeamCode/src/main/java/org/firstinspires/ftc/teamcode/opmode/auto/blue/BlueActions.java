@@ -39,8 +39,8 @@ public class BlueActions {
 
     public static Action basketToFirstSample(Drivetrain drive) {
         return drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
-                .turnTo(Math.toRadians(75))
-                //.strafeToLinearHeading(new Vector2d(-48, -52), Math.toRadians(90))
+                //.turnTo(Math.toRadians(75))
+                .strafeToLinearHeading(new Vector2d(-50, -52), Math.toRadians(90))
                 .build();
     }
 
@@ -53,7 +53,7 @@ public class BlueActions {
 
     public static Action basketToSecondSample(Drivetrain drive) {
         return drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
-                .turnTo(Math.toRadians(92))
+                .turnTo(Math.toRadians(93))
                 //.splineToLinearHeading(new Pose2d(-55.5, -53, Math.toRadians(89)), Math.toRadians(90))
                 .build();
     }
@@ -90,7 +90,7 @@ public class BlueActions {
     public static Action submersibleToBasket(Drivetrain drive) {
         return drive.getTrajectoryBuilder(new Pose2d(new Vector2d(-21, -7), Math.toRadians(0)))
                 .setReversed(true)
-                .splineToLinearHeading(new Pose2d(basketPos, Math.toRadians(45)), Math.toRadians(180))
+                .splineToLinearHeading(new Pose2d(basketPos, Math.toRadians(45)), Math.toRadians(240))
                 .build();
     }
 
@@ -103,7 +103,7 @@ public class BlueActions {
     public static Action submersible2ToBasket(Drivetrain drive) {
         return drive.getTrajectoryBuilder(new Pose2d(new Vector2d(-21, -12), Math.toRadians(0)))
                 .setReversed(true)
-                .splineToLinearHeading(new Pose2d(basketPos, Math.toRadians(45)), Math.toRadians(180))
+                .splineToLinearHeading(new Pose2d(basketPos, Math.toRadians(45)), Math.toRadians(240))
                 .build();
     }
 
