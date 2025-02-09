@@ -136,7 +136,7 @@ public class Intake extends SubsystemBase {
     @Override
     public void periodic() {
         if (isGamepad) {
-            trim = (gamepad.left_trigger * 70);
+            trim = (gamepad.left_trigger * 90);
         }
 
         currentColor = getCurrentColor();
