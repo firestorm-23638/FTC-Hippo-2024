@@ -35,7 +35,7 @@ public class TransitionCommand extends SequentialCommandGroup {
                 new IntakePositionCommand(intake, Intake.state.RESTING, 100),
                 new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(50),
                 new ElevatorPositionCommand(elevator, Elevator.basketState.HOME),
-                new DepositorCommand(depositor, Depositor.state.CLAWCLOSE).withTimeout(200),
+                new DepositorCommand(depositor, Depositor.state.CLAWCLOSE).withTimeout(100),
                 new IntakePositionCommand(intake, Intake.state.TRANSFERRING).withTimeout(300)
         );
     }

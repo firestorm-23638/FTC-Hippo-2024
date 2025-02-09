@@ -45,13 +45,13 @@ public class Constants {
     public static final double intakeHorizontalToIntakePose = 25;
     public static final double intakeHorizontalToHomePose = 0;
 
-    public static final double intakePivotToBasket = 202;
+    public static final double intakePivotToBasket = 210;
     public static final double intakePivotToDown = 60;
-    public static final double intakePivotToRest = 202;
+    public static final double intakePivotToRest = 210;
     public static final double intakePivotToEject = 190;
 
     public static final double intakeInchingSpeed = 0.2;
-    public static final double intakeVacuumSpeed = -.3;
+    public static final double intakeVacuumSpeed = -1;
 
     public static final double intakeEjectSpeed = .5;
 
@@ -67,6 +67,8 @@ public class Constants {
 
     public static final double specimenOpenAngle = 90;
     public static final double specimenCloseAngle = 11;
+
+    public static final double intakeJamCurrentThreshold = 800;
 
     public static final short limelightApriltagPipeline = 1;
 

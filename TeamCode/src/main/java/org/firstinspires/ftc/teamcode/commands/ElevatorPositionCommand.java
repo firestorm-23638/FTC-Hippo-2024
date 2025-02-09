@@ -19,7 +19,14 @@ public class ElevatorPositionCommand extends CommandBase {
 
     public ElevatorPositionCommand(Elevator elevator, Elevator.basketState state) {
         this(elevator, state, 0);
-    }
+    }/*            if (intake.getControlHubMilliamps() > Constants.intakeJamCurrentThreshold) {
+                intake.trim -= 15;
+                timer = new Timing.Timer(120, TimeUnit.MILLISECONDS);
+            } else {
+                intake.trim += 5;
+                timer = new Timing.Timer(120, TimeUnit.MILLISECONDS);
+                timer.start();
+            }*/
 
     @Override
     public void initialize() {

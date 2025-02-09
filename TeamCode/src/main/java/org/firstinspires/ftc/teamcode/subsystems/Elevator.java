@@ -33,7 +33,7 @@ public class Elevator extends SubsystemBase {
 
     public boolean isBarState = false;
     public boolean isSlightState = false;
-    public boolean isZeroed = true;
+    public boolean isZeroed = false;
     private double trim = 0;
 
     public final Motor vertical;     // The motor for the elevator

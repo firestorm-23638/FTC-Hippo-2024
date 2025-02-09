@@ -5,6 +5,7 @@ import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.CRServo;
 import com.arcrobotics.ftclib.util.Timing;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -13,6 +14,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Constants;
 
 import java.util.concurrent.TimeUnit;
@@ -29,13 +31,15 @@ public class Intake extends SubsystemBase {
     private final DigitalChannel beamBrake;
     private final AnalogInput pivotEncoder;
     private final AnalogInput extensionEncoder;
+    private final LynxModule controlHub;
 
     public enum state {
         INTAKING,
         RESTING,
         TRANSFERRING,
         BARFING,
-        SLIGHTLY
+        SLIGHTLY,
+        DOWN_EJECTING
     }
 
     public enum vacuum {
@@ -82,6 +86,7 @@ public class Intake extends SubsystemBase {
         rightVacuum = new CRServo(hardwareMap, Constants.intakeRightVacuumConfig);
         colorSensor = hardwareMap.get(ColorSensor.class, "intakeColor");
         beamBrake = hardwareMap.get(DigitalChannel.class, Constants.intakeBeamBreakConfig);
+        controlHub = hardwareMap.get(LynxModule.class, "Control Hub");
 
         isGamepad = true;
         this.gamepad = gamepad;
@@ -132,9 +137,15 @@ public class Intake extends SubsystemBase {
         updatingColor = val;
     }
 
+    public double getControlHubMilliamps() {
+        return controlHub.getCurrent(CurrentUnit.MILLIAMPS);
+    }
+
     // The vacuum will only run if the color sensor detects nothing. Otherwise, it will either eject or stop and bring the intake back.
     @Override
     public void periodic() {
+        telemetry.addData("Current", getControlHubMilliamps());
+
         if (isGamepad) {
             trim = (gamepad.left_trigger * 90);
         }
@@ -228,6 +239,12 @@ public class Intake extends SubsystemBase {
             horizontalOut();
             pivotEject();
             runVacuumRun();
+            blockerUp();
+        }
+        else if (currentState == state.DOWN_EJECTING) {
+            horizontalOut();
+            pivotDown();
+            runVacuumEject();
             blockerUp();
         }
 

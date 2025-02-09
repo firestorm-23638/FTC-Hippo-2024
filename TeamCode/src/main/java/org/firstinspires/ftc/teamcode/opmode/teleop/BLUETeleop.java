@@ -17,8 +17,10 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.commands.DepositorCommand;
 import org.firstinspires.ftc.teamcode.commands.DrivetrainCommand;
@@ -34,6 +36,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Depositor;
 
 @TeleOp
 public class BLUETeleop extends CommandOpMode {
+    private LynxModule lynxModule;
     private GamepadEx driver;
     private GamepadEx operator;
 
@@ -58,6 +61,8 @@ public class BLUETeleop extends CommandOpMode {
         limelight = new Limelight(hardwareMap, telemetry);
         kicker = new Kicker(hardwareMap, telemetry);
         depositor = new Depositor(hardwareMap, telemetry);
+
+        lynxModule = hardwareMap.get(LynxModule.class, "Control Hub");
 
         drive.forwardSpeedlimit = 1;
         drive.strafeSpeedlimit = 1;
@@ -262,6 +267,7 @@ public class BLUETeleop extends CommandOpMode {
         // Put game start code here. i.e home everything
         schedule(
                 new ParallelCommandGroup(
+                        new RunCommand(() -> telemetry.addData("Expansion Current", lynxModule.getCurrent(CurrentUnit.MILLIAMPS))),
                         new SequentialCommandGroup(
                                 new DepositorCommand(depositor, Depositor.state.CLAWTIGHTEN).withTimeout(100),
                                 new DepositorCommand(depositor, Depositor.state.HOME).withTimeout(100)

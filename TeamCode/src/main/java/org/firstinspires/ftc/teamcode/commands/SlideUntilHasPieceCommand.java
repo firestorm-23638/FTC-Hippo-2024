@@ -14,6 +14,7 @@ public class SlideUntilHasPieceCommand extends CommandBase {
     private final Intake.color colorToReceive;
     private Timing.Timer timer;
     public double startTrim = 0;
+    private double minCurrent = 10000;
 
     public SlideUntilHasPieceCommand(Intake intake, Intake.color colorToReceive) {
         this(intake, colorToReceive, 0);
@@ -40,9 +41,17 @@ public class SlideUntilHasPieceCommand extends CommandBase {
         intake.horizontalOut();
         intake.pivotDown();
         intake.setVacuumRun();
+        if (intake.getControlHubMilliamps() < minCurrent) {
+            minCurrent = intake.getControlHubMilliamps();
+        }
         if (intake.getPivotPos() > (Constants.intakePivotToDown - 5)) {
             if (timer.done()) {
-                intake.trim += 5;
+                if ((intake.getControlHubMilliamps() - minCurrent) > Constants.intakeJamCurrentThreshold) {
+                    intake.trim -= 5;
+                }
+                else {
+                    intake.trim += 5;
+                }
                 timer = new Timing.Timer(120, TimeUnit.MILLISECONDS);
                 timer.start();
             }
