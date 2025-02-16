@@ -12,33 +12,39 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.RunCommand;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Constants;
+import org.firstinspires.ftc.teamcode.commands.DepositorCommand;
 import org.firstinspires.ftc.teamcode.commands.DrivetrainCommand;
-import org.firstinspires.ftc.teamcode.commands.SpecimenClawCommand;
-import org.firstinspires.ftc.teamcode.subsystems.Basket;
+import org.firstinspires.ftc.teamcode.commands.ElevatorPositionCommand;
+import org.firstinspires.ftc.teamcode.commands.IntakePositionCommand;
+import org.firstinspires.ftc.teamcode.commands.TransitionCommand;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.Elevator;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Kicker;
 import org.firstinspires.ftc.teamcode.subsystems.Limelight;
-import org.firstinspires.ftc.teamcode.subsystems.SpecimenClaw;
+import org.firstinspires.ftc.teamcode.subsystems.Depositor;
 
 @TeleOp
 public class FIELDREDTeleop extends CommandOpMode {
+    private LynxModule lynxModule;
     private GamepadEx driver;
     private GamepadEx operator;
 
     private Drivetrain drive;
+    private Depositor depositor;
     private Intake intake;
-    private Basket basket;
     private Elevator elevator;
     private Kicker kicker;
-    private SpecimenClaw specimen;
 
     private Limelight limelight;
 
@@ -51,15 +57,16 @@ public class FIELDREDTeleop extends CommandOpMode {
 
         drive = new Drivetrain(hardwareMap, new Pose2d(0, 0, 0), telemetry);
         intake = new Intake(hardwareMap, telemetry,  Intake.color.BLUE, gamepad1);
-        basket = new Basket(hardwareMap, telemetry);
         elevator = new Elevator(hardwareMap, telemetry, gamepad1);
         limelight = new Limelight(hardwareMap, telemetry);
         kicker = new Kicker(hardwareMap, telemetry);
-        specimen = new SpecimenClaw(hardwareMap, telemetry);
+        depositor = new Depositor(hardwareMap, telemetry);
 
-        drive.forwardSpeedlimit = 0.9;
-        drive.strafeSpeedlimit = 0.9;
-        drive.rotSpeedLimit = 0.7;
+        lynxModule = hardwareMap.get(LynxModule.class, "Control Hub");
+
+        drive.forwardSpeedlimit = 1;
+        drive.strafeSpeedlimit = 1;
+        drive.rotSpeedLimit = 1;
 
         // Change the basket goal based on the alliance
         if (Constants.isRed) {
@@ -70,32 +77,33 @@ public class FIELDREDTeleop extends CommandOpMode {
         }
 
         GamepadButton intakeOut = new GamepadButton(driver, GamepadKeys.Button.RIGHT_BUMPER);
-        GamepadButton toBasket = new GamepadButton(driver, GamepadKeys.Button.A);
-        GamepadButton zoomZoom = new GamepadButton(driver, GamepadKeys.Button.LEFT_BUMPER);
+        GamepadButton transition = new GamepadButton(driver, GamepadKeys.Button.LEFT_BUMPER);
+        GamepadButton zoomZoom = new GamepadButton(driver, GamepadKeys.Button.Y);
+        GamepadButton driverClaw = new GamepadButton(driver, GamepadKeys.Button.A);
         GamepadButton kickerButton = new GamepadButton(driver, GamepadKeys.Button.X);
-
+        GamepadButton ejectSample = new GamepadButton(driver, GamepadKeys.Button.B);
         GamepadButton zeroButton = new GamepadButton(driver, GamepadKeys.Button.Y);
 
-        GamepadButton basketOut = new GamepadButton(operator, GamepadKeys.Button.A);
+        GamepadButton basketScore = new GamepadButton(operator, GamepadKeys.Button.A);
+        GamepadButton specimenScore = new GamepadButton(operator, GamepadKeys.Button.X);
         GamepadButton depositorUp = new GamepadButton(operator, GamepadKeys.Button.DPAD_UP);
         GamepadButton depositorDown = new GamepadButton(operator, GamepadKeys.Button.DPAD_DOWN);
+        GamepadButton depositorUpDriver = new GamepadButton(driver, GamepadKeys.Button.DPAD_UP);
+        GamepadButton depositorDownDriver = new GamepadButton(driver, GamepadKeys.Button.DPAD_DOWN);
         GamepadButton depositorSlight = new GamepadButton(operator, GamepadKeys.Button.DPAD_RIGHT);
         //GamepadButton elevatorTrim = new GamepadButton(driver, )
 
         GamepadButton elevUp = new GamepadButton(driver, GamepadKeys.Button.DPAD_UP);
         GamepadButton elevDown = new GamepadButton(driver, GamepadKeys.Button.DPAD_DOWN);
 
-        GamepadButton specimenClaw = new GamepadButton(operator, GamepadKeys.Button.RIGHT_BUMPER);
         GamepadButton depositorBar = new GamepadButton(operator, GamepadKeys.Button.LEFT_BUMPER);
 
         // experimental
-//        basketTrajectoryButton.whenHeld(new StrafeToPositionCommand(basketPose, drive))
-//                .whenReleased(new RunCommand(() -> drive.driveFieldCentric(-this.gamepad1.left_stick_y, -this.gamepad1.left_stick_x, -this.gamepad1.right_stick_x)));
+        //basketTrajectoryButton.whenHeld(new StrafeToPositionCommand(basketPose, drive))
+        //        .whenReleased(new RunCommand(() -> drive.driveFieldCentric(-this.gamepad1.left_stick_y, -this.gamepad1.left_stick_x, -this.gamepad1.right_stick_x)));
 
         kickerButton.whenPressed(new InstantCommand(() -> kicker.currentState = Kicker.state.OPEN))
                 .whenReleased(new InstantCommand(() -> kicker.currentState = Kicker.state.CLOSE));
-
-        zeroButton.whenHeld(new InstantCommand(() -> drive.setCurrentPose(new Pose2d(0, 0, Math.toRadians(270)))));
 
         drive.setDefaultCommand(new DrivetrainCommand(drive,
                 ()->(double)-this.gamepad1.left_stick_y,
@@ -103,16 +111,15 @@ public class FIELDREDTeleop extends CommandOpMode {
                 ()->(double)-this.gamepad1.right_stick_x,
                 true));
 
-        specimenClaw.whenHeld(new SpecimenClawCommand(specimen, true))
-                .whenReleased(new SpecimenClawCommand(specimen, false));
-
         // Reads limelight position for now
         //limelight.setDefaultCommand(new LimelightCommand(limelight, drive));
 
+        //TEST.whenHeld(new RunCommand(() -> intake.blockerDown())).whenReleased(new RunCommand(() -> intake.blockerUp()));
+
+        zeroButton.whenHeld(new InstantCommand(() -> drive.setCurrentPose(new Pose2d(0, 0, Math.toRadians(270)))));
+
         intakeOut.whenHeld(new InstantCommand(() -> {
-            intake.pivotDown();
-            intake.horizontalOut();
-            intake.setVacuumRun();
+            intake.currentState = Intake.state.INTAKING;
             intake.updateColorSensor(true);
 
             // Slow down the drivetrain when the intake is out
@@ -120,71 +127,110 @@ public class FIELDREDTeleop extends CommandOpMode {
             drive.strafeSpeedlimit = 0.3;
             drive.rotSpeedLimit = 0.3;
         })).whenReleased(new InstantCommand(() -> {
-            intake.pivotHome();
-            intake.horizontalIn();
-            intake.setVacuumStop();
+            intake.currentState = Intake.state.RESTING;
             intake.updateColorSensor(false);
 
-            drive.forwardSpeedlimit = 0.9;
-            drive.strafeSpeedlimit = 0.9;
-            drive.rotSpeedLimit = 0.7;
+            drive.forwardSpeedlimit = 1;
+            drive.strafeSpeedlimit = 1;
+            drive.rotSpeedLimit = 1;
         }));
 
-        toBasket.whenHeld(new InstantCommand(() -> {
-            intake.pivotBasket();
-            intake.setVacuumEject();
-
+        ejectSample.whenHeld(new InstantCommand(() -> {
+            intake.currentState = Intake.state.BARFING;
         })).whenReleased(new InstantCommand(() -> {
-            intake.pivotHome();
-            intake.setVacuumStop();
+            intake.currentState = Intake.state.RESTING;
         }));
+
+        basketScore.whenHeld(new SequentialCommandGroup(
+                //new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(800),
+                new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(400)
+        )).whenReleased(new SequentialCommandGroup(
+                new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(100)
+                //new DepositorCommand(depositor, Depositor.state.HOME).withTimeout(800)
+        ));
+
+        driverClaw.whenHeld(new SequentialCommandGroup(
+                //new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(800),
+                new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(400)
+        )).whenReleased(new SequentialCommandGroup(
+                new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(100)
+                //new DepositorCommand(depositor, Depositor.state.HOME).withTimeout(800)
+        ));
+
+        specimenScore.whenHeld(new SequentialCommandGroup(
+                new DepositorCommand(depositor, Depositor.state.SPECIMEN).withTimeout(800),
+                new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(100)
+        )).whenReleased(new SequentialCommandGroup(
+                new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(300),
+                new DepositorCommand(depositor, Depositor.state.HOME).withTimeout(10)
+        ));
+
+        transition.whenHeld(new TransitionCommand(depositor, intake, elevator)).whenReleased(new SequentialCommandGroup(
+                new DepositorCommand(depositor, Depositor.state.CLAWTIGHTEN).withTimeout(100),
+                new ElevatorPositionCommand(elevator, Elevator.basketState.MIDDLE_BASKET),
+                new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(100)
+        ));
 
         zoomZoom.whenHeld(new InstantCommand(() -> {
             drive.rotSpeedLimit = .8;
             drive.strafeSpeedlimit = 1;
             drive.forwardSpeedlimit = 1;
         })).whenReleased(new InstantCommand(() -> {
-            drive.forwardSpeedlimit = 0.9;
-            drive.strafeSpeedlimit = 0.9;
-            drive.rotSpeedLimit = 0.7;
+            drive.forwardSpeedlimit = 0.675;
+            drive.strafeSpeedlimit = 0.675;
+            drive.rotSpeedLimit = 0.4;
         }));
-
-        // Manual test elevator
-/*      elevUp.whenHeld(new InstantCommand(() -> {
-            elevator.vertical.set(1);
-        })).whenReleased(new InstantCommand(() -> {
-            elevator.vertical.set(0);
-        }));
-
-        elevDown.whenHeld(new InstantCommand(() -> {
-            elevator.vertical.set(-1);
-        })).whenReleased(new InstantCommand(() -> {
-            elevator.vertical.set(0);
-        })); */
-
-//        specimenClaw.whenHeld(new InstantCommand(() -> {
-//            specimen.open();
-//        })).whenReleased(new InstantCommand(() -> {
-//            specimen.close();
-//        }));
 
         depositorBar.whenHeld(new InstantCommand(() -> elevator.isBarState = true))
                 .whenReleased(new InstantCommand(() -> {
                     elevator.isBarState = false;
                 }));
 
-        basketOut.whenHeld(new InstantCommand(() -> basket.toDeposit()))
-                .whenReleased(new InstantCommand(() -> basket.toHome()));
+        depositorUp.whenPressed(new ParallelCommandGroup(
+                new InstantCommand(() -> {
+                    elevator.increaseStage();
+                    elevator.isZeroed = false;
+                }),
+                new SequentialCommandGroup(
+                        new WaitCommand(100),
+                        new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(10)
+                )
+        ));
+        depositorDown.whenPressed(new ParallelCommandGroup(
+                new InstantCommand(() -> {
+                    elevator.decreaseStage();
+                    if (elevator.currentStage == Elevator.basketState.MIDDLE_BASKET) {
+                        depositor.toHome();
+                    }
+                })
+                //new DepositorCommand(depositor, NewDepositor.state.HOME).withTimeout(10)
+        ));
 
-        depositorUp.whenPressed(new InstantCommand(() -> {elevator.increaseStage(); elevator.isZeroed = false;}));
-        depositorDown.whenPressed(new InstantCommand(() -> {
-            elevator.decreaseStage();}));
+        depositorUpDriver.whenPressed(new ParallelCommandGroup(
+                new InstantCommand(() -> {
+                    elevator.increaseStage();
+                    elevator.isZeroed = false;
+                }),
+                new SequentialCommandGroup(
+                        new WaitCommand(100),
+                        new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(10)
+                )
+        ));
+        depositorDownDriver.whenPressed(new ParallelCommandGroup(
+                new InstantCommand(() -> {
+                    elevator.decreaseStage();
+                    if (elevator.currentStage == Elevator.basketState.MIDDLE_BASKET) {
+                        depositor.toHome();
+                    }
+                })
+                //new DepositorCommand(depositor, NewDepositor.state.HOME).withTimeout(10)
+        ));
 
         depositorSlight.whenHeld(new InstantCommand(() -> elevator.isSlightState = true))
                 .whenReleased(new InstantCommand(() -> elevator.isSlightState = false));
 
         // If a subsystem has a default command, you don't need to register.
-        register(intake, basket, elevator, limelight);
+        register(intake, elevator, limelight, depositor);
         // Automatically updates telemetry
         schedule(new RunCommand(telemetry::update));
 
@@ -200,26 +246,28 @@ public class FIELDREDTeleop extends CommandOpMode {
         // Put game start code here. i.e home everything
         schedule(
                 new ParallelCommandGroup(
-                        new SpecimenClawCommand(specimen, false),
+                        new RunCommand(() -> telemetry.addData("Expansion Current", lynxModule.getCurrent(CurrentUnit.MILLIAMPS))),
+                        new SequentialCommandGroup(
+                                new DepositorCommand(depositor, Depositor.state.CLAWTIGHTEN).withTimeout(100),
+                                new DepositorCommand(depositor, Depositor.state.HOME).withTimeout(100)
+                        ),
                         new InstantCommand(() -> kicker.close()),
                         new InstantCommand(() -> {
-                            intake.horizontalIn();
-                            basket.toHome();
-                            elevator.currentStage = Elevator.basketState.HOME;
-                            intake.pivotHome();
+                            elevator.currentStage = Elevator.basketState.MIDDLE_BASKET;
                         }),
                         new RunCommand(() -> {
                             elevator.setTrim(this.gamepad1.right_trigger * 15.0);
-                            if ((this.gamepad1.right_trigger * 15.0) > 7) {
-                                specimen.open();
-                            }
-                            if ((elevator.currentStage != Elevator.basketState.HOME) && (intake.currentState == Intake.state.RESTING)) {
+                            /*if ((elevator.currentStage != Elevator.basketState.HOME) && (intake.currentState == Intake.state.RESTING)) {
                                 intake.currentState = Intake.state.SLIGHTLY;
                             }
                             else if ((elevator.currentStage == Elevator.basketState.HOME) && (intake.currentState == Intake.state.SLIGHTLY)) {
                                 intake.currentState = Intake.state.RESTING;
-                            }
+                            }*/
                         })
                 ));
+    }
+
+    public void transitionMacro() {
+
     }
 }

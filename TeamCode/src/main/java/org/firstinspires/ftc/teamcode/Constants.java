@@ -66,7 +66,7 @@ public class Constants {
 
 
     public static final double specimenOpenAngle = 90;
-    public static final double specimenCloseAngle = 11;
+    public static final double specimenCloseAngle = 26;
 
     public static final double intakeJamCurrentThreshold = 800;
 

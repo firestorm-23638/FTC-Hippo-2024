@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmode.auto.blue;
+package org.firstinspires.ftc.teamcode.opmode.auto;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -17,7 +17,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.commands.DepositorCommand;
 import org.firstinspires.ftc.teamcode.commands.ElevatorPositionCommand;
-import org.firstinspires.ftc.teamcode.commands.IntakeHasAnySampleCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeHasSampleCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakePositionCommand;
 import org.firstinspires.ftc.teamcode.commands.KickerCommand;
@@ -35,7 +34,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Kicker;
 import org.firstinspires.ftc.teamcode.subsystems.Limelight;
 
 @Autonomous
-public class TESTAuto0_6 extends CommandOpMode {
+public class RedSixSample extends CommandOpMode {
     private Drivetrain drive;
     private Elevator elevator;
     private Intake intake;
@@ -52,7 +51,7 @@ public class TESTAuto0_6 extends CommandOpMode {
         depositor = new Depositor(hardwareMap, telemetry);
         drive = new Drivetrain(hardwareMap, home, telemetry);
         elevator = new Elevator(hardwareMap, telemetry);
-        intake = new Intake(hardwareMap, telemetry, Intake.color.RED);
+        intake = new Intake(hardwareMap, telemetry, Intake.color.BLUE);
         limelight = new Limelight(hardwareMap, telemetry);
         kicker = new Kicker(hardwareMap, telemetry);
 
@@ -178,17 +177,17 @@ public class TESTAuto0_6 extends CommandOpMode {
                                         new RawDrivetrainCommand(drive, 0, 0, 0).withTimeout(50)
                                 )
                         ), new ParallelCommandGroup(
-                                new StrafeToPositionCommand(new Pose2d(BlueActions.basketPos, Math.toRadians(45)), drive),
+                        new StrafeToPositionCommand(new Pose2d(BlueActions.basketPos, Math.toRadians(45)), drive),
+                        new SequentialCommandGroup(
+                                new IntakePositionCommand(intake, Intake.state.RESTING, 500),
+                                new TransitionCommand(depositor, intake, elevator),
                                 new SequentialCommandGroup(
-                                        new IntakePositionCommand(intake, Intake.state.RESTING, 500),
-                                        new TransitionCommand(depositor, intake, elevator),
-                                        new SequentialCommandGroup(
-                                                new DepositorCommand(depositor, Depositor.state.CLAWTIGHTEN).withTimeout(50),
-                                                new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET),
-                                                new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(600)
-                                        )
+                                        new DepositorCommand(depositor, Depositor.state.CLAWTIGHTEN).withTimeout(50),
+                                        new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET),
+                                        new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(600)
                                 )
-                        ),
+                        )
+                ),
                         new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(Constants.depositorClawOpenTimeMs),
                         new ParallelCommandGroup(
                                 new DepositorCommand(depositor, Depositor.state.TRANSITIONING).withTimeout(500),
@@ -235,7 +234,7 @@ public class TESTAuto0_6 extends CommandOpMode {
                         new KickerCommand(kicker, 300, Kicker.state.OPEN),
                         new SequentialCommandGroup(
                                 new IntakePositionCommand(intake, Intake.state.INTAKING, 300, 0),
-                                new SlideUntilHasPieceCommand(intake, Intake.color.BLUE)
+                                new SlideUntilHasPieceCommand(intake, Intake.color.RED)
                         ),
                         new ConditionalCommand(
                                 //TRUE
@@ -272,7 +271,7 @@ public class TESTAuto0_6 extends CommandOpMode {
                         ),
                         new SequentialCommandGroup(
                                 new IntakePositionCommand(intake, Intake.state.INTAKING, 400, 0),
-                                new SlideUntilHasPieceCommand(intake, Intake.color.BLUE)
+                                new SlideUntilHasPieceCommand(intake, Intake.color.RED)
                         ),
                         new SequentialCommandGroup(
                                 new ParallelCommandGroup(

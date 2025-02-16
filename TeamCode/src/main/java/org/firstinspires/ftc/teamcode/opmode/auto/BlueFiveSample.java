@@ -1,10 +1,11 @@
-package org.firstinspires.ftc.teamcode.opmode.auto.blue;
+package org.firstinspires.ftc.teamcode.opmode.auto;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.ParallelRaceGroup;
@@ -14,10 +15,8 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Constants;
-import org.firstinspires.ftc.teamcode.commands.CalculateAndTurnLimelightCommand;
 import org.firstinspires.ftc.teamcode.commands.DepositorCommand;
 import org.firstinspires.ftc.teamcode.commands.ElevatorPositionCommand;
-import org.firstinspires.ftc.teamcode.commands.IntakeHasAnySampleCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeHasSampleCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakePositionCommand;
 import org.firstinspires.ftc.teamcode.commands.KickerCommand;
@@ -35,7 +34,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Kicker;
 import org.firstinspires.ftc.teamcode.subsystems.Limelight;
 
 @Autonomous
-public class TESTAuto0_6Limelight extends CommandOpMode {
+public class BlueFiveSample extends CommandOpMode {
     private Drivetrain drive;
     private Elevator elevator;
     private Intake intake;
@@ -74,7 +73,7 @@ public class TESTAuto0_6Limelight extends CommandOpMode {
         schedule(new RunCommand(telemetry::update));
         waitForStart();
         schedule(new InstantCommand(() -> {
-            depositor.clawClose();
+            depositor.clawTighten();
             depositor.toTransition();
             elevator.currentStage = Elevator.basketState.MIDDLE_BASKET;
             intake.currentState = Intake.state.RESTING;
@@ -109,11 +108,10 @@ public class TESTAuto0_6Limelight extends CommandOpMode {
                                 new TrajectoryGotoCommand(startToBasket, drive),
                                 new SequentialCommandGroup(
                                         new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET),
-                                        new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(500)
+                                        new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(700)
                                 )
                         ),
                         new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(Constants.depositorClawOpenTimeMs),
-                        //new WaitCommand(20000),
                         new ParallelCommandGroup(
                                 new DepositorCommand(depositor, Depositor.state.TRANSITIONING).withTimeout(500),
                                 new SequentialCommandGroup(
@@ -122,29 +120,35 @@ public class TESTAuto0_6Limelight extends CommandOpMode {
                                 ),
                                 //FIRST SAMPLE
                                 new SequentialCommandGroup(
-                                        new TrajectoryGotoCommand(basketToFirstSample, drive),
-                                        //new IntakePositionCommand(intake, Intake.state.INTAKING, 500, 15),
-                                        //new TurnToNearestYellowSampleCommand(limelight, drive).withTimeout(1000),
-                                        new SequentialCommandGroup(
-                                                new ParallelCommandGroup(
-                                                        new ParallelRaceGroup(
-                                                                new CalculateAndTurnLimelightCommand(limelight, drive, telemetry, 0.25).withTimeout(1500),
-                                                                new SequentialCommandGroup(
-                                                                        new WaitCommand(300),
-                                                                        new SlideUntilHasPieceCommand(intake, Intake.color.YELLOW)
-                                                                )
-                                                        )
-                                                )
+                                        new ParallelCommandGroup(
+                                                new IntakePositionCommand(intake, Intake.state.INTAKING, 600, 40),
+                                                new TrajectoryGotoCommand(basketToFirstSample, drive)
+                                        ),
+                                        new ParallelRaceGroup(
+                                                new RawDrivetrainCommand(drive, 0.2, 0, 0).withTimeout(1000),
+                                                new IntakeHasSampleCommand(intake)
                                         ),
                                         new RawDrivetrainCommand(drive, 0, 0, 0).withTimeout(50)
+//                                        new ParallelCommandGroup(
+//                                                new TrajectoryGotoCommand(basketToFirstSample, drive),
+//                                                new IntakePositionCommand(intake, Intake.state.INTAKING, 700, 30)
+//                                        ),
+//                                        //new TurnToNearestYellowSampleCommand(limelight, drive).withTimeout(1000),
+//                                        new IntakePositionCommand(intake, Intake.state.INTAKING, 100, 50),
+//                                        new ParallelRaceGroup(
+//                                                 new RawDrivetrainCommand(drive, .25, 0, 0).withTimeout(1000),
+//                                                 new IntakeHasSampleCommand(intake)
+//                                        ),
+//                                        new RawDrivetrainCommand(drive, 0, 0, 0).withTimeout(50)
                                 )
                         ),
-                        new IntakePositionCommand(intake, Intake.state.RESTING, 500),
                         new ParallelCommandGroup(
                                 new StrafeToPositionCommand(new Pose2d(BlueActions.basketPos, Math.toRadians(45)), drive),
                                 new SequentialCommandGroup(
+                                        new IntakePositionCommand(intake, Intake.state.RESTING, 500),
                                         new TransitionCommand(depositor, intake, elevator),
                                         new SequentialCommandGroup(
+                                                new DepositorCommand(depositor, Depositor.state.CLAWTIGHTEN).withTimeout(50),
                                                 new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET),
                                                 new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(500)
                                         )
@@ -160,26 +164,26 @@ public class TESTAuto0_6Limelight extends CommandOpMode {
                                 //SECOND SAMPLE
                                 new SequentialCommandGroup(
                                         new ParallelCommandGroup(
-                                                new IntakePositionCommand(intake, Intake.state.INTAKING, 700, 30),
+                                                new IntakePositionCommand(intake, Intake.state.INTAKING, 700, 50),
                                                 new TrajectoryGotoCommand(basketToSecondSample, drive)
                                         ),
                                         //new TurnToNearestYellowSampleCommand(limelight, drive).withTimeout(1000),
-                                        new IntakePositionCommand(intake, Intake.state.INTAKING, 100, 50),
+                                        new IntakePositionCommand(intake, Intake.state.INTAKING, 100, 60),
                                         new ParallelRaceGroup(
                                                 new RawDrivetrainCommand(drive, .25, 0, 0).withTimeout(1200),
                                                 new IntakeHasSampleCommand(intake)
                                         ),
                                         new RawDrivetrainCommand(drive, 0, 0, 0).withTimeout(50)
                                 )
-                        ),
-                        new IntakePositionCommand(intake, Intake.state.RESTING, 500),
-                        new ParallelCommandGroup(
+                        ), new ParallelCommandGroup(
                                 new StrafeToPositionCommand(new Pose2d(BlueActions.basketPos, Math.toRadians(45)), drive),
                                 new SequentialCommandGroup(
+                                        new IntakePositionCommand(intake, Intake.state.RESTING, 500),
                                         new TransitionCommand(depositor, intake, elevator),
                                         new SequentialCommandGroup(
+                                                new DepositorCommand(depositor, Depositor.state.CLAWTIGHTEN).withTimeout(50),
                                                 new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET),
-                                                new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(500)
+                                                new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(600)
                                         )
                                 )
                         ),
@@ -207,12 +211,13 @@ public class TESTAuto0_6Limelight extends CommandOpMode {
                                         new RawDrivetrainCommand(drive, 0, 0, 0).withTimeout(50)
                                 )
                         ),
-                        new IntakePositionCommand(intake, Intake.state.RESTING, 500),
                         new ParallelCommandGroup(
                                 new StrafeToPositionCommand(new Pose2d(BlueActions.basketPos, Math.toRadians(45)), drive),
                                 new SequentialCommandGroup(
+                                        new IntakePositionCommand(intake, Intake.state.RESTING, 500),
                                         new TransitionCommand(depositor, intake, elevator),
                                         new SequentialCommandGroup(
+                                                new DepositorCommand(depositor, Depositor.state.CLAWTIGHTEN).withTimeout(50),
                                                 new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET),
                                                 new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(500)
                                         )
@@ -225,51 +230,28 @@ public class TESTAuto0_6Limelight extends CommandOpMode {
                                 // Fourth Sample
                                 new TrajectoryGotoCommand(basketToSubmersible, drive)
                         ),
-                        new KickerCommand(kicker, 500, Kicker.state.OPEN),
+                        new KickerCommand(kicker, 300, Kicker.state.OPEN),
                         new SequentialCommandGroup(
-                                new IntakePositionCommand(intake, Intake.state.INTAKING, 400, 0),
+                                new IntakePositionCommand(intake, Intake.state.INTAKING, 300, 0),
                                 new SlideUntilHasPieceCommand(intake, Intake.color.BLUE)
                         ),
-                        new ParallelCommandGroup(
-                                new KickerCommand(kicker, 500, Kicker.state.CLOSE),
-                                new SequentialCommandGroup(
-                                        new IntakePositionCommand(intake, Intake.state.RESTING, 700),
-                                        new TransitionCommand(depositor, intake, elevator),
-                                        new SequentialCommandGroup(
-                                                new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET),
-                                                new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(500)
-                                        )
-                                ),
-                                new TrajectoryGotoCommand(submersibleToBasket, drive)
-                        ),
-                        new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(Constants.depositorClawOpenTimeMs),
-                        new ParallelCommandGroup(
-                                new DepositorCommand(depositor, Depositor.state.TRANSITIONING).withTimeout(500),
-                                new ElevatorPositionCommand(elevator, Elevator.basketState.MIDDLE_BASKET),
-                                // Fifth Sample
-                                new TrajectoryGotoCommand(basketToSubmersible2, drive)
-                        ),
                         new SequentialCommandGroup(
-                                new IntakePositionCommand(intake, Intake.state.INTAKING, 400, 0),
-                                new SlideUntilHasPieceCommand(intake, Intake.color.BLUE)
-                        ),
-                        new ParallelCommandGroup(
-                                new KickerCommand(kicker, 500, Kicker.state.CLOSE),
-                                new SequentialCommandGroup(
-                                        new IntakePositionCommand(intake, Intake.state.RESTING, 700),
-                                        new TransitionCommand(depositor, intake, elevator),
+                                new ParallelCommandGroup(
+                                        new KickerCommand(kicker, 500, Kicker.state.CLOSE),
                                         new SequentialCommandGroup(
-                                                new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET),
-                                                new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(500)
-                                        )
+                                                new IntakePositionCommand(intake, Intake.state.RESTING, 700),
+                                                new TransitionCommand(depositor, intake, elevator),
+                                                new SequentialCommandGroup(
+                                                        new DepositorCommand(depositor, Depositor.state.CLAWTIGHTEN).withTimeout(50),
+                                                        new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET),
+                                                        new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(500)
+                                                )
+                                        ),
+                                        new TrajectoryGotoCommand(submersibleToBasket, drive)
                                 ),
-                                new TrajectoryGotoCommand(submersible2ToBasket, drive)
-                        ),
-                        new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(300),
-                        new ParallelCommandGroup(
-                                new DepositorCommand(depositor, Depositor.state.HOME),
-                                new SequentialCommandGroup(
-                                        new WaitCommand(500),
+                                new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(Constants.depositorClawOpenTimeMs),
+                                new ParallelCommandGroup(
+                                        new DepositorCommand(depositor, Depositor.state.TRANSITIONING).withTimeout(500),
                                         new ElevatorPositionCommand(elevator, Elevator.basketState.MIDDLE_BASKET)
                                 )
                         )

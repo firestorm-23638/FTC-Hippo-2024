@@ -60,7 +60,7 @@ public class Depositor extends SubsystemBase {
         claw.turnToAngle(Constants.specimenCloseAngle);
     }
     public void clawTighten() {
-        claw.turnToAngle(0);
+        claw.turnToAngle(15);
     }
 
     public void toSpecimen() {

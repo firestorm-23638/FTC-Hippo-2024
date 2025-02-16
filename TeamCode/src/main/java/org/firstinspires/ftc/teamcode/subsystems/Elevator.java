@@ -22,7 +22,7 @@ public class Elevator extends SubsystemBase {
     public enum basketState {    // The current "state" or position of the elevator
         HOME((int)Constants.depositorVerticalToBottomPose),
         MIDDLE_BASKET((int)Constants.depositorVerticalToMidPose),
-        SPECIMEN((int)Constants.depositorVerticalToTopPose-225),
+        SPECIMEN((int)400),
         HIGH_BASKET((int)Constants.depositorVerticalToTopPose);
 
         public final int pos;

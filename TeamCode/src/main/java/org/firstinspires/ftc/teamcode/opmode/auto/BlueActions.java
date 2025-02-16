@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmode.auto.blue;
+package org.firstinspires.ftc.teamcode.opmode.auto;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -60,7 +60,7 @@ public class BlueActions {
 
     public static Action basketToThirdSample(Drivetrain drive) {
         return drive.getTrajectoryBuilder(new Pose2d(basketPos, Math.toRadians(45)))
-                .strafeToLinearHeading(new Vector2d(-58, -46), Math.toRadians(118))
+                .strafeToLinearHeading(new Vector2d(-58, -46), Math.toRadians(116))
                 //.strafeToLinearHeading(new Vector2d(-44, -37), Math.toRadians(152))
                 .build();
     }
