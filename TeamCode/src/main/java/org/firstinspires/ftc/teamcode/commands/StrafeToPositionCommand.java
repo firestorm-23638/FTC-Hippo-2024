@@ -6,17 +6,23 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.CommandBase;
+import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierLine;
+import com.pedropathing.pathgen.Path;
+import com.pedropathing.pathgen.PathChain;
+import com.pedropathing.pathgen.Point;
 
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 
 public class StrafeToPositionCommand extends CommandBase {
-    private Action action;
-    private final Pose2d targetPose;
+    private PathChain action;
+    private Pose currentPose;
+    private Pose targetPose;
     private boolean isFinished = false;
     private Drivetrain drivetrain;
 
 
-    public StrafeToPositionCommand(Pose2d targetPose, Drivetrain drivetrain) {
+    public StrafeToPositionCommand(Pose targetPose, Drivetrain drivetrain) {
         addRequirements(drivetrain);
         this.targetPose = targetPose;
         this.drivetrain = drivetrain;
@@ -24,17 +30,19 @@ public class StrafeToPositionCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        action = drivetrain.getTrajectoryBuilder(drivetrain.getCurrentPose())
-                .strafeToLinearHeading(targetPose.position, targetPose.heading.log())
+        currentPose = drivetrain.getCurrentPose();
+
+        action = drivetrain.getBuilder()
+                .addPath(new BezierLine(new Point(currentPose), new Point(targetPose)))
+                .setLinearHeadingInterpolation(currentPose.getHeading(), targetPose.getHeading())
                 .build();
+
+        drivetrain.follower.followPath(action,true);
     }
 
     @Override
     public void execute() {
-        TelemetryPacket packet = new TelemetryPacket();
-        action.preview(packet.fieldOverlay());
-        isFinished = !action.run(packet);
-        FtcDashboard.getInstance().sendTelemetryPacket(packet);
+        isFinished = !drivetrain.follower.isBusy();
     }
 
     @Override

@@ -17,11 +17,9 @@ import org.firstinspires.ftc.teamcode.commands.DepositorCommand;
 import org.firstinspires.ftc.teamcode.commands.ElevatorPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeHasSampleCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakePositionCommand;
-import org.firstinspires.ftc.teamcode.commands.KickerCommand;
 import org.firstinspires.ftc.teamcode.commands.RawDrivetrainCommand;
-import org.firstinspires.ftc.teamcode.commands.SlideUntilHasPieceCommand;
 import org.firstinspires.ftc.teamcode.commands.StrafeToPositionCommand;
-import org.firstinspires.ftc.teamcode.commands.TrajectoryGotoCommand;
+import org.firstinspires.ftc.teamcode.commands.PathChainCommand;
 import org.firstinspires.ftc.teamcode.commands.TransitionCommand;
 import org.firstinspires.ftc.teamcode.commands.TurnToNearestYellowSampleCommand;
 import org.firstinspires.ftc.teamcode.subsystems.Depositor;
@@ -101,7 +99,7 @@ public class BlueFourSample extends CommandOpMode {
 
         schedule(new SequentialCommandGroup(
                         new ParallelCommandGroup(
-                                new TrajectoryGotoCommand(startToBasket, drive),
+                                new PathChainCommand(startToBasket, drive),
                                 new SequentialCommandGroup(
                                         new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET),
                                         new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(700)
@@ -118,7 +116,7 @@ public class BlueFourSample extends CommandOpMode {
                                 new SequentialCommandGroup(
                                         new ParallelCommandGroup(
                                                 new IntakePositionCommand(intake, Intake.state.INTAKING, 600, 40),
-                                                new TrajectoryGotoCommand(basketToFirstSample, drive)
+                                                new PathChainCommand(basketToFirstSample, drive)
                                         ),
                                         new ParallelRaceGroup(
                                                 new RawDrivetrainCommand(drive, 0.2, 0, 0).withTimeout(1000),
@@ -161,7 +159,7 @@ public class BlueFourSample extends CommandOpMode {
                                 new SequentialCommandGroup(
                                         new ParallelCommandGroup(
                                                 new IntakePositionCommand(intake, Intake.state.INTAKING, 700, 50),
-                                                new TrajectoryGotoCommand(basketToSecondSample, drive)
+                                                new PathChainCommand(basketToSecondSample, drive)
                                         ),
                                         //new TurnToNearestYellowSampleCommand(limelight, drive).withTimeout(1000),
                                         new IntakePositionCommand(intake, Intake.state.INTAKING, 100, 60),
@@ -195,7 +193,7 @@ public class BlueFourSample extends CommandOpMode {
                                 // Third Sample
                                 new SequentialCommandGroup(
                                         new ParallelCommandGroup(
-                                                new TrajectoryGotoCommand(basketToThirdSample, drive),
+                                                new PathChainCommand(basketToThirdSample, drive),
                                                 new IntakePositionCommand(intake, Intake.state.INTAKING, 500, 15)
                                         ),
                                         //new TurnToNearestYellowSampleCommand(limelight, drive).withTimeout(1000),

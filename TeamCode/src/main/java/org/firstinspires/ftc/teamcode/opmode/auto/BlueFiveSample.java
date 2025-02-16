@@ -1,17 +1,15 @@
 package org.firstinspires.ftc.teamcode.opmode.auto;
 
-import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandOpMode;
-import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.ParallelRaceGroup;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
+import com.pedropathing.pathgen.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Constants;
@@ -23,7 +21,7 @@ import org.firstinspires.ftc.teamcode.commands.KickerCommand;
 import org.firstinspires.ftc.teamcode.commands.RawDrivetrainCommand;
 import org.firstinspires.ftc.teamcode.commands.SlideUntilHasPieceCommand;
 import org.firstinspires.ftc.teamcode.commands.StrafeToPositionCommand;
-import org.firstinspires.ftc.teamcode.commands.TrajectoryGotoCommand;
+import org.firstinspires.ftc.teamcode.commands.PathChainCommand;
 import org.firstinspires.ftc.teamcode.commands.TransitionCommand;
 import org.firstinspires.ftc.teamcode.commands.TurnToNearestYellowSampleCommand;
 import org.firstinspires.ftc.teamcode.subsystems.Depositor;
@@ -59,15 +57,15 @@ public class BlueFiveSample extends CommandOpMode {
         drive.strafeSpeedlimit = 1;
         drive.rotSpeedLimit = 1;
 
-        Action startToBasket = BlueActions.startToBasket(drive, home);
+        PathChain startToBasket = BlueActions.startToBasket(drive, home);
 
-        Action basketToFirstSample = BlueActions.basketToFirstSample(drive);
-        Action basketToSecondSample = BlueActions.basketToSecondSample(drive);
-        Action basketToThirdSample = BlueActions.basketToThirdSample(drive);
-        Action basketToSubmersible = BlueActions.basketToSubmersible2(drive);
-        Action submersibleToBasket = BlueActions.submersibleToBasket(drive);
-        Action basketToSubmersible2 = BlueActions.basketToSubmersible(drive);
-        Action submersible2ToBasket = BlueActions.submersible2ToBasket(drive);
+        PathChain basketToFirstSample = BlueActions.basketToFirstSample(drive);
+        PathChain basketToSecondSample = BlueActions.basketToSecondSample(drive);
+        PathChain basketToThirdSample = BlueActions.basketToThirdSample(drive);
+        PathChain basketToSubmersible = BlueActions.basketToSubmersible2(drive);
+        PathChain submersibleToBasket = BlueActions.submersibleToBasket(drive);
+        PathChain basketToSubmersible2 = BlueActions.basketToSubmersible(drive);
+        PathChain submersible2ToBasket = BlueActions.submersible2ToBasket(drive);
 
         register(drive);
         schedule(new RunCommand(telemetry::update));
@@ -105,7 +103,7 @@ public class BlueFiveSample extends CommandOpMode {
 
         schedule(new SequentialCommandGroup(
                         new ParallelCommandGroup(
-                                new TrajectoryGotoCommand(startToBasket, drive),
+                                new PathChainCommand(startToBasket, drive),
                                 new SequentialCommandGroup(
                                         new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET),
                                         new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(700)
@@ -122,7 +120,7 @@ public class BlueFiveSample extends CommandOpMode {
                                 new SequentialCommandGroup(
                                         new ParallelCommandGroup(
                                                 new IntakePositionCommand(intake, Intake.state.INTAKING, 600, 40),
-                                                new TrajectoryGotoCommand(basketToFirstSample, drive)
+                                                new PathChainCommand(basketToFirstSample, drive)
                                         ),
                                         new ParallelRaceGroup(
                                                 new RawDrivetrainCommand(drive, 0.2, 0, 0).withTimeout(1000),
@@ -165,7 +163,7 @@ public class BlueFiveSample extends CommandOpMode {
                                 new SequentialCommandGroup(
                                         new ParallelCommandGroup(
                                                 new IntakePositionCommand(intake, Intake.state.INTAKING, 700, 50),
-                                                new TrajectoryGotoCommand(basketToSecondSample, drive)
+                                                new PathChainCommand(basketToSecondSample, drive)
                                         ),
                                         //new TurnToNearestYellowSampleCommand(limelight, drive).withTimeout(1000),
                                         new IntakePositionCommand(intake, Intake.state.INTAKING, 100, 60),
@@ -199,7 +197,7 @@ public class BlueFiveSample extends CommandOpMode {
                                 // Third Sample
                                 new SequentialCommandGroup(
                                         new ParallelCommandGroup(
-                                                new TrajectoryGotoCommand(basketToThirdSample, drive),
+                                                new PathChainCommand(basketToThirdSample, drive),
                                                 new IntakePositionCommand(intake, Intake.state.INTAKING, 500, 15)
                                         ),
                                         //new TurnToNearestYellowSampleCommand(limelight, drive).withTimeout(1000),
@@ -228,7 +226,7 @@ public class BlueFiveSample extends CommandOpMode {
                                 new DepositorCommand(depositor, Depositor.state.TRANSITIONING).withTimeout(500),
                                 new ElevatorPositionCommand(elevator, Elevator.basketState.MIDDLE_BASKET),
                                 // Fourth Sample
-                                new TrajectoryGotoCommand(basketToSubmersible, drive)
+                                new PathChainCommand(basketToSubmersible, drive)
                         ),
                         new KickerCommand(kicker, 300, Kicker.state.OPEN),
                         new SequentialCommandGroup(
@@ -247,7 +245,7 @@ public class BlueFiveSample extends CommandOpMode {
                                                         new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(500)
                                                 )
                                         ),
-                                        new TrajectoryGotoCommand(submersibleToBasket, drive)
+                                        new PathChainCommand(submersibleToBasket, drive)
                                 ),
                                 new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(Constants.depositorClawOpenTimeMs),
                                 new ParallelCommandGroup(

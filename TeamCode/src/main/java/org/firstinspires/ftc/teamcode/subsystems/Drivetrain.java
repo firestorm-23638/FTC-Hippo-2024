@@ -6,6 +6,11 @@ import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.geometry.Vector2d;
 import com.arcrobotics.ftclib.hardware.RevIMU;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.Path;
+import com.pedropathing.pathgen.PathBuilder;
+import com.pedropathing.pathgen.PathChain;
 import com.qualcomm.hardware.bosch.BHI260IMU;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -24,7 +29,7 @@ public class Drivetrain extends SubsystemBase {
     private static int backLeft = 2;
     private static int backRight = 3;
 
-    private MecanumDrive mecanumDrive;
+    public Follower follower;
     private Telemetry telemetry;
     private double imuOffset;
 
@@ -32,139 +37,39 @@ public class Drivetrain extends SubsystemBase {
     public double strafeSpeedlimit = 1;
     public double rotSpeedLimit = 1;
 
-    public Drivetrain(HardwareMap hmap, Pose2d pose, Telemetry telemetry) {
+    public Drivetrain(HardwareMap hmap, Pose pose, Telemetry telemetry) {
         // get motors for drivetrain
-        mecanumDrive = new MecanumDrive(hmap,pose);
+        follower = new Follower(hmap);
+        follower.setStartingPose(pose);
         this.telemetry = telemetry;
-    }
-
-    private double clipRange(double value) {
-        return value <= -1.0 ? -1.0
-                : value >= 1.0 ? 1.0
-                : value;
-    }
-
-    /**
-     * Normalize the wheel speeds
-     */
-    private void normalize(double[] wheelSpeeds, double magnitude) {
-        double maxMagnitude = Math.abs(wheelSpeeds[0]);
-        for (int i = 1; i < wheelSpeeds.length; i++) {
-            double temp = Math.abs(wheelSpeeds[i]);
-            if (maxMagnitude < temp) {
-                maxMagnitude = temp;
-            }
-        }
-        for (int i = 0; i < wheelSpeeds.length; i++) {
-            wheelSpeeds[i] = (wheelSpeeds[i] / maxMagnitude) * magnitude;
-        }
-
-    }
-
-    /**
-     * Normalize the wheel speeds
-     */
-    private void normalize(double[] wheelSpeeds) {
-        double maxMagnitude = Math.abs(wheelSpeeds[0]);
-        for (int i = 1; i < wheelSpeeds.length; i++) {
-            double temp = Math.abs(wheelSpeeds[i]);
-            if (maxMagnitude < temp) {
-                maxMagnitude = temp;
-            }
-        }
-        if (maxMagnitude > 1) {
-            for (int i = 0; i < wheelSpeeds.length; i++) {
-                wheelSpeeds[i] = (wheelSpeeds[i] / maxMagnitude);
-            }
-        }
     }
 
     @Override
     public void periodic() {
-        this.mecanumDrive.updatePoseEstimate();
-        telemetry.addData("Robot X", this.mecanumDrive.pose.position.x);
-        telemetry.addData("Robot Y", this.mecanumDrive.pose.position.y);
-        telemetry.addData("Robot Heading", Math.toDegrees(this.mecanumDrive.pose.heading.log()));
-    }
+        telemetry.addData("Robot X", this.follower.getPose().getX());
+        telemetry.addData("Robot Y", this.follower.getPose().getY());
+        telemetry.addData("Robot Heading", Math.toDegrees(this.follower.getPose().getHeading()));
 
-    public void testFrontLeft(double amt) {
-        this.mecanumDrive.leftFront.setPower(amt);
-    }
-
-    public void testFrontRight(double amt) {
-        this.mecanumDrive.rightFront.setPower(amt);
-    }
-
-    public void testBackLeft(double amt) {
-        this.mecanumDrive.leftBack.setPower(amt);
-    }
-
-    public void testBackRight(double amt) {
-        this.mecanumDrive.rightBack.setPower(amt);
+        this.follower.update();
     }
 
     public void driveArcade(double forwardSpeed, double strafeSpeed, double turnSpeed) {
-        this.fieldCentricDrive(forwardSpeed, strafeSpeed, turnSpeed, 0.0);
+        this.follower.setTeleOpMovementVectors(forwardSpeed*forwardSpeedlimit, strafeSpeed*strafeSpeedlimit, turnSpeed*rotSpeedLimit);
     }
 
-    public void setCurrentPose(Pose2d newPose) {
-        this.mecanumDrive.pose = newPose;
+    public void setCurrentPose(Pose newPose) {
+        this.follower.setPose(newPose);
     }
 
-    public Pose2d getCurrentPose() {
-        return this.mecanumDrive.pose;
+    public Pose getCurrentPose() {
+        return this.follower.getPose();
     }
 
     public void driveFieldCentric(double forwardSpeed, double strafeSpeed, double turnSpeed, boolean isFieldCentric) {
-        if (isFieldCentric) {
-            this.fieldCentricDrive(forwardSpeed, strafeSpeed, turnSpeed,Math.toDegrees(mecanumDrive.pose.heading.log()) + 90);
-        }
-        else {
-            this.fieldCentricDrive(forwardSpeed, strafeSpeed, turnSpeed, 0);
-        }
-
+        this.follower.setTeleOpMovementVectors(forwardSpeed*forwardSpeedlimit, strafeSpeed*strafeSpeedlimit, turnSpeed*rotSpeedLimit, isFieldCentric);
     }
 
-    private void fieldCentricDrive(double forwardSpeed, double strafeSpeed, double turnSpeed, double gyroAngle) {
-
-        forwardSpeed = forwardSpeed * forwardSpeedlimit;
-        strafeSpeed = strafeSpeed * strafeSpeedlimit;
-        turnSpeed = turnSpeed * rotSpeedLimit;
-
-        strafeSpeed = clipRange(strafeSpeed);
-        forwardSpeed = clipRange(forwardSpeed);
-        turnSpeed = clipRange(turnSpeed);
-        Vector2d input = new Vector2d(strafeSpeed, forwardSpeed);
-        input = input.rotateBy(-gyroAngle);
-
-        double theta = input.angle();
-
-        double[] wheelSpeeds = new double[4];
-        wheelSpeeds[frontLeft] = Math.sin(theta + Math.PI / 4);
-        wheelSpeeds[frontRight] = Math.sin(theta - Math.PI / 4);
-        wheelSpeeds[backLeft] = Math.sin(theta - Math.PI / 4);
-        wheelSpeeds[backRight] = Math.sin(theta + Math.PI / 4);
-
-        normalize(wheelSpeeds, input.magnitude());
-
-        wheelSpeeds[frontLeft] += turnSpeed;
-        wheelSpeeds[frontRight] -= turnSpeed;
-        wheelSpeeds[backLeft] += turnSpeed;
-        wheelSpeeds[backRight] -= turnSpeed;
-
-        normalize(wheelSpeeds);
-
-        this.mecanumDrive.leftFront.setPower(wheelSpeeds[frontLeft]);
-        this.mecanumDrive.rightFront.setPower(wheelSpeeds[frontRight]);
-        this.mecanumDrive.leftBack.setPower(wheelSpeeds[backLeft]);
-        this.mecanumDrive.rightBack.setPower(wheelSpeeds[backRight]);
-    }
-
-    public TrajectoryActionBuilder getTrajectoryBuilder(Pose2d initalPose) {
-        return this.mecanumDrive.actionBuilder(initalPose);
-    }
-
-    public TrajectoryActionBuilder inverseGetTrajectoryBuilder(Pose2d initialPose) {
-        return this.mecanumDrive.inverseActionBuilder(initialPose);
+    public PathBuilder getBuilder() {
+        return follower.pathBuilder();
     }
 }

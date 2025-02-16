@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.commands.KickerCommand;
 import org.firstinspires.ftc.teamcode.commands.RawDrivetrainCommand;
 import org.firstinspires.ftc.teamcode.commands.SlideUntilHasPieceCommand;
 import org.firstinspires.ftc.teamcode.commands.StrafeToPositionCommand;
-import org.firstinspires.ftc.teamcode.commands.TrajectoryGotoCommand;
+import org.firstinspires.ftc.teamcode.commands.PathChainCommand;
 import org.firstinspires.ftc.teamcode.commands.TransitionCommand;
 import org.firstinspires.ftc.teamcode.commands.TurnToNearestYellowSampleCommand;
 import org.firstinspires.ftc.teamcode.subsystems.Depositor;
@@ -105,7 +105,7 @@ public class RedSixSample extends CommandOpMode {
 
         schedule(new SequentialCommandGroup(
                         new ParallelCommandGroup(
-                                new TrajectoryGotoCommand(startToBasket, drive),
+                                new PathChainCommand(startToBasket, drive),
                                 new SequentialCommandGroup(
                                         new ElevatorPositionCommand(elevator, Elevator.basketState.HIGH_BASKET),
                                         new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(700)
@@ -122,7 +122,7 @@ public class RedSixSample extends CommandOpMode {
                                 new SequentialCommandGroup(
                                         new ParallelCommandGroup(
                                                 new IntakePositionCommand(intake, Intake.state.INTAKING, 600, 40),
-                                                new TrajectoryGotoCommand(basketToFirstSample, drive)
+                                                new PathChainCommand(basketToFirstSample, drive)
                                         ),
                                         new ParallelRaceGroup(
                                                 new RawDrivetrainCommand(drive, 0.2, 0, 0).withTimeout(1000),
@@ -166,7 +166,7 @@ public class RedSixSample extends CommandOpMode {
                                 new SequentialCommandGroup(
                                         new ParallelCommandGroup(
                                                 new IntakePositionCommand(intake, Intake.state.INTAKING, 700, 50),
-                                                new TrajectoryGotoCommand(basketToSecondSample, drive)
+                                                new PathChainCommand(basketToSecondSample, drive)
                                         ),
                                         //new TurnToNearestYellowSampleCommand(limelight, drive).withTimeout(1000),
                                         new IntakePositionCommand(intake, Intake.state.INTAKING, 100, 60),
@@ -200,7 +200,7 @@ public class RedSixSample extends CommandOpMode {
                                 // Third Sample
                                 new SequentialCommandGroup(
                                         new ParallelCommandGroup(
-                                                new TrajectoryGotoCommand(basketToThirdSample, drive),
+                                                new PathChainCommand(basketToThirdSample, drive),
                                                 new IntakePositionCommand(intake, Intake.state.INTAKING, 500, 15)
                                         ),
                                         //new TurnToNearestYellowSampleCommand(limelight, drive).withTimeout(1000),
@@ -229,7 +229,7 @@ public class RedSixSample extends CommandOpMode {
                                 new DepositorCommand(depositor, Depositor.state.TRANSITIONING).withTimeout(500),
                                 new ElevatorPositionCommand(elevator, Elevator.basketState.MIDDLE_BASKET),
                                 // Fourth Sample
-                                new TrajectoryGotoCommand(basketToSubmersible, drive)
+                                new PathChainCommand(basketToSubmersible, drive)
                         ),
                         new KickerCommand(kicker, 300, Kicker.state.OPEN),
                         new SequentialCommandGroup(
@@ -256,14 +256,14 @@ public class RedSixSample extends CommandOpMode {
                                                                 new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(500)
                                                         )
                                                 ),
-                                                new TrajectoryGotoCommand(submersibleToBasket, drive)
+                                                new PathChainCommand(submersibleToBasket, drive)
                                         ),
                                         new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(Constants.depositorClawOpenTimeMs),
                                         new ParallelCommandGroup(
                                                 new DepositorCommand(depositor, Depositor.state.TRANSITIONING).withTimeout(500),
                                                 new ElevatorPositionCommand(elevator, Elevator.basketState.MIDDLE_BASKET),
                                                 // Fifth Sample
-                                                new TrajectoryGotoCommand(basketToSubmersible2, drive)
+                                                new PathChainCommand(basketToSubmersible2, drive)
                                         )
                                 ),
                                 //CONDITION
@@ -285,7 +285,7 @@ public class RedSixSample extends CommandOpMode {
                                                         new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(500)
                                                 )
                                         ),
-                                        new TrajectoryGotoCommand(submersible2ToBasket, drive)
+                                        new PathChainCommand(submersible2ToBasket, drive)
                                 ),
                                 new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(300),
                                 new ParallelCommandGroup(

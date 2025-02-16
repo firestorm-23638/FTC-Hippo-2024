@@ -255,14 +255,6 @@ public class BLUETeleop extends CommandOpMode {
         // Automatically updates telemetry
         schedule(new RunCommand(telemetry::update));
 
-        // Set pose from when defined in autonomous
-        if (Constants.pose != null) {
-            drive.setCurrentPose(Constants.pose);
-        }
-        else {
-            drive.setCurrentPose(new Pose2d(0, 0, 0));
-        }
-
         waitForStart();
         // Put game start code here. i.e home everything
         schedule(
