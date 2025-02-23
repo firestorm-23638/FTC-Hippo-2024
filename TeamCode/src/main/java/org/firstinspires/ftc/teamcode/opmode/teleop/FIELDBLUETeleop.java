@@ -17,6 +17,7 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.pedropathing.localization.Pose;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -55,7 +56,7 @@ public class FIELDBLUETeleop extends CommandOpMode {
         driver = new GamepadEx(this.gamepad1);
         operator = new GamepadEx(this.gamepad2);
 
-        drive = new Drivetrain(hardwareMap, new Pose2d(0, 0, 0), telemetry);
+        drive = new Drivetrain(hardwareMap, new Pose(0, 0, 0), telemetry);
         intake = new Intake(hardwareMap, telemetry,  Intake.color.RED, gamepad1);
         elevator = new Elevator(hardwareMap, telemetry, gamepad1);
         limelight = new Limelight(hardwareMap, telemetry);
@@ -115,8 +116,6 @@ public class FIELDBLUETeleop extends CommandOpMode {
         //limelight.setDefaultCommand(new LimelightCommand(limelight, drive));
 
         //TEST.whenHeld(new RunCommand(() -> intake.blockerDown())).whenReleased(new RunCommand(() -> intake.blockerUp()));
-
-        zeroButton.whenHeld(new InstantCommand(() -> drive.setCurrentPose(new Pose2d(0, 0, Math.toRadians(270)))));
 
         intakeOut.whenHeld(new InstantCommand(() -> {
             intake.currentState = Intake.state.INTAKING;
@@ -254,14 +253,6 @@ public class FIELDBLUETeleop extends CommandOpMode {
         register(intake, elevator, limelight, depositor);
         // Automatically updates telemetry
         schedule(new RunCommand(telemetry::update));
-
-        // Set pose from when defined in autonomous
-        if (Constants.pose != null) {
-            drive.setCurrentPose(Constants.pose);
-        }
-        else {
-            drive.setCurrentPose(new Pose2d(0, 0, 0));
-        }
 
         waitForStart();
         // Put game start code here. i.e home everything

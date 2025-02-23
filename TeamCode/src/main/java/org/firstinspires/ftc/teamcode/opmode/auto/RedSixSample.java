@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmode.auto;
 
-import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
@@ -12,6 +9,8 @@ import com.arcrobotics.ftclib.command.ParallelRaceGroup;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
+import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Constants;
@@ -46,7 +45,7 @@ public class RedSixSample extends CommandOpMode {
     public void initialize() {
         Constants.isRed = false;
 
-        Pose2d home = new Pose2d(-38,-60.5, Math.toRadians(90));
+        Pose home = new Pose(-38,-60.5, Math.toRadians(90));
 
         depositor = new Depositor(hardwareMap, telemetry);
         drive = new Drivetrain(hardwareMap, home, telemetry);
@@ -59,15 +58,15 @@ public class RedSixSample extends CommandOpMode {
         drive.strafeSpeedlimit = 1;
         drive.rotSpeedLimit = 1;
 
-        Action startToBasket = BlueActions.startToBasket(drive, home);
+        PathChain startToBasket = Actions.startToBasket(drive, home);
 
-        Action basketToFirstSample = BlueActions.basketToFirstSample(drive);
-        Action basketToSecondSample = BlueActions.basketToSecondSample(drive);
-        Action basketToThirdSample = BlueActions.basketToThirdSample(drive);
-        Action basketToSubmersible = BlueActions.basketToSubmersible2(drive);
-        Action submersibleToBasket = BlueActions.submersibleToBasket(drive);
-        Action basketToSubmersible2 = BlueActions.basketToSubmersible(drive);
-        Action submersible2ToBasket = BlueActions.submersible2ToBasket(drive);
+        PathChain basketToFirstSample = Actions.basketToFirstSample(drive);
+        PathChain basketToSecondSample = Actions.basketToSecondSample(drive);
+        PathChain basketToThirdSample = Actions.basketToThirdSample(drive);
+        PathChain basketToSubmersible = Actions.basketToSubmersible2(drive);
+        PathChain submersibleToBasket = Actions.submersibleToBasket(drive);
+        PathChain basketToSubmersible2 = Actions.basketToSubmersible(drive);
+        PathChain submersible2ToBasket = Actions.submersible2ToBasket(drive);
 
         register(drive);
         schedule(new RunCommand(telemetry::update));
@@ -144,7 +143,7 @@ public class RedSixSample extends CommandOpMode {
                                 )
                         ),
                         new ParallelCommandGroup(
-                                new StrafeToPositionCommand(new Pose2d(BlueActions.basketPos, Math.toRadians(45)), drive),
+                                new StrafeToPositionCommand(Actions.basketPos, drive),
                                 new SequentialCommandGroup(
                                         new IntakePositionCommand(intake, Intake.state.RESTING, 500),
                                         new TransitionCommand(depositor, intake, elevator),
@@ -177,7 +176,7 @@ public class RedSixSample extends CommandOpMode {
                                         new RawDrivetrainCommand(drive, 0, 0, 0).withTimeout(50)
                                 )
                         ), new ParallelCommandGroup(
-                        new StrafeToPositionCommand(new Pose2d(BlueActions.basketPos, Math.toRadians(45)), drive),
+                        new StrafeToPositionCommand(Actions.basketPos, drive),
                         new SequentialCommandGroup(
                                 new IntakePositionCommand(intake, Intake.state.RESTING, 500),
                                 new TransitionCommand(depositor, intake, elevator),
@@ -213,7 +212,7 @@ public class RedSixSample extends CommandOpMode {
                                 )
                         ),
                         new ParallelCommandGroup(
-                                new StrafeToPositionCommand(new Pose2d(BlueActions.basketPos, Math.toRadians(45)), drive),
+                                new StrafeToPositionCommand(Actions.basketPos, drive),
                                 new SequentialCommandGroup(
                                         new IntakePositionCommand(intake, Intake.state.RESTING, 500),
                                         new TransitionCommand(depositor, intake, elevator),
@@ -234,14 +233,14 @@ public class RedSixSample extends CommandOpMode {
                         new KickerCommand(kicker, 300, Kicker.state.OPEN),
                         new SequentialCommandGroup(
                                 new IntakePositionCommand(intake, Intake.state.INTAKING, 300, 0),
-                                new SlideUntilHasPieceCommand(intake, Intake.color.RED)
+                                new SlideUntilHasPieceCommand(intake, Intake.color.BLUE)
                         ),
                         new ConditionalCommand(
                                 //TRUE
                                 new SequentialCommandGroup(
                                         new IntakePositionCommand(intake, Intake.state.DOWN_EJECTING, 300, 50),
                                         new IntakePositionCommand(intake, Intake.state.RESTING, 500),
-                                        new StrafeToPositionCommand(new Pose2d(new Vector2d(-21, -5), Math.toRadians(0)), drive)
+                                        new StrafeToPositionCommand(Actions.basketPos, drive)
                                 ),
                                 //FALSE
                                 new SequentialCommandGroup(
@@ -271,7 +270,7 @@ public class RedSixSample extends CommandOpMode {
                         ),
                         new SequentialCommandGroup(
                                 new IntakePositionCommand(intake, Intake.state.INTAKING, 400, 0),
-                                new SlideUntilHasPieceCommand(intake, Intake.color.RED)
+                                new SlideUntilHasPieceCommand(intake, Intake.color.BLUE)
                         ),
                         new SequentialCommandGroup(
                                 new ParallelCommandGroup(

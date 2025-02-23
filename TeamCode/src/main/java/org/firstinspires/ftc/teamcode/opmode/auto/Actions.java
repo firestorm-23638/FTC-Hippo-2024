@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmode.auto;
 
-import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.BezierLine;
@@ -12,7 +9,7 @@ import com.pedropathing.pathgen.Point;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 
 // This class is all the actions used in autonomous. They are all in one file so you only have to change one action to affect all autos.
-public class BlueActions {
+public class Actions {
     public static final Pose basketPos = new Pose(
             15,
             129,
@@ -125,17 +122,17 @@ public class BlueActions {
 
     // Specimen Paths
 
-    public static PathChain startToSpecimen(Drivetrain drive, Pose home) {
-        return drive.getBuilder()
-                .addPath(new BezierLine(
-                        new Point(home),
-                        new Point(specPos)
-                ))
-                .setLinearHeadingInterpolation(home.getHeading(), specPos.getHeading())
-                .build();
-    }
-
-    public static PathChain
+//    public static PathChain startToSpecimen(Drivetrain drive, Pose home) {
+//        return drive.getBuilder()
+//                .addPath(new BezierLine(
+//                        new Point(home),
+//                        new Point(specPos)
+//                ))
+//                .setLinearHeadingInterpolation(home.getHeading(), specPos.getHeading())
+//                .build();
+//    }
+//
+//    public static PathChain
 
 //    public static Action toFirstSample(Drivetrain drive) {
 //         return drive.getBuilder(new Pose2d(rightSpecimenPos, Math.toRadians(180)))

@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmode.auto;
 
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
@@ -60,15 +58,15 @@ public class BlueSixSample extends CommandOpMode {
         drive.strafeSpeedlimit = 1;
         drive.rotSpeedLimit = 1;
 
-        PathChain startToBasket = BlueActions.startToBasket(drive, home);
+        PathChain startToBasket = Actions.startToBasket(drive, home);
 
-        PathChain basketToFirstSample = BlueActions.basketToFirstSample(drive);
-        PathChain basketToSecondSample = BlueActions.basketToSecondSample(drive);
-        PathChain basketToThirdSample = BlueActions.basketToThirdSample(drive);
-        PathChain basketToSubmersible = BlueActions.basketToSubmersible2(drive);
-        PathChain submersibleToBasket = BlueActions.submersibleToBasket(drive);
-        PathChain basketToSubmersible2 = BlueActions.basketToSubmersible(drive);
-        PathChain submersible2ToBasket = BlueActions.submersible2ToBasket(drive);
+        PathChain basketToFirstSample = Actions.basketToFirstSample(drive);
+        PathChain basketToSecondSample = Actions.basketToSecondSample(drive);
+        PathChain basketToThirdSample = Actions.basketToThirdSample(drive);
+        PathChain basketToSubmersible = Actions.basketToSubmersible2(drive);
+        PathChain submersibleToBasket = Actions.submersibleToBasket(drive);
+        PathChain basketToSubmersible2 = Actions.basketToSubmersible(drive);
+        PathChain submersible2ToBasket = Actions.submersible2ToBasket(drive);
 
         register(drive);
         schedule(new RunCommand(telemetry::update));
@@ -145,7 +143,7 @@ public class BlueSixSample extends CommandOpMode {
                                 )
                         ),
                         new ParallelCommandGroup(
-                                new StrafeToPositionCommand(BlueActions.basketPos, drive),
+                                new StrafeToPositionCommand(Actions.basketPos, drive),
                                 new SequentialCommandGroup(
                                         new IntakePositionCommand(intake, Intake.state.RESTING, 500),
                                         new TransitionCommand(depositor, intake, elevator),
@@ -178,7 +176,7 @@ public class BlueSixSample extends CommandOpMode {
                                         new RawDrivetrainCommand(drive, 0, 0, 0).withTimeout(50)
                                 )
                         ), new ParallelCommandGroup(
-                                new StrafeToPositionCommand(BlueActions.basketPos, drive),
+                                new StrafeToPositionCommand(Actions.basketPos, drive),
                                 new SequentialCommandGroup(
                                         new IntakePositionCommand(intake, Intake.state.RESTING, 500),
                                         new TransitionCommand(depositor, intake, elevator),
@@ -214,7 +212,7 @@ public class BlueSixSample extends CommandOpMode {
                                 )
                         ),
                         new ParallelCommandGroup(
-                                new StrafeToPositionCommand(BlueActions.basketPos, drive),
+                                new StrafeToPositionCommand(Actions.basketPos, drive),
                                 new SequentialCommandGroup(
                                         new IntakePositionCommand(intake, Intake.state.RESTING, 500),
                                         new TransitionCommand(depositor, intake, elevator),
@@ -242,7 +240,7 @@ public class BlueSixSample extends CommandOpMode {
                                 new SequentialCommandGroup(
                                         new IntakePositionCommand(intake, Intake.state.DOWN_EJECTING, 300, 50),
                                         new IntakePositionCommand(intake, Intake.state.RESTING, 500),
-                                        new StrafeToPositionCommand(BlueActions.basketPos, drive)
+                                        new StrafeToPositionCommand(Actions.basketPos, drive)
                                 ),
                                 //FALSE
                                 new SequentialCommandGroup(

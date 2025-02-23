@@ -46,7 +46,7 @@ public class Constants {
     public static final double intakeHorizontalToHomePose = 0;
 
     public static final double intakePivotToBasket = 210;
-    public static final double intakePivotToDown = 60;
+    public static final double intakePivotToDown = 70;
     public static final double intakePivotToRest = 210;
     public static final double intakePivotToEject = 190;
 
