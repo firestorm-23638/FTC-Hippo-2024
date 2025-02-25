@@ -30,14 +30,14 @@ public class ForwardAndTurnToNearestSampleCommand extends CommandBase {
 
         addRequirements(limelight, drivetrain);
 
-        limelight.toYellowSample();
+        limelight.toYellowAndBlue();
     }
 
     @Override
     public void execute() {
-        List<LLResultTypes.ColorResult> results = limelight.lookForSamples();
+        double[] results = limelight.lookForSamples();
         if (results != null) {
-            currentAngle = results.get(0).getTargetXDegrees();
+            currentAngle = results[0];
             hasTarget = true;
         }
         if (hasTarget) {

@@ -14,7 +14,9 @@ import java.util.List;
 public class Limelight extends SubsystemBase {
     private final Telemetry telemetry;
     private LLResult currResult;
+    private double[] llpython;
     public short currentPipeline = 0;
+    public boolean works = false;
 
     private final Limelight3A limelight;
 
@@ -22,20 +24,22 @@ public class Limelight extends SubsystemBase {
         this.telemetry = telemetry;
 
         this.limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(2);
         limelight.setPollRateHz(100);
         limelight.start();
+
+        llpython = new double[8];
     }
 
     @Override
     public void periodic() {
-        lookForSamples(); // for now
+        telemetry.addData("works", works);
+        limelight.updatePythonInputs(llpython);
+        //lookForSamples(); // for now
 //        if (currResult != null) {
 //            telemetry.addData("Limelight X", currResult.getTx() * 39.26);
 //            telemetry.addData("Limelight Y",  currResult.getTy() * 39.26);
 //            telemetry.addData("Limelight Bot pose", currResult.getBotpose().toString());
 //        }
-
     }
 
     public void updatePosition() {
@@ -52,24 +56,31 @@ public class Limelight extends SubsystemBase {
         limelight.pipelineSwitch(1);
     }
 
-    public void toYellowSample() {
-        limelight.pipelineSwitch(2);
+    public void toYellowAndBlue() {
+        limelight.pipelineSwitch(3);
+        limelight.pipelineSwitch(4);
     }
 
-    public void toBlueSample() {
-        limelight.pipelineSwitch(0);
+    public void toYellowAndRed() {
+        limelight.pipelineSwitch(5);
     }
 
-    public List<LLResultTypes.ColorResult> lookForSamples() {
-        LLResult result = limelight.getLatestResult();
-        if (result != null && result.isValid()) {
-            List<LLResultTypes.ColorResult> colorResults = result.getColorResults();
-            for (LLResultTypes.ColorResult cr : colorResults) {
-                telemetry.addData("Color", "X: %.2f, Y: %.2f", cr.getTargetXDegrees(), cr.getTargetYDegrees());
-            }
-            return colorResults;
-        }
+    public double[] getYellowAndBlue() {
+
         return null;
+    }
+
+
+    public double[] lookForSamples() {
+        LLResult result = limelight.getLatestResult();
+        return result.getPythonOutput();
+//        if (result != null && result.isValid()) {
+//            List<LLResultTypes.ColorResult> colorResults = result.getColorResults();
+//            for (LLResultTypes.ColorResult cr : colorResults) {
+//                telemetry.addData("Color", "X: %.2f, Y: %.2f", cr.getTargetXDegrees(), cr.getTargetYDegrees());
+//            }
+//            return colorResults;
+//        }
     }
 
     /*public Pose2d getCurrentPose() {

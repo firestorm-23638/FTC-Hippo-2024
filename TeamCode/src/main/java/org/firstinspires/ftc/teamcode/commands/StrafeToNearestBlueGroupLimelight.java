@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Limelight;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CalculateAndTurnLimelightCommand extends CommandBase {
+public class StrafeToNearestBlueGroupLimelight extends CommandBase {
     public class AngleAmount {
         public double angle;
         public int amount;
@@ -30,13 +30,13 @@ public class CalculateAndTurnLimelightCommand extends CommandBase {
     private double allAngles[] = new double[MAX_TICKS];
     private List<AngleAmount> uniqueAngles = new ArrayList<>();
     private double goalAngle;
-    private double initialAngle;
+    private double initialPose;
 
     private double forSpeed = 0;
 
     private int ticks = 0;
 
-    public CalculateAndTurnLimelightCommand(Limelight limelight, Drivetrain drivetrain, Telemetry telemetry, double forwardSpeed) {
+    public StrafeToNearestBlueGroupLimelight(Limelight limelight, Drivetrain drivetrain, Telemetry telemetry, double forwardSpeed) {
         this.limelight = limelight;
         this.drivetrain = drivetrain;
         this.forSpeed = forwardSpeed;
@@ -44,7 +44,7 @@ public class CalculateAndTurnLimelightCommand extends CommandBase {
 
         addRequirements(limelight, drivetrain);
 
-        limelight.toYellowSample();
+        limelight.toYellowAndBlue();
     }
 
     public double coterm(double angle) {
@@ -75,28 +75,31 @@ public class CalculateAndTurnLimelightCommand extends CommandBase {
         telemetry.addData("new goal", goalAngle);
         telemetry.addData("new current", currentAngle);
         return (goalAngle - currentAngle);
+
     }
 
     @Override
     public void execute() {
         telemetry.addData("Has Angle", hasAngle);
+        telemetry.addData("Ticks", ticks);
         //telemetry.addData("Final Limelight Angle", finalAngle.angle);
         if (hasAngle) {
             telemetry.addData("Final Limelight Angle", finalAngle.angle);
-            double currentAngle = Math.toDegrees(drivetrain.getCurrentPose().heading.log());
-            double amtTurned = initialAngle - currentAngle;
+            double currentPos = drivetrain.getCurrentPose().position.x;
+            double amtTurned = initialPose - currentPos;
             telemetry.addData("Amount turned", amtTurned);
-            double kP = 0.03;
+            double kP = 0.08;
             double error = finalAngle.angle - amtTurned;
             telemetry.addData("Error", finalAngle.angle - amtTurned);
             telemetry.addData("Setting to", error*kP);
-            drivetrain.driveArcade(forSpeed, 0, error*kP);
+            //drivetrain.driveArcade(0, error*kP, 0);
         }
         else {
             if (ticks < MAX_TICKS) {
-                List<LLResultTypes.ColorResult> results = limelight.lookForSamples();
+                double[] results = limelight.lookForSamples();
+                telemetry.addData("Results", results == null);
                 if (results != null) {
-                    allAngles[ticks] = results.get(0).getTargetXDegrees();
+                    allAngles[ticks] = results[1];
                     ticks ++;
                 }
             }
@@ -115,8 +118,8 @@ public class CalculateAndTurnLimelightCommand extends CommandBase {
                         finalAngle = u;
                     }
                 }
-                goalAngle = coterm(Math.toDegrees(drivetrain.getCurrentPose().heading.log()) + (-finalAngle.angle * LIMELIGHT_ANGLE_MULTIPLIER));
-                initialAngle = Math.toDegrees(drivetrain.getCurrentPose().heading.log());
+                goalAngle = coterm(Math.toDegrees(drivetrain.getCurrentPose().position.x) + (-finalAngle.angle * LIMELIGHT_ANGLE_MULTIPLIER));
+                initialPose = Math.toDegrees(drivetrain.getCurrentPose().position.x);
                 hasAngle = true;
             }
         }

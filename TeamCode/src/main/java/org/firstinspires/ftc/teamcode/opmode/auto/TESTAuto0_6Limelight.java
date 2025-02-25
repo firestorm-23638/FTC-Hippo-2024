@@ -13,7 +13,7 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Constants;
-import org.firstinspires.ftc.teamcode.commands.CalculateAndTurnLimelightCommand;
+import org.firstinspires.ftc.teamcode.commands.StrafeToNearestBlueGroupLimelight;
 import org.firstinspires.ftc.teamcode.commands.DepositorCommand;
 import org.firstinspires.ftc.teamcode.commands.ElevatorPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeHasSampleCommand;
@@ -126,7 +126,7 @@ public class TESTAuto0_6Limelight extends CommandOpMode {
                                         new SequentialCommandGroup(
                                                 new ParallelCommandGroup(
                                                         new ParallelRaceGroup(
-                                                                new CalculateAndTurnLimelightCommand(limelight, drive, telemetry, 0.25).withTimeout(1500),
+                                                                new StrafeToNearestBlueGroupLimelight(limelight, drive, telemetry, 0.25).withTimeout(1500),
                                                                 new SequentialCommandGroup(
                                                                         new WaitCommand(300),
                                                                         new SlideUntilHasPieceCommand(intake, Intake.color.YELLOW)

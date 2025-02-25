@@ -7,13 +7,12 @@ import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.commands.CalculateAndTurnLimelightCommand;
-import org.firstinspires.ftc.teamcode.commands.TurnToNearestYellowSampleCommand;
+import org.firstinspires.ftc.teamcode.commands.StrafeToNearestBlueGroupLimelight;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.Limelight;
 
 @TeleOp
-public class OrientToPixelTeleop extends CommandOpMode {
+public class OrientToSampleTeleop extends CommandOpMode {
 
     private Drivetrain drive;
 
@@ -23,7 +22,7 @@ public class OrientToPixelTeleop extends CommandOpMode {
     public void initialize() {
         drive = new Drivetrain(hardwareMap, new Pose2d(0, 0, 0), telemetry);
         limelight = new Limelight(hardwareMap, telemetry);
-        drive.setDefaultCommand(new CalculateAndTurnLimelightCommand(limelight, drive, telemetry, 0));
+        drive.setDefaultCommand(new StrafeToNearestBlueGroupLimelight(limelight, drive, telemetry, 0));
         // Reads limelight position for now
         //limelight.setDefaultCommand(new LimelightCommand(limelight, drive));
         // If a subsystem has a default command, you don't need to register.

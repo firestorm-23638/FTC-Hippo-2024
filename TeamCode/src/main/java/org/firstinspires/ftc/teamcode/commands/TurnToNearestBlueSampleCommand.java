@@ -28,14 +28,14 @@ public class TurnToNearestBlueSampleCommand extends CommandBase {
 
         addRequirements(limelight, drivetrain);
 
-        limelight.toBlueSample();
+        limelight.toYellowAndBlue();
     }
 
     @Override
     public void execute() {
-        List<LLResultTypes.ColorResult> results = limelight.lookForSamples();
+        double[] results = limelight.lookForSamples();
         if (results != null) {
-            currentAngle = results.get(0).getTargetXDegrees();
+            currentAngle = results[0];
             hasTarget = true;
         }
         else {
