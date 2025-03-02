@@ -32,8 +32,6 @@ public class Limelight extends SubsystemBase {
 
     @Override
     public void periodic() {
-        telemetry.addData("works", works);
-        limelight.updatePythonInputs(llpython);
         //lookForSamples(); // for now
 //        if (currResult != null) {
 //            telemetry.addData("Limelight X", currResult.getTx() * 39.26);
@@ -73,6 +71,7 @@ public class Limelight extends SubsystemBase {
 
     public double[] lookForSamples() {
         LLResult result = limelight.getLatestResult();
+        limelight.updatePythonInputs(llpython);
         return result.getPythonOutput();
 //        if (result != null && result.isValid()) {
 //            List<LLResultTypes.ColorResult> colorResults = result.getColorResults();

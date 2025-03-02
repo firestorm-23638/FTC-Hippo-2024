@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
-import com.qualcomm.hardware.limelightvision.LLResultTypes;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
@@ -11,11 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StrafeToNearestBlueGroupLimelight extends CommandBase {
-    public class AngleAmount {
-        public double angle;
+    public class PixelAmount {
+        public double pixel;
         public int amount;
-        public AngleAmount(double angle) {
-            this.angle = angle;
+        public PixelAmount(double angle) {
+            this.pixel = angle;
             this.amount = 1;
         }
     }
@@ -23,13 +22,15 @@ public class StrafeToNearestBlueGroupLimelight extends CommandBase {
     private final Limelight limelight;
     private final Drivetrain drivetrain;
     private final Telemetry telemetry;
+    private final double resX = 640;
+    private final double pixelsToInches = 0.025;
 
     private final int MAX_TICKS = 10;
-    private AngleAmount finalAngle;
-    private boolean hasAngle = false;
-    private double allAngles[] = new double[MAX_TICKS];
-    private List<AngleAmount> uniqueAngles = new ArrayList<>();
-    private double goalAngle;
+    private PixelAmount finalPixel;
+    private boolean hasPixel = false;
+    private double allPixels[] = new double[MAX_TICKS];
+    private List<PixelAmount> uniquePixels = new ArrayList<>();
+    private double goalInches;
     private double initialPose;
 
     private double forSpeed = 0;
@@ -57,15 +58,15 @@ public class StrafeToNearestBlueGroupLimelight extends CommandBase {
         return angle;
     }
 
-    public void smartAdd(double angle) {
-        for (AngleAmount a: uniqueAngles) {
-            double MAX_ERROR = 0.75;
-            if ((angle >= a.angle - MAX_ERROR) && (angle <= a.angle + MAX_ERROR)) {
+    public void smartAdd(double pixel) {
+        for (PixelAmount a: uniquePixels) {
+            double MAX_ERROR = 25;
+            if ((pixel >= a.pixel - MAX_ERROR) && (pixel <= a.pixel + MAX_ERROR)) {
                 a.amount ++;
                 return;
             }
         }
-        uniqueAngles.add(new AngleAmount(angle));
+        uniquePixels.add(new PixelAmount(pixel));
     }
 
     public double calculateError(double goalAngle, double currentAngle) {
@@ -75,22 +76,23 @@ public class StrafeToNearestBlueGroupLimelight extends CommandBase {
         telemetry.addData("new goal", goalAngle);
         telemetry.addData("new current", currentAngle);
         return (goalAngle - currentAngle);
-
     }
 
     @Override
     public void execute() {
-        telemetry.addData("Has Angle", hasAngle);
+        telemetry.addData("Has Pixel", hasPixel);
         telemetry.addData("Ticks", ticks);
         //telemetry.addData("Final Limelight Angle", finalAngle.angle);
-        if (hasAngle) {
-            telemetry.addData("Final Limelight Angle", finalAngle.angle);
+        if (hasPixel) {
+            telemetry.addData("Final Pixel", finalPixel.pixel);
+            telemetry.addData("Final Inches", goalInches);
+            telemetry.addData("Robot X", drivetrain.getCurrentPose().position.x);
             double currentPos = drivetrain.getCurrentPose().position.x;
-            double amtTurned = initialPose - currentPos;
-            telemetry.addData("Amount turned", amtTurned);
-            double kP = 0.08;
-            double error = finalAngle.angle - amtTurned;
-            telemetry.addData("Error", finalAngle.angle - amtTurned);
+            double amtTraveled = initialPose - currentPos;
+            telemetry.addData("Amount Traveled", amtTraveled);
+            double kP = 0.1;
+            double error = finalPixel.pixel - amtTraveled;
+            telemetry.addData("Error", goalInches - amtTraveled);
             telemetry.addData("Setting to", error*kP);
             //drivetrain.driveArcade(0, error*kP, 0);
         }
@@ -99,28 +101,28 @@ public class StrafeToNearestBlueGroupLimelight extends CommandBase {
                 double[] results = limelight.lookForSamples();
                 telemetry.addData("Results", results == null);
                 if (results != null) {
-                    allAngles[ticks] = results[1];
+                    allPixels[ticks] = results[1];
                     ticks ++;
                 }
             }
             else {      // now we have all angle samples
                 double LIMELIGHT_ANGLE_MULTIPLIER = 1;
-                for (double a: allAngles) {
+                for (double a: allPixels) {
                     smartAdd(a);
                 }
-                for (AngleAmount u: uniqueAngles) {
-                    if (finalAngle != null) {
-                        if (u.amount > finalAngle.amount) {
-                            finalAngle = u;
+                for (PixelAmount u: uniquePixels) {
+                    if (finalPixel != null) {
+                        if (u.amount > finalPixel.amount) {
+                            finalPixel = u;
                         }
                     }
                     else {
-                        finalAngle = u;
+                        finalPixel = u;
                     }
                 }
-                goalAngle = coterm(Math.toDegrees(drivetrain.getCurrentPose().position.x) + (-finalAngle.angle * LIMELIGHT_ANGLE_MULTIPLIER));
-                initialPose = Math.toDegrees(drivetrain.getCurrentPose().position.x);
-                hasAngle = true;
+                goalInches = finalPixel.pixel * pixelsToInches;
+                initialPose = drivetrain.getCurrentPose().position.x;
+                hasPixel = true;
             }
         }
     }
