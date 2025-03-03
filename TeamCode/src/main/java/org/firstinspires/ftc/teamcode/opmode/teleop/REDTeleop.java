@@ -17,6 +17,7 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.pedropathing.localization.Pose;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -55,8 +56,8 @@ public class REDTeleop extends CommandOpMode {
         driver = new GamepadEx(this.gamepad1);
         operator = new GamepadEx(this.gamepad2);
 
-        drive = new Drivetrain(hardwareMap, new Pose2d(0, 0, 0), telemetry);
-        intake = new Intake(hardwareMap, telemetry,  Intake.color.BLUE, gamepad1);
+        drive = new Drivetrain(hardwareMap, new Pose(0, 0, 0), telemetry);
+        intake = new Intake(hardwareMap, telemetry,  Intake.color.RED, gamepad1);
         elevator = new Elevator(hardwareMap, telemetry, gamepad1);
         limelight = new Limelight(hardwareMap, telemetry);
         kicker = new Kicker(hardwareMap, telemetry);
@@ -82,9 +83,7 @@ public class REDTeleop extends CommandOpMode {
         GamepadButton driverClaw = new GamepadButton(driver, GamepadKeys.Button.A);
         GamepadButton kickerButton = new GamepadButton(driver, GamepadKeys.Button.X);
         GamepadButton ejectSample = new GamepadButton(driver, GamepadKeys.Button.B);
-        GamepadButton TEST = new GamepadButton(operator, GamepadKeys.Button.Y);
-
-        GamepadButton basketTrajectoryButton = new GamepadButton(driver, GamepadKeys.Button.Y);
+        GamepadButton zeroButton = new GamepadButton(driver, GamepadKeys.Button.Y);
 
         GamepadButton basketScore = new GamepadButton(operator, GamepadKeys.Button.A);
         GamepadButton specimenScore = new GamepadButton(operator, GamepadKeys.Button.X);
@@ -111,7 +110,7 @@ public class REDTeleop extends CommandOpMode {
                 ()->(double)-this.gamepad1.left_stick_y,
                 ()->(double)-this.gamepad1.left_stick_x,
                 ()->(double)-this.gamepad1.right_stick_x,
-                false));
+                true));
 
         // Reads limelight position for now
         //limelight.setDefaultCommand(new LimelightCommand(limelight, drive));
@@ -254,14 +253,6 @@ public class REDTeleop extends CommandOpMode {
         register(intake, elevator, limelight, depositor);
         // Automatically updates telemetry
         schedule(new RunCommand(telemetry::update));
-
-        // Set pose from when defined in autonomous
-        if (Constants.pose != null) {
-            drive.setCurrentPose(Constants.pose);
-        }
-        else {
-            drive.setCurrentPose(new Pose2d(0, 0, 0));
-        }
 
         waitForStart();
         // Put game start code here. i.e home everything
