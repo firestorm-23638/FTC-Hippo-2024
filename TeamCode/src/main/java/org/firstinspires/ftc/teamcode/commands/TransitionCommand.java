@@ -1,13 +1,11 @@
 package org.firstinspires.ftc.teamcode.commands;
 
-import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-import com.arcrobotics.ftclib.command.WaitCommand;
 
-import org.firstinspires.ftc.teamcode.subsystems.Basket;
 import org.firstinspires.ftc.teamcode.subsystems.Depositor;
 import org.firstinspires.ftc.teamcode.subsystems.Elevator;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.RumbleManager;
 
 /*
 new SequentialCommandGroup(
@@ -22,8 +20,6 @@ public class TransitionCommand extends SequentialCommandGroup {
     private final Depositor depositor;
     private final Intake intake;
     private final Elevator elevator;
-
-    private Basket.state state;
 
     public TransitionCommand(Depositor depositor, Intake intake, Elevator elevator) {
         addRequirements(depositor, intake, elevator);

@@ -20,6 +20,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.pedropathing.localization.Pose;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Constants;
@@ -27,6 +28,8 @@ import org.firstinspires.ftc.teamcode.commands.DepositorCommand;
 import org.firstinspires.ftc.teamcode.commands.DrivetrainCommand;
 import org.firstinspires.ftc.teamcode.commands.ElevatorPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakePositionCommand;
+import org.firstinspires.ftc.teamcode.commands.IntakingCommand;
+import org.firstinspires.ftc.teamcode.commands.RumbleRawCommand;
 import org.firstinspires.ftc.teamcode.commands.TransitionCommand;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.Elevator;
@@ -34,6 +37,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Kicker;
 import org.firstinspires.ftc.teamcode.subsystems.Limelight;
 import org.firstinspires.ftc.teamcode.subsystems.Depositor;
+import org.firstinspires.ftc.teamcode.subsystems.RumbleManager;
 
 @TeleOp
 public class BLUETeleop extends CommandOpMode {
@@ -46,6 +50,7 @@ public class BLUETeleop extends CommandOpMode {
     private Intake intake;
     private Elevator elevator;
     private Kicker kicker;
+    private RumbleManager rumbleManager;
 
     private Limelight limelight;
 
@@ -62,6 +67,7 @@ public class BLUETeleop extends CommandOpMode {
         limelight = new Limelight(hardwareMap, telemetry);
         kicker = new Kicker(hardwareMap, telemetry);
         depositor = new Depositor(hardwareMap, telemetry);
+        rumbleManager = new RumbleManager(hardwareMap, telemetry, gamepad1);
 
         lynxModule = hardwareMap.get(LynxModule.class, "Control Hub");
 
@@ -94,16 +100,11 @@ public class BLUETeleop extends CommandOpMode {
         GamepadButton depositorUpDriver = new GamepadButton(driver, GamepadKeys.Button.DPAD_UP);
         GamepadButton depositorDownDriver = new GamepadButton(driver, GamepadKeys.Button.DPAD_DOWN);
         GamepadButton depositorSlight = new GamepadButton(operator, GamepadKeys.Button.DPAD_RIGHT);
-        //GamepadButton elevatorTrim = new GamepadButton(driver, )
 
         GamepadButton elevUp = new GamepadButton(driver, GamepadKeys.Button.DPAD_UP);
         GamepadButton elevDown = new GamepadButton(driver, GamepadKeys.Button.DPAD_DOWN);
 
         GamepadButton depositorBar = new GamepadButton(operator, GamepadKeys.Button.LEFT_BUMPER);
-
-        // experimental
-        //basketTrajectoryButton.whenHeld(new StrafeToPositionCommand(basketPose, drive))
-        //        .whenReleased(new RunCommand(() -> drive.driveFieldCentric(-this.gamepad1.left_stick_y, -this.gamepad1.left_stick_x, -this.gamepad1.right_stick_x)));
 
         kickerButton.whenPressed(new InstantCommand(() -> kicker.currentState = Kicker.state.OPEN))
                 .whenReleased(new InstantCommand(() -> kicker.currentState = Kicker.state.CLOSE));
@@ -119,15 +120,10 @@ public class BLUETeleop extends CommandOpMode {
 
         //TEST.whenHeld(new RunCommand(() -> intake.blockerDown())).whenReleased(new RunCommand(() -> intake.blockerUp()));
 
-        intakeOut.whenHeld(new InstantCommand(() -> {
-            intake.currentState = Intake.state.INTAKING;
-            intake.updateColorSensor(true);
-
-            // Slow down the drivetrain when the intake is out
-            drive.forwardSpeedlimit = 0.3;
-            drive.strafeSpeedlimit = 0.3;
-            drive.rotSpeedLimit = 0.3;
-        })).whenReleased(new InstantCommand(() -> {
+        intakeOut.whenHeld(new SequentialCommandGroup(
+                new IntakingCommand(intake, Intake.color.RED),
+                new RumbleRawCommand(rumbleManager, 0.5, 0.5, 100)
+        )).whenReleased(new InstantCommand(() -> {
             intake.currentState = Intake.state.RESTING;
             intake.updateColorSensor(false);
 
@@ -166,11 +162,16 @@ public class BLUETeleop extends CommandOpMode {
                 new DepositorCommand(depositor, Depositor.state.HOME).withTimeout(10)
         ));
 
-        transition.whenHeld(new TransitionCommand(depositor, intake, elevator)).whenReleased(new SequentialCommandGroup(
-                new DepositorCommand(depositor, Depositor.state.CLAWTIGHTEN).withTimeout(100),
-                new ElevatorPositionCommand(elevator, Elevator.basketState.MIDDLE_BASKET),
-                new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(100)
-        ));
+        transition.whenHeld(
+                new SequentialCommandGroup(
+                    new TransitionCommand(depositor, intake, elevator),
+                    new RumbleRawCommand(rumbleManager, 0.75, 0.75, 100)
+                ))
+                .whenReleased(new SequentialCommandGroup(
+                    new DepositorCommand(depositor, Depositor.state.CLAWTIGHTEN).withTimeout(100),
+                    new ElevatorPositionCommand(elevator, Elevator.basketState.MIDDLE_BASKET),
+                    new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(100)
+                ));
 
         zoomZoom.whenHeld(new InstantCommand(() -> {
             drive.rotSpeedLimit = .8;
@@ -197,12 +198,6 @@ public class BLUETeleop extends CommandOpMode {
             elevator.vertical.set(0);
         })); */
 
-//        specimenClaw.whenHeld(new InstantCommand(() -> {
-//            specimen.open();
-//        })).whenReleased(new InstantCommand(() -> {
-//            specimen.close();
-//        }));
-
         depositorBar.whenHeld(new InstantCommand(() -> elevator.isBarState = true))
                 .whenReleased(new InstantCommand(() -> {
                     elevator.isBarState = false;
@@ -225,7 +220,6 @@ public class BLUETeleop extends CommandOpMode {
                         depositor.toHome();
                     }
                 })
-                //new DepositorCommand(depositor, NewDepositor.state.HOME).withTimeout(10)
         ));
 
         depositorUpDriver.whenPressed(new ParallelCommandGroup(
@@ -245,14 +239,13 @@ public class BLUETeleop extends CommandOpMode {
                         depositor.toHome();
                     }
                 })
-                //new DepositorCommand(depositor, NewDepositor.state.HOME).withTimeout(10)
         ));
 
         depositorSlight.whenHeld(new InstantCommand(() -> elevator.isSlightState = true))
                 .whenReleased(new InstantCommand(() -> elevator.isSlightState = false));
 
         // If a subsystem has a default command, you don't need to register.
-        register(intake, elevator, limelight, depositor);
+        register(intake, elevator, limelight, depositor, rumbleManager);
         // Automatically updates telemetry
         schedule(new RunCommand(telemetry::update));
 
@@ -269,19 +262,7 @@ public class BLUETeleop extends CommandOpMode {
                         new InstantCommand(() -> {
                             elevator.currentStage = Elevator.basketState.MIDDLE_BASKET;
                         }),
-                        new RunCommand(() -> {
-                            elevator.setTrim(this.gamepad1.right_trigger * 15.0);
-                            /*if ((elevator.currentStage != Elevator.basketState.HOME) && (intake.currentState == Intake.state.RESTING)) {
-                                intake.currentState = Intake.state.SLIGHTLY;
-                            }
-                            else if ((elevator.currentStage == Elevator.basketState.HOME) && (intake.currentState == Intake.state.SLIGHTLY)) {
-                                intake.currentState = Intake.state.RESTING;
-                            }*/
-                        })
+                        new RumbleRawCommand(rumbleManager, 0.5, 0.5, 200)
                 ));
-    }
-
-    public void transitionMacro() {
-
     }
 }
