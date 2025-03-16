@@ -30,7 +30,7 @@ public class ForwardAndTurnToNearestSampleCommand extends CommandBase {
 
         addRequirements(limelight, drivetrain);
 
-        limelight.toYellowSample();
+        limelight.toYellowAndRed();
     }
 
     @Override
