@@ -1,79 +1,71 @@
 package org.firstinspires.ftc.teamcode;
 
 /*
-PORTS
-Control Hub - Motor
-
-* */
+* Constants File - all configurations/angles/positions/speeds should be located here
+*/
 
 import com.acmerobotics.roadrunner.Pose2d;
 
 public class Constants {
-    public static final String driveFrontLeftConfig = "frontLeft";   // Control Hub Port 0
-    public static final String driveFrontRightConfig = "frontRight"; // Control Hub Port 1
-    public static final String driveBackLeftConfig = "backLeft";     // Control Hub Port 2
-    public static final String driveBackRightConfig = "backRight";   // Control Hub Port 3
 
-    public static final String depositorVerticalConfig = "vertical";
-    public static final String depositor2ndVerticalConfig = "secondVertical";
+    // Drivetrain
+    public static final String DRIVE_FRONT_LEFT_CONFIG  = "frontLeft";   // Control Hub Port 0
+    public static final String DRIVE_FRONT_RIGHT_CONFIG = "frontRight"; // Control Hub Port 1
+    public static final String DRIVE_BACK_LEFT_CONFIG   = "backLeft";     // Control Hub Port 2
+    public static final String DRIVE_BACK_RIGHT_CONFIG  = "backRight";   // Control Hub Port 3
 
-    public static final String depositorBasketConfig = "basketServo";
-    public static final double depositorVerticalToTopPose = 840
-            ;//2700;
-    public static final double depositorVerticalToMidPose = 120;
-    public static final double depositorVerticalToBottomPose = 0;
-    public static final double depositorVerticalKP = .007;
-    public static final double depositorVerticalErrorRange = 10;
+    // Elevator
+    public static final String ELEVATOR_MOTOR_CONFIG     = "vertical";
+    public static final String ELEVATOR_2ND_MOTOR_CONFIG = "secondVertical";
+    public static final double ELEVATOR_HIGH_BASKET_POS  = 840;//2700;
+    public static final double ELEVATOR_LOW_BASKET_POS   = 120;
+    public static final double ELEVATOR_HOME_POS         = 0;
+    public static final double ELEVATOR_PID_P_TERM       = .007;
 
-    public static final double depositorVerticalToTopBar = 2000;
-    public static final double depositorVerticalUpSlightly = 500;
+    // Depositor Pivot
+    public static final String DEPOSITOR_PIVOT_SERVO_CONFIG        = "basketServo";
+    public static final double DEPOSITOR_PIVOT_TO_BASKET_ANGLE     = 240;
+    public static final double DEPOSITOR_PIVOT_TO_SPECIMEN_ANGLE   = 260;
+    public static final double DEPOSITOR_PIVOT_TO_TRANSITION_ANGLE = 20;
+    public static final double DEPOSITOR_PIVOT_TO_HOME_ANGLE       = 20;
+    public static final double DEPOSITOR_PIVOT_TO_PRIME_ANGLE      = 140;
 
-    public static final double depositorBasketToDepositAngle = 240;
-    public static final double depositorBasketToSpecimenAngle = 260;
-    public static final double depositorBasketToTransitionAngle = 20;
-    public static final double depositorBasketToHomeAngle = 20;
+    // Extension
+    public static final String LEFT_EXTENSION_CONFIG    = "leftHorizontal";
+    public static final String RIGHT_EXTENSION_CONFIG   = "rightHorizontal";
+    public static final double EXTENSION_OUT_ANGLE      = 25;
+    public static final double EXTENSION_IN_ANGLE       = 0;
+    public static final String EXTENSION_ENCODER_CONFIG = "extensionEncoder";
 
-    public static final long depositorArmSpecimenTimeMs = 700;
-    public static final long depositorClawOpenTimeMs = 300;
+    // Intake
+    public static final String INTAKE_PIVOT_CONFIG              = "intakePivot";
+    public static final String INTAKE_LEFT_VACUUM_CONFIG        = "rightVacuum";
+    public static final String INTAKE_RIGHT_VACUUM_CONFIG       = "leftVacuum";
+    public static final String INTAKE_BEAM_BREAK_CONFIG         = "intakeBeam";
+    public static final String INTAKE_PIVOT_ENCODER             = "intakeEncoder";
+    public static final double INTAKE_PIVOT_TO_TRANSITION_ANGLE = 210;
+    public static final double INTAKE_PIVOT_TO_DOWN_ANGLE       = 70;
+    public static final double INTAKE_PIVOT_TO_REST_ANGLE       = 210;
+    public static final double INTAKE_PIVOT_TO_EJECT_ANGLE      = 190;
+    public static final double INTAKE_INCHING_SPEED             = 0.2;
+    public static final double INTAKE_SUCK_SPEED                = -1;
+    public static final double INTAKE_EJECT_SPEED               = .5;
+    public static final double INTAKE_CURRENT_JAM_THRESHOLD     = 800;
 
-    public static final String intakeLeftHorizontalConfig = "leftHorizontal";
-    public static final String intakeRightHorizontalConfig = "rightHorizontal";
-    public static final String intakePivotConfig = "intakePivot";
-    public static final String intakeLeftVacuumConfig = "rightVacuum";
-    public static final String intakeRightVacuumConfig = "leftVacuum";
+    // Main claw
+    public static final String MAIN_CLAW_CONFIG      = "specimen";
+    public static final double MAIN_CLAW_OPEN_ANGLE  = 90;
+    public static final double MAIN_CLAW_CLOSE_ANGLE = 26;
+    public static final long MAIN_CLAW_MS_OPEN       = 250;
 
-    public static final double intakeHorizontalToIntakePose = 25;
-    public static final double intakeHorizontalToHomePose = 0;
+    // Kicker
+    public static final String KICKER_CONFIG = "kicker";
 
-    public static final double intakePivotToBasket = 210;
-    public static final double intakePivotToDown = 70;
-    public static final double intakePivotToRest = 210;
-    public static final double intakePivotToEject = 190;
+    // Limelight
+    public static final short LIMELIGHT_APRILTAG_PIPELINE = 1;
 
-    public static final double intakeInchingSpeed = 0.2;
-    public static final double intakeVacuumSpeed = -1;
-
-    public static final double intakeEjectSpeed = .5;
-
-    public static final double intakeHorizontalKP = .05;
-
-    public static final String specimenClawConfig = "specimen";
-    public static final String kickerConfig = "kicker";
-
-    public static final String intakeBeamBreakConfig = "intakeBeam";
-    public static final String horizontalEncoderConfig = "extensionEncoder";
-    public static final String intakeWristEncoder = "intakeEncoder";
-
-
-    public static final double specimenOpenAngle = 90;
-    public static final double specimenCloseAngle = 26;
-
-    public static final double intakeJamCurrentThreshold = 800;
-
-    public static final short limelightApriltagPipeline = 1;
-
-    public static boolean isRed = false;
-
-    public static Pose2d pose;
+    // ETC.
+    public static boolean IS_RED = false;
+    public static Pose2d CURRENT_POSE;
 
 }

@@ -17,7 +17,7 @@ public class IntakeHasAnySampleCommand extends CommandBase {
 
     @Override
     public void execute() {
-        hasPiece = !m_intake.beamBrake();
+        hasPiece = !m_intake.intakeEmpty();
     }
 
     @Override

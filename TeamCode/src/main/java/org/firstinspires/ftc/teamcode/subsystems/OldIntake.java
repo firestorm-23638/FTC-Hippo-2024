@@ -66,13 +66,13 @@ public class OldIntake extends SubsystemBase {
     };
 
     public OldIntake(HardwareMap hardwareMap, Telemetry telemetry, color colorToIgnore, Gamepad gamepad) {
-        leftHorizontal = new SimpleServo(hardwareMap, Constants.intakeLeftHorizontalConfig, 0, 180, AngleUnit.DEGREES);
-        rightHorizontal = new SimpleServo(hardwareMap, Constants.intakeRightHorizontalConfig, 0, 180, AngleUnit.DEGREES);
-        pivot = new SimpleServo(hardwareMap, Constants.intakePivotConfig, 0, 220, AngleUnit.DEGREES);
-        leftVacuum = new CRServo(hardwareMap, Constants.intakeLeftVacuumConfig);
-        rightVacuum = new CRServo(hardwareMap, Constants.intakeRightVacuumConfig);
+        leftHorizontal = new SimpleServo(hardwareMap, Constants.LEFT_EXTENSION_CONFIG, 0, 180, AngleUnit.DEGREES);
+        rightHorizontal = new SimpleServo(hardwareMap, Constants.RIGHT_EXTENSION_CONFIG, 0, 180, AngleUnit.DEGREES);
+        pivot = new SimpleServo(hardwareMap, Constants.INTAKE_PIVOT_CONFIG, 0, 220, AngleUnit.DEGREES);
+        leftVacuum = new CRServo(hardwareMap, Constants.INTAKE_LEFT_VACUUM_CONFIG);
+        rightVacuum = new CRServo(hardwareMap, Constants.INTAKE_RIGHT_VACUUM_CONFIG);
         colorSensor = hardwareMap.get(ColorSensor.class, "intakeColor");
-        beamBrake = hardwareMap.get(DigitalChannel.class, Constants.intakeBeamBreakConfig);
+        beamBrake = hardwareMap.get(DigitalChannel.class, Constants.INTAKE_BEAM_BREAK_CONFIG);
 
         isGamepad = true;
         this.gamepad = gamepad;
@@ -84,13 +84,13 @@ public class OldIntake extends SubsystemBase {
 
     // These functions directly command the vacuum to run. They are (and should) only be used internally.
     private void runVacuumEject() {
-        leftVacuum.set(Constants.intakeEjectSpeed);
-        rightVacuum.set(-Constants.intakeEjectSpeed);
+        leftVacuum.set(Constants.INTAKE_EJECT_SPEED);
+        rightVacuum.set(-Constants.INTAKE_EJECT_SPEED);
     }
 
     private void runVacuumRun() {
-        leftVacuum.set(Constants.intakeVacuumSpeed);
-        rightVacuum.set(-Constants.intakeVacuumSpeed);
+        leftVacuum.set(Constants.INTAKE_SUCK_SPEED);
+        rightVacuum.set(-Constants.INTAKE_SUCK_SPEED);
     }
 
     public void runVacuumStop() {
@@ -179,21 +179,21 @@ public class OldIntake extends SubsystemBase {
     }
 
     public void horizontalIn() {
-        horizontalToPos(Constants.intakeHorizontalToHomePose + trim);
+        horizontalToPos(Constants.EXTENSION_IN_ANGLE + trim);
         intakeState = state.RESTING;
     }
 
     public void horizontalTransfer() {
-        horizontalToPos(Constants.intakeHorizontalToHomePose - 10);
+        horizontalToPos(Constants.EXTENSION_IN_ANGLE - 10);
     }
 
     public void horizontalOut() {
-        horizontalToPos(Constants.intakeHorizontalToIntakePose + trim);
+        horizontalToPos(Constants.EXTENSION_OUT_ANGLE + trim);
         intakeState = state.INTAKING;
     }
 
     public void horizontalOut(double t) {
-        horizontalToPos(Constants.intakeHorizontalToIntakePose + t);
+        horizontalToPos(Constants.EXTENSION_OUT_ANGLE + t);
         intakeState = state.INTAKING;
     }
 
@@ -202,16 +202,16 @@ public class OldIntake extends SubsystemBase {
     }
 
     public void pivotDown() {
-        pivotToPos(Constants.intakePivotToDown);
+        pivotToPos(Constants.INTAKE_PIVOT_TO_DOWN_ANGLE);
     }
 
     public void pivotEject() {
-        pivotToPos(Constants.intakePivotToEject);
+        pivotToPos(Constants.INTAKE_PIVOT_TO_EJECT_ANGLE);
     }
 
     public void pivotBasket() {
         if (intakeState == state.RESTING) {
-            pivotToPos(Constants.intakePivotToBasket);
+            pivotToPos(Constants.INTAKE_PIVOT_TO_TRANSITION_ANGLE);
         }
     }
 
@@ -219,7 +219,7 @@ public class OldIntake extends SubsystemBase {
         if ((vacuumState == vacuum.SPEWING) && (intakeState == state.INTAKING)) {
             return;
         }
-        pivotToPos(Constants.intakePivotToRest);
+        pivotToPos(Constants.INTAKE_PIVOT_TO_REST_ANGLE);
     }
 
     // Vacuum: these functions set the vacuum mode. However, this mode may be overridden.
@@ -248,16 +248,16 @@ public class OldIntake extends SubsystemBase {
         double hPose = 0;
         double pPose = 0;
         if (state == OldIntake.state.INTAKING) {
-            hPose = Constants.intakeHorizontalToIntakePose + trim;
-            pPose = Constants.intakePivotToDown;
+            hPose = Constants.EXTENSION_OUT_ANGLE + trim;
+            pPose = Constants.INTAKE_PIVOT_TO_DOWN_ANGLE;
         }
         else if (state == OldIntake.state.RESTING){
-            hPose = Constants.intakeHorizontalToHomePose;
-            pPose = Constants.intakePivotToRest;
+            hPose = Constants.EXTENSION_IN_ANGLE;
+            pPose = Constants.INTAKE_PIVOT_TO_REST_ANGLE;
         }
         else if (state == OldIntake.state.TRANSFERRING){
-            hPose = Constants.intakeHorizontalToHomePose;
-            pPose = Constants.intakePivotToBasket;
+            hPose = Constants.EXTENSION_IN_ANGLE;
+            pPose = Constants.INTAKE_PIVOT_TO_TRANSITION_ANGLE;
         }
 
         return isAtPos(hPose, pPose);
@@ -287,6 +287,6 @@ public class OldIntake extends SubsystemBase {
     }
 
     public void extendSlightly() {
-        horizontalToPos(Constants.intakeHorizontalToHomePose + 40);
+        horizontalToPos(Constants.EXTENSION_IN_ANGLE + 40);
     }
 }

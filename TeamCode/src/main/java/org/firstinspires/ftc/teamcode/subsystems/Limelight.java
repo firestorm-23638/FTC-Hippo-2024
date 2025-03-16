@@ -39,8 +39,8 @@ public class Limelight extends SubsystemBase {
     }
 
     public void updatePosition() {
-        if (currentPipeline != Constants.limelightApriltagPipeline) {
-            limelight.pipelineSwitch(Constants.limelightApriltagPipeline);
+        if (currentPipeline != Constants.LIMELIGHT_APRILTAG_PIPELINE) {
+            limelight.pipelineSwitch(Constants.LIMELIGHT_APRILTAG_PIPELINE);
         }
         LLResult result = limelight.getLatestResult();
         if (result != null && result.isValid()) {

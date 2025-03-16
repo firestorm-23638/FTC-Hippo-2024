@@ -7,7 +7,6 @@ import com.arcrobotics.ftclib.hardware.motors.CRServo;
 import com.arcrobotics.ftclib.util.Timing;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -27,7 +26,7 @@ public class Intake extends SubsystemBase {
     private final CRServo leftVacuum;
     private final CRServo rightVacuum;
     private final Telemetry telemetry;
-    private final ColorSensor colorSensor;
+    private final TwoWayColorSensor colorSensor;
     private final DigitalChannel beamBrake;
     private final AnalogInput pivotEncoder;
     private final AnalogInput extensionEncoder;
@@ -76,16 +75,16 @@ public class Intake extends SubsystemBase {
     };
 
     public Intake(HardwareMap hardwareMap, Telemetry telemetry, color colorToIgnore, Gamepad gamepad) {
-        leftHorizontal = new SimpleServo(hardwareMap, Constants.intakeLeftHorizontalConfig, 0, 180, AngleUnit.DEGREES);
-        rightHorizontal = new SimpleServo(hardwareMap, Constants.intakeRightHorizontalConfig, 0, 180, AngleUnit.DEGREES);
+        leftHorizontal  = new SimpleServo(hardwareMap, Constants.LEFT_EXTENSION_CONFIG, 0, 180, AngleUnit.DEGREES);
+        rightHorizontal = new SimpleServo(hardwareMap, Constants.RIGHT_EXTENSION_CONFIG, 0, 180, AngleUnit.DEGREES);
         blocker = new SimpleServo(hardwareMap, "blockerServo", 0, 180);
         pivotEncoder = hardwareMap.get(AnalogInput.class, "pivotEncoder");
         extensionEncoder = hardwareMap.get(AnalogInput.class, "extensionEncoder");
-        pivot = new SimpleServo(hardwareMap, Constants.intakePivotConfig, 0, 220, AngleUnit.DEGREES);
-        leftVacuum = new CRServo(hardwareMap, Constants.intakeLeftVacuumConfig);
-        rightVacuum = new CRServo(hardwareMap, Constants.intakeRightVacuumConfig);
-        colorSensor = hardwareMap.get(ColorSensor.class, "intakeColor");
-        beamBrake = hardwareMap.get(DigitalChannel.class, Constants.intakeBeamBreakConfig);
+        pivot = new SimpleServo(hardwareMap, Constants.INTAKE_PIVOT_CONFIG, 0, 220, AngleUnit.DEGREES);
+        leftVacuum = new CRServo(hardwareMap, Constants.INTAKE_LEFT_VACUUM_CONFIG);
+        rightVacuum = new CRServo(hardwareMap, Constants.INTAKE_RIGHT_VACUUM_CONFIG);
+        colorSensor = new TwoWayColorSensor(hardwareMap, telemetry);
+        beamBrake = hardwareMap.get(DigitalChannel.class, Constants.INTAKE_BEAM_BREAK_CONFIG);
         controlHub = hardwareMap.get(LynxModule.class, "Control Hub");
 
         isGamepad = true;
@@ -98,13 +97,13 @@ public class Intake extends SubsystemBase {
 
     // These functions directly command the vacuum to run. They are (and should) only be used internally.
     private void runVacuumEject() {
-        leftVacuum.set(Constants.intakeEjectSpeed);
-        rightVacuum.set(-Constants.intakeEjectSpeed);
+        leftVacuum.set(Constants.INTAKE_EJECT_SPEED);
+        rightVacuum.set(-Constants.INTAKE_EJECT_SPEED);
     }
 
     private void runVacuumRun() {
-        leftVacuum.set(Constants.intakeVacuumSpeed);
-        rightVacuum.set(-Constants.intakeVacuumSpeed);
+        leftVacuum.set(Constants.INTAKE_SUCK_SPEED);
+        rightVacuum.set(-Constants.INTAKE_SUCK_SPEED);
     }
 
     public void runVacuumStop() {
@@ -113,8 +112,8 @@ public class Intake extends SubsystemBase {
     }
 
     public void runVacuumInch() {
-        leftVacuum.set(Constants.intakeInchingSpeed);
-        rightVacuum.set(-Constants.intakeInchingSpeed);
+        leftVacuum.set(Constants.INTAKE_INCHING_SPEED);
+        rightVacuum.set(-Constants.INTAKE_INCHING_SPEED);
     }
 
     public void blockerUp() {
@@ -151,58 +150,12 @@ public class Intake extends SubsystemBase {
         }
 
         currentColor = getCurrentColor();
-/* WITHOUT CATCHER
-        if (currentState == state.INTAKING) {
-            pivotDown();
-            horizontalOut();
-            if ((!beamBrake.getState() && (!colorDetected))) {   // if it has a piece and it doesn't know the color yet
-                hasTheRightColor = false;
-                leftVacuum.set(.2);
-                rightVacuum.set(-.2);
-                if (currentColor != color.NONE) {
-                    colorDetected = true;
-                }
-            }
-            else if ((colorDetected)) {
-                if (currentColor == color.NONE) {
-                    colorDetected = false;
-                }
-                else if (currentColor == colorToIgnore) {
-                    runVacuumRun();
-                }
-                else {
-                    hasTheRightColor = true;
-                    currentState = state.RESTING;
-                }
-            }
-            else {
-                runVacuumRun();
-            }
-        }
-        else if (currentState == state.RESTING) {
-            pivotHome();
-            horizontalIn();
-            if (!beamBrake.getState()) {
-                runVacuumInch();
-            }
-            else {
-                runVacuumStop();
-            }
-        }
-        else if (currentState == state.TRANSFERRING) {
-            runVacuumEject();
-        }
-        else if (currentState == state.BARFING) {
-            horizontalOut();
-            pivotEject();
-            runVacuumRun();
-        }*/
-        //WITH CATCHER
+
         if (currentState == state.INTAKING) {
             pivotDown();
             horizontalOut();
 
-            if (!beamBrake()) {
+            if (!intakeEmpty()) {
                 runVacuumStop();
                 if (currentColor == colorToIgnore) {
                     blockerUp();
@@ -248,11 +201,11 @@ public class Intake extends SubsystemBase {
             blockerUp();
         }
 
-        telemetry.addData("beam", beamBrake());
+        telemetry.addData("beam", intakeEmpty());
     }
 
-    public boolean beamBrake() {
-        return beamBrake.getState();
+    public boolean intakeEmpty() {
+        return colorSensor.isNone();
     }
 
     private void horizontalToPos(double targetPos) {
@@ -265,37 +218,37 @@ public class Intake extends SubsystemBase {
     }
 
     public void horizontalIn() {
-        horizontalToPos(Constants.intakeHorizontalToHomePose + trim);
+        horizontalToPos(Constants.EXTENSION_IN_ANGLE + trim);
     }
 
     public void horizontalTransfer() {
-        horizontalToPos(Constants.intakeHorizontalToHomePose - 10);
+        horizontalToPos(Constants.EXTENSION_IN_ANGLE - 10);
     }
 
     public void horizontalOut() {
-        horizontalToPos(Constants.intakeHorizontalToIntakePose + trim);
+        horizontalToPos(Constants.EXTENSION_OUT_ANGLE + trim);
     }
 
     public void horizontalOut(double t) {
-        horizontalToPos(Constants.intakeHorizontalToIntakePose + t);
+        horizontalToPos(Constants.EXTENSION_OUT_ANGLE + t);
     }
 
     public void pivotDown() {
-        pivotToPos(Constants.intakePivotToDown);
+        pivotToPos(Constants.INTAKE_PIVOT_TO_DOWN_ANGLE);
     }
 
     public void pivotEject() {
-        pivotToPos(Constants.intakePivotToEject);
+        pivotToPos(Constants.INTAKE_PIVOT_TO_EJECT_ANGLE);
     }
 
     public void pivotBasket() {
         if (currentState == state.RESTING) {
-            pivotToPos(Constants.intakePivotToBasket);
+            pivotToPos(Constants.INTAKE_PIVOT_TO_TRANSITION_ANGLE);
         }
     }
 
     public void pivotHome() {
-        pivotToPos(Constants.intakePivotToRest);
+        pivotToPos(Constants.INTAKE_PIVOT_TO_REST_ANGLE);
     }
 
     // Vacuum: these functions set the vacuum mode. However, this mode may be overridden.
@@ -324,42 +277,35 @@ public class Intake extends SubsystemBase {
         double hPose = 0;
         double pPose = 0;
         if (state == Intake.state.INTAKING) {
-            hPose = Constants.intakeHorizontalToIntakePose + trim;
-            pPose = Constants.intakePivotToDown;
+            hPose = Constants.EXTENSION_OUT_ANGLE + trim;
+            pPose = Constants.INTAKE_PIVOT_TO_DOWN_ANGLE;
         }
         else if (state == Intake.state.RESTING){
-            hPose = Constants.intakeHorizontalToHomePose;
-            pPose = Constants.intakePivotToRest;
+            hPose = Constants.EXTENSION_IN_ANGLE;
+            pPose = Constants.INTAKE_PIVOT_TO_REST_ANGLE;
         }
         else if (state == Intake.state.TRANSFERRING){
-            hPose = Constants.intakeHorizontalToHomePose;
-            pPose = Constants.intakePivotToBasket;
+            hPose = Constants.EXTENSION_IN_ANGLE;
+            pPose = Constants.INTAKE_PIVOT_TO_TRANSITION_ANGLE;
         }
 
         return isAtPos(hPose, pPose);
     }
 
-    public color getCurrentColor() {//258 365 170
-        double colRed = colorSensor.red();
-        double colGreen = colorSensor.green();//878 1060 258
-        double colBlue = colorSensor.blue();
-
-        telemetry.addData("RED", colorSensor.red());
-        telemetry.addData("GREEN", colorSensor.green());
-        telemetry.addData("BLUE", colorSensor.blue());
-
-        if (withinRange(colRed, 500, 1500) && withinRange(colGreen, 750, 1400) && withinRange(colBlue, 100, 450)) {
-            return color.YELLOW;
-        }
-        else if (withinRange(colRed, 50, 150) && withinRange(colGreen, 150, 300) && withinRange(colBlue, 400, 650)) { //98 204 516   89 182 461   89 182 457
+    public color getCurrentColor() {
+        if (colorSensor.isBlue()) {
             return color.BLUE;
         }
-        else if (withinRange(colRed, 350, 550) && withinRange(colGreen, 150, 400) && withinRange(colBlue, 60, 200)) {  //456 226 114
+        else if (colorSensor.isRed()) {
             return color.RED;
         }
-        else {
+        else if (colorSensor.isYellow()) {
+            return color.YELLOW;
+        }
+        else if (colorSensor.isNone()) {
             return color.NONE;
         }
+        return color.NONE;
     }
 
     public double getExtensionPos() {
@@ -371,6 +317,6 @@ public class Intake extends SubsystemBase {
     }
 
     public void extendSlightly() {
-        horizontalToPos(Constants.intakeHorizontalToHomePose + 40);
+        horizontalToPos(Constants.EXTENSION_IN_ANGLE + 40);
     }
 }

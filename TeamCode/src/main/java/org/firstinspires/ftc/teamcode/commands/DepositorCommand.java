@@ -25,6 +25,9 @@ public class DepositorCommand extends CommandBase {
         else if (state == Depositor.state.BUCKET) {
             depositor.toBasket();
         }
+        else if (state == Depositor.state.PRIME) {
+            depositor.toPrime();
+        }
         else if (state == Depositor.state.CLAWOPEN) {
             depositor.clawOpen();
         }

@@ -12,7 +12,7 @@ public class FConstants { // This is how we change Follower Constants.
         // We can change the value of any variable/constant of FollowerConstants.
         FollowerConstants.mass = 10; // In kg
 
-        FollowerConstants.leftFrontMotorName = "frontLEft";
+        FollowerConstants.leftFrontMotorName = "frontLeft";
         FollowerConstants.leftRearMotorName = "backLeft";
         FollowerConstants.rightFrontMotorName = "frontRight";
         FollowerConstants.rightRearMotorName = "backRight";

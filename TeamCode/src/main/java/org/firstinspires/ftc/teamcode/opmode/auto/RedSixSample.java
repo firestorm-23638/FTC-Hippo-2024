@@ -43,7 +43,7 @@ public class RedSixSample extends CommandOpMode {
 
     @Override
     public void initialize() {
-        Constants.isRed = false;
+        Constants.IS_RED = false;
 
         Pose home = new Pose(-38,-60.5, Math.toRadians(90));
 
@@ -110,7 +110,7 @@ public class RedSixSample extends CommandOpMode {
                                         new DepositorCommand(depositor, Depositor.state.BUCKET).withTimeout(700)
                                 )
                         ),
-                        new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(Constants.depositorClawOpenTimeMs),
+                        new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(Constants.MAIN_CLAW_MS_OPEN),
                         new ParallelCommandGroup(
                                 new DepositorCommand(depositor, Depositor.state.TRANSITIONING).withTimeout(500),
                                 new SequentialCommandGroup(
@@ -154,7 +154,7 @@ public class RedSixSample extends CommandOpMode {
                                         )
                                 )
                         ),
-                        new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(Constants.depositorClawOpenTimeMs),
+                        new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(Constants.MAIN_CLAW_MS_OPEN),
                         new ParallelCommandGroup(
                                 new DepositorCommand(depositor, Depositor.state.TRANSITIONING).withTimeout(500),
                                 new SequentialCommandGroup(
@@ -187,7 +187,7 @@ public class RedSixSample extends CommandOpMode {
                                 )
                         )
                 ),
-                        new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(Constants.depositorClawOpenTimeMs),
+                        new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(Constants.MAIN_CLAW_MS_OPEN),
                         new ParallelCommandGroup(
                                 new DepositorCommand(depositor, Depositor.state.TRANSITIONING).withTimeout(500),
                                 new SequentialCommandGroup(
@@ -223,7 +223,7 @@ public class RedSixSample extends CommandOpMode {
                                         )
                                 )
                         ),
-                        new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(Constants.depositorClawOpenTimeMs),
+                        new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(Constants.MAIN_CLAW_MS_OPEN),
                         new ParallelCommandGroup(
                                 new DepositorCommand(depositor, Depositor.state.TRANSITIONING).withTimeout(500),
                                 new ElevatorPositionCommand(elevator, Elevator.basketState.MIDDLE_BASKET),
@@ -257,7 +257,7 @@ public class RedSixSample extends CommandOpMode {
                                                 ),
                                                 new PathChainCommand(submersibleToBasket, drive)
                                         ),
-                                        new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(Constants.depositorClawOpenTimeMs),
+                                        new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(Constants.MAIN_CLAW_MS_OPEN),
                                         new ParallelCommandGroup(
                                                 new DepositorCommand(depositor, Depositor.state.TRANSITIONING).withTimeout(500),
                                                 new ElevatorPositionCommand(elevator, Elevator.basketState.MIDDLE_BASKET),
@@ -266,7 +266,7 @@ public class RedSixSample extends CommandOpMode {
                                         )
                                 ),
                                 //CONDITION
-                                () -> (intake.currentColor == Intake.color.RED) || (intake.beamBrake())
+                                () -> (intake.currentColor == Intake.color.RED) || (intake.intakeEmpty())
                         ),
                         new SequentialCommandGroup(
                                 new IntakePositionCommand(intake, Intake.state.INTAKING, 400, 0),

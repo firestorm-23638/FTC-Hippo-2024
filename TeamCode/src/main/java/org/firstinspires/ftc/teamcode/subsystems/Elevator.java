@@ -1,18 +1,13 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.arcrobotics.ftclib.hardware.ServoEx;
-import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Constants;
-
-import java.text.StringCharacterIterator;
 
 /*
 Elevator: The elevator subsystem for the robot.
@@ -20,10 +15,10 @@ Elevator: The elevator subsystem for the robot.
 
 public class Elevator extends SubsystemBase {
     public enum basketState {    // The current "state" or position of the elevator
-        HOME((int)Constants.depositorVerticalToBottomPose),
-        MIDDLE_BASKET((int)Constants.depositorVerticalToMidPose),
+        HOME((int)Constants.ELEVATOR_HOME_POS),
+        MIDDLE_BASKET((int)Constants.ELEVATOR_LOW_BASKET_POS),
         SPECIMEN((int)400),
-        HIGH_BASKET((int)Constants.depositorVerticalToTopPose);
+        HIGH_BASKET((int)Constants.ELEVATOR_HIGH_BASKET_POS);
 
         public final int pos;
         basketState(int pos) {
@@ -49,8 +44,8 @@ public class Elevator extends SubsystemBase {
     private boolean isGamepad = false;
 
     public Elevator(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad) {
-        vertical = new Motor(hardwareMap, Constants.depositorVerticalConfig);
-        secondVertical = new Motor(hardwareMap, Constants.depositor2ndVerticalConfig);
+        vertical = new Motor(hardwareMap, Constants.ELEVATOR_MOTOR_CONFIG);
+        secondVertical = new Motor(hardwareMap, Constants.ELEVATOR_2ND_MOTOR_CONFIG);
         limitSwitch = hardwareMap.get(DigitalChannel.class, "elevatorLimit");
         claw = new SpecimenClaw(hardwareMap, telemetry);
         this.gamepad = gamepad;
@@ -154,7 +149,7 @@ public class Elevator extends SubsystemBase {
 
     private void verticalToPos(double targetPos) {     // PID algorithm function. There is just a kP term for now
         vertical.setRunMode(Motor.RunMode.RawPower);
-        double kP = Constants.depositorVerticalKP;
+        double kP = Constants.ELEVATOR_PID_P_TERM;
 
         double currPos = getPosition();
         double error = targetPos - currPos;

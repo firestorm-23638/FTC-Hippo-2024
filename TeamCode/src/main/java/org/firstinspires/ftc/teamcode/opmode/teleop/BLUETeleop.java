@@ -20,7 +20,6 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.pedropathing.localization.Pose;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Constants;
@@ -76,7 +75,7 @@ public class BLUETeleop extends CommandOpMode {
         drive.rotSpeedLimit = 1;
 
         // Change the basket goal based on the alliance
-        if (Constants.isRed) {
+        if (Constants.IS_RED) {
             basketPose = new Pose2d(-58.923881554, -55.0502525317, Math.toRadians(45));
         }
         else {

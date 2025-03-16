@@ -4,7 +4,6 @@ import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.util.Timing;
 
 import org.firstinspires.ftc.teamcode.Constants;
-import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 
 import java.util.concurrent.TimeUnit;
@@ -44,9 +43,9 @@ public class SlideUntilHasPieceCommand extends CommandBase {
         if (intake.getControlHubMilliamps() < minCurrent) {
             minCurrent = intake.getControlHubMilliamps();
         }
-        if (intake.getPivotPos() > (Constants.intakePivotToDown - 5)) {
+        if (intake.getPivotPos() > (Constants.INTAKE_PIVOT_TO_DOWN_ANGLE - 5)) {
             if (timer.done()) {
-                if ((intake.getControlHubMilliamps() - minCurrent) > Constants.intakeJamCurrentThreshold) {
+                if ((intake.getControlHubMilliamps() - minCurrent) > Constants.INTAKE_CURRENT_JAM_THRESHOLD) {
                     intake.trim -= 5;
                 }
                 else {
