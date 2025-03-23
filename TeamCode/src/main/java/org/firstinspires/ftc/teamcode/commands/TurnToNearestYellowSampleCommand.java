@@ -28,7 +28,7 @@ public class TurnToNearestYellowSampleCommand extends CommandBase {
 
         addRequirements(limelight, drivetrain);
 
-        limelight.toYellowAndBlue();
+//        limelight.toYellowSample();
     }
 
     @Override
