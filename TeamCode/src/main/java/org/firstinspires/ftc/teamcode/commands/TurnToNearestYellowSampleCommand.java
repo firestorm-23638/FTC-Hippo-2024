@@ -28,26 +28,26 @@ public class TurnToNearestYellowSampleCommand extends CommandBase {
 
         addRequirements(limelight, drivetrain);
 
-        limelight.toYellowSample();
+//        limelight.toYellowSample();
     }
 
     @Override
     public void execute() {
-        List<LLResultTypes.ColorResult> results = limelight.lookForSamples();
-        if (results != null) {
-            currentAngle = results.get(0).getTargetXDegrees();
-            hasTarget = true;
-        }
-        else {
-            currentAngle = 0;
-        }
-        if (hasTarget) {
-            drivetrain.driveArcade(0, 0, currentAngle * 0.05);
-            isAligned = (currentAngle > -1) && (currentAngle < 1);
-        }
-        else {
-            drivetrain.driveArcade(0, 0, startingSpeed);
-        }
+//        List<LLResultTypes.ColorResult> results = limelight.lookForSamples();
+//        if (results != null) {
+//            currentAngle = results.get(0).getTargetXDegrees();
+//            hasTarget = true;
+//        }
+//        else {
+//            currentAngle = 0;
+//        }
+//        if (hasTarget) {
+//            drivetrain.driveArcade(0, 0, currentAngle * 0.05);
+//            isAligned = (currentAngle > -1) && (currentAngle < 1);
+//        }
+//        else {
+//            drivetrain.driveArcade(0, 0, startingSpeed);
+//        }
     }
 
     @Override
