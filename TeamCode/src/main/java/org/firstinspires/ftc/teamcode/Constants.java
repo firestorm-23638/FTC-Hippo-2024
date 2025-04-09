@@ -57,7 +57,7 @@ public class Constants {
     public static final String INTAKE_REV_COLOR_SENSOR_CONFIG   = "revColor";
     public static final double INTAKE_PIVOT_TO_SPECIMEN_ANGLE   = 210;
     public static final double INTAKE_PIVOT_TO_TRANSITION_ANGLE = 161;
-    public static final double INTAKE_PIVOT_TO_DOWN_ANGLE       = 90;
+    public static final double INTAKE_PIVOT_TO_DOWN_ANGLE       = 87;
     public static final double INTAKE_PIVOT_TO_REST_ANGLE       = INTAKE_PIVOT_TO_TRANSITION_ANGLE;
     public static final double INTAKE_PIVOT_TO_EJECT_ANGLE      = 190;
     public static final double INTAKE_INCHING_SPEED             = 0.2;

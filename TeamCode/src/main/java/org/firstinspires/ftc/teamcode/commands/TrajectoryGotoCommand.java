@@ -12,7 +12,7 @@ public class TrajectoryGotoCommand extends CommandBase {
     private boolean isFinished = false;
 
 
-    public TrajectoryGotoCommand(Action trajectoryAction, Drivetrain drivetrain) {
+    public TrajectoryGotoCommand(Drivetrain drivetrain, Action trajectoryAction) {
         addRequirements(drivetrain);
         this.trajectoryAction = trajectoryAction;
     }

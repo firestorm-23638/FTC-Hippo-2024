@@ -32,6 +32,8 @@ public class TwoWayColorSensor extends SubsystemBase {
         telemetry.addData("R", r);
         telemetry.addData("G", g);
         telemetry.addData("B", b);
+
+        telemetry.addData("COLOR", getColor());
     }
 
     private boolean withinRange(double val, double min, double max) {
