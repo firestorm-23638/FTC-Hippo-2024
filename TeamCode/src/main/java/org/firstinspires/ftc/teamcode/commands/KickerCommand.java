@@ -14,26 +14,15 @@ public class KickerCommand extends CommandBase {
     private Timing.Timer timer;
     private Kicker.state state;
 
-    public KickerCommand(Kicker kicker, long ms, Kicker.state state) {
+    public KickerCommand(Kicker kicker, Kicker.state state) {
         this.kicker = kicker;
-        timer = new Timing.Timer(ms, TimeUnit.MILLISECONDS);
         this.state = state;
 
         addRequirements(kicker);
     }
 
     @Override
-    public void initialize() {
-        timer.start();
-    }
-
-    @Override
     public void execute() {
         kicker.currentState = state;
-    }
-
-    @Override
-    public boolean isFinished() {
-        return timer.done();
     }
 }

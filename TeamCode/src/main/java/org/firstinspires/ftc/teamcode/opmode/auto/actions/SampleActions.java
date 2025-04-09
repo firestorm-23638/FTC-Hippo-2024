@@ -16,7 +16,7 @@ public class SampleActions {
     public static final Pose2d rightmostSamplePos = new Pose2d(
             -50,
             -46,
-            Math.toRadians(90));
+            Math.toRadians(71));
 
     public static final Pose2d middleSamplePos = new Pose2d(
             basketPos.position,
@@ -26,7 +26,7 @@ public class SampleActions {
     public static final Pose2d leftmostSamplePos = new Pose2d(
             -58,
             -46,
-            Math.toRadians(116)
+            Math.toRadians(115)
     );
 
     public static final Pose2d submersiblePos1 = new Pose2d(
@@ -51,7 +51,7 @@ public class SampleActions {
     public static Action basketToFirstSample(Drivetrain drive) {
         return drive.getTrajectoryBuilder(basketPos)
                 //.turnTo(Math.toRadians(75))
-                .strafeToLinearHeading(rightmostSamplePos.position, rightmostSamplePos.heading)
+                .turnTo(rightmostSamplePos.heading)
                 .build();
     }
 

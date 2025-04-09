@@ -42,17 +42,17 @@ public class TwoWayColorSensor extends SubsystemBase {
 
     public boolean isYellow() {
         // 480, 570, 135
-        return withinRange(r, 350, 650) && withinRange(g, 370, 770) && withinRange(b, 0, 220);
+        return withinRange(r, 400, 500) && withinRange(g, 475, 570) && withinRange(b, 100, 200);
     }
 
     public boolean isRed() {
         // 300, 150, 80
-        return withinRange(r,100, 400) && withinRange(g, 0, 250) && withinRange(b, 0, 200);
+        return withinRange(r,250, 350) && withinRange(g, 100, 200) && withinRange(b, 0, 100);
     }
 
     public boolean isBlue() {
         // 62, 124, 300
-        return withinRange(r,0, 150) && withinRange(g, 0, 250) && withinRange(b, 200, 400);
+        return withinRange(r,0, 100) && withinRange(g, 100, 200) && withinRange(b, 280, 380);
     }
 
     public Intake.color getColor() {

@@ -11,18 +11,16 @@ import java.util.concurrent.TimeUnit;
 
 public class SlideUntilHasPieceCommand extends CommandBase {
     private final Intake intake;
-    private final Intake.color colorToReceive;
     private Timing.Timer timer;
     public double startTrim = 0;
     private double minCurrent = 10000;
 
-    public SlideUntilHasPieceCommand(Intake intake, Intake.color colorToReceive) {
-        this(intake, colorToReceive, 0);
+    public SlideUntilHasPieceCommand(Intake intake) {
+        this(intake, 0);
     }
 
-    public SlideUntilHasPieceCommand(Intake intake, Intake.color colorToReceive, double startingTrim) {
+    public SlideUntilHasPieceCommand(Intake intake, double startingTrim) {
         this.intake = intake;
-        this.colorToReceive = colorToReceive;
         this.startTrim = startingTrim;
 
         addRequirements(intake);
@@ -60,6 +58,6 @@ public class SlideUntilHasPieceCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return (intake.trim == 100) || ((intake.getCurrentColor() == colorToReceive) || intake.getCurrentColor() == Intake.color.YELLOW) || (intake.hasTheRightColor);
+        return (intake.trim == 50) || ((intake.getCurrentColor() == colorToReceive) || intake.getCurrentColor() == Intake.color.YELLOW) || (intake.hasTheRightColor);
     }
 }
