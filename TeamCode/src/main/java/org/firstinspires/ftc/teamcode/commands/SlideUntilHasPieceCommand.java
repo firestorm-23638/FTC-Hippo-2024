@@ -30,7 +30,7 @@ public class SlideUntilHasPieceCommand extends CommandBase {
     public void initialize() {
         intake.hasTheRightColor = false;
         intake.trim = startTrim;
-        timer = new Timing.Timer(120, TimeUnit.MILLISECONDS);
+        timer = new Timing.Timer(35, TimeUnit.MILLISECONDS);
         timer.start();
     }
 
@@ -39,25 +39,16 @@ public class SlideUntilHasPieceCommand extends CommandBase {
         intake.horizontalOut();
         intake.pivotDown();
         intake.setVacuumRun();
-        if (intake.getControlHubMilliamps() < minCurrent) {
-            minCurrent = intake.getControlHubMilliamps();
+        if (timer.done()) {
+            intake.trim += 1;
+            timer = new Timing.Timer(35, TimeUnit.MILLISECONDS);
+            timer.start();
         }
-        if (intake.getPivotPos() > (Constants.INTAKE_PIVOT_TO_DOWN_ANGLE - 5)) {
-            if (timer.done()) {
-                if ((intake.getControlHubMilliamps() - minCurrent) > Constants.INTAKE_CURRENT_JAM_THRESHOLD) {
-                    intake.trim -= 5;
-                }
-                else {
-                    intake.trim += 5;
-                }
-                timer = new Timing.Timer(120, TimeUnit.MILLISECONDS);
-                timer.start();
-            }
-        }
+
     }
 
     @Override
     public boolean isFinished() {
-        return (intake.trim == 50) || ((intake.getCurrentColor() == colorToReceive) || intake.getCurrentColor() == Intake.color.YELLOW) || (intake.hasTheRightColor);
+        return (intake.trim == 45) || (intake.getCurrentColor() == Intake.color.YELLOW) || ((intake.getCurrentColor() != intake.colorToIgnore) && (intake.getCurrentColor() != Intake.color.NONE));
     }
 }

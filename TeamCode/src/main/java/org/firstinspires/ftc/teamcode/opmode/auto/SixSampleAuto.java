@@ -31,7 +31,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Kicker;
 import org.firstinspires.ftc.teamcode.subsystems.Limelight;
 
 @Autonomous
-public class SevenSampleAuto extends CommandOpMode {
+public class SixSampleAuto extends CommandOpMode {
     private Drivetrain drive;
     private Elevator elevator;
     private Intake intake;

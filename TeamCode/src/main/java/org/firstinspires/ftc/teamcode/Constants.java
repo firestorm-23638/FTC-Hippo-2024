@@ -18,23 +18,23 @@ public class Constants {
     // Elevator
     public static final String ELEVATOR_MOTOR_CONFIG     = "vertical";
     public static final String ELEVATOR_2ND_MOTOR_CONFIG = "secondVertical";
-    public static final double ELEVATOR_HIGH_BASKET_POS  = 600;
-    public static final double ELEVATOR_OVERFLOW_POS  = 600;//2700;
+    public static final double ELEVATOR_HIGH_BASKET_POS  = 535;
+    public static final double ELEVATOR_OVERFLOW_POS  = 535;//2700;
 
     public static final double ELEVATOR_LOW_BASKET_POS   = 300;
     public static final double ELEVATOR_HOME_POS         = 0;
-    public static final double ELEVATOR_PID_P_TERM       = .05;
+    public static final double ELEVATOR_PID_P_TERM       = .025;
 
     // Depositor Pivot
     public static final String DEPOSITOR_PIVOT_ELBOW_CONFIG        = "elbowServo";
     public static final String DEPOSITOR_PIVOT_SHOULDER_CONFIG     = "shoulderServo";
 
-    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_VERTICAL_TRANSITION_ANGLE_PAIR = new Depositor.AnglePair(83, 134); //109,130
-    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_PICKUP_ANGLE_PAIR     = new Depositor.AnglePair(141, 83); //109,130
-    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_PRIME_ANGLE_PAIR      = new Depositor.AnglePair(141, 70); //109,130
-    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_PRIME_PAIR                   = new Depositor.AnglePair(66, 141);
-    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_HOME_ANGLE_PAIR              = new Depositor.AnglePair(155, 90);
-    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_BASKET_ANGLE_PAIR            = new Depositor.AnglePair(47, 79);  //32 92
+    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_VERTICAL_TRANSITION_ANGLE_PAIR = new Depositor.AnglePair(77, 129);
+    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_PICKUP_ANGLE_PAIR     = new Depositor.AnglePair(129,83); //109,130
+    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_PRIME_ANGLE_PAIR      = new Depositor.AnglePair(135, 70); //109,130
+    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_PRIME_PAIR                   = new Depositor.AnglePair(62, 136);
+    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_HOME_ANGLE_PAIR              = new Depositor.AnglePair(149, 90);
+    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_BASKET_ANGLE_PAIR            = new Depositor.AnglePair(25, 86);  //32 92
     public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_OVERFLOW_BASKET_ANGLE_PAIR = new Depositor.AnglePair(32, 92);
     public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_SCORE_ANGLE_PAIR    = new Depositor.AnglePair(90, 46);
     public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_INITIATE_ANGLE_PAIR = new Depositor.AnglePair(81, 50);
@@ -53,7 +53,7 @@ public class Constants {
     public static final String INTAKE_RIGHT_VACUUM_CONFIG       = "leftVacuum";
     public static final String INTAKE_BEAM_BREAK_CONFIG         = "intakeBeam";
     public static final String INTAKE_REV_COLOR_SENSOR_CONFIG   = "revColor";
-    public static final double INTAKE_PIVOT_TO_TRANSITION_ANGLE = 164;
+    public static final double INTAKE_PIVOT_TO_TRANSITION_ANGLE = 166.5;
     public static final double INTAKE_PIVOT_TO_DOWN_ANGLE       = 87;
     public static final double INTAKE_PIVOT_TO_REST_ANGLE       = INTAKE_PIVOT_TO_TRANSITION_ANGLE;
     public static final double INTAKE_PIVOT_TO_SPECIMEN_ANGLE   = INTAKE_PIVOT_TO_TRANSITION_ANGLE;

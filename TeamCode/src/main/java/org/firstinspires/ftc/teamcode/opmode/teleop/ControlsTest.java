@@ -24,12 +24,14 @@ import org.firstinspires.ftc.teamcode.commands.DrivetrainCommand;
 import org.firstinspires.ftc.teamcode.commands.ElevatorPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.HorizontalTransitionCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakingCommand;
+import org.firstinspires.ftc.teamcode.commands.KickerCommand;
 import org.firstinspires.ftc.teamcode.commands.RumbleRawCommand;
 import org.firstinspires.ftc.teamcode.commands.VerticalTransitionCommand;
 import org.firstinspires.ftc.teamcode.subsystems.Depositor;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.Elevator;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.Kicker;
 import org.firstinspires.ftc.teamcode.subsystems.RumbleManager;
 
 @TeleOp
@@ -42,6 +44,7 @@ public class ControlsTest extends CommandOpMode {
     private Intake intake;
     private Elevator elevator;
     private RumbleManager rumbleManager;
+    private Kicker kicker;
 
     private boolean isVerticalTransition = false;
 
@@ -55,6 +58,7 @@ public class ControlsTest extends CommandOpMode {
         intake = new Intake(hardwareMap, telemetry, Intake.color.RED, gamepad1);
         elevator = new Elevator(hardwareMap, telemetry);
         rumbleManager = new RumbleManager(hardwareMap, telemetry, gamepad1);
+        kicker = new Kicker(hardwareMap, telemetry);
 
         GamepadButton transition = new GamepadButton(driver, GamepadKeys.Button.LEFT_BUMPER);
         GamepadButton intakeButton = new GamepadButton(driver, GamepadKeys.Button.RIGHT_BUMPER);
@@ -62,6 +66,7 @@ public class ControlsTest extends CommandOpMode {
         GamepadButton depositorDown = new GamepadButton(operator, GamepadKeys.Button.DPAD_DOWN);
         GamepadButton depositorUpDriver = new GamepadButton(driver, GamepadKeys.Button.DPAD_UP);
         GamepadButton depositorDownDriver = new GamepadButton(driver, GamepadKeys.Button.DPAD_DOWN);
+        GamepadButton kickerOut = new GamepadButton(driver, GamepadKeys.Button.X);
 
         GamepadButton score = new GamepadButton(operator, GamepadKeys.Button.A);
         GamepadButton switchTransition = new GamepadButton(operator, GamepadKeys.Button.Y);
@@ -123,6 +128,10 @@ public class ControlsTest extends CommandOpMode {
                 )
         );
 
+        kickerOut.whenPressed(new KickerCommand(kicker, Kicker.state.OPEN))
+                .whenReleased(new KickerCommand(kicker, Kicker.state.CLOSE));
+
+
         // OPERATOR
 
         switchTransition.whenPressed(new InstantCommand(() -> isVerticalTransition = !isVerticalTransition));  // Switches transition mode
@@ -130,7 +139,7 @@ public class ControlsTest extends CommandOpMode {
         score.whenHeld(new DepositorCommand(dep, Depositor.state.CLAWOPEN));
 
         drive.setDefaultCommand(new DrivetrainCommand(drive,
-                ()->(double)this.gamepad1.left_stick_y,
+                ()->(double)-this.gamepad1.left_stick_y,
                 ()->(double)-this.gamepad1.left_stick_x,
                 ()->(double)-this.gamepad1.right_stick_x,
                 false));

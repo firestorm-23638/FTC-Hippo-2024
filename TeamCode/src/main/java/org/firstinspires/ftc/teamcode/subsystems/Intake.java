@@ -47,6 +47,7 @@ public class Intake extends SubsystemBase {
 
     public enum state {
         INTAKING,
+        DELAYED_INTAKING,
         RESTING,
         SPECIMEN,
         VERTICAL_TRANSITION,
@@ -74,6 +75,7 @@ public class Intake extends SubsystemBase {
     public vacuum vacuumState = vacuum.STATIONING;
     public color colorToIgnore;
     public Timing.Timer blockerTimer = new Timing.Timer(300, TimeUnit.MILLISECONDS);
+    public Timing.Timer intakeLowerTimer = new Timing.Timer(200, TimeUnit.MILLISECONDS);
     public Gamepad gamepad;
     public boolean isGamepad = false;
     public double trim = 20;
@@ -159,10 +161,16 @@ public class Intake extends SubsystemBase {
     public void periodic() {
         telemetry.addData("Current", getControlHubMilliamps());
         telemetry.addData("Current Recorded Color", currentColor);
+        telemetry.addData("TRIM", trim);
         telemetry.addData("Current Estimated Color", finalSampleColor);
 
         if (isGamepad) {
             trim = (gamepad.left_trigger * 70);
+        }
+
+        if (currentState != state.INTAKING) {
+            intakeLowerTimer = new Timing.Timer(200, TimeUnit.MILLISECONDS);
+            intakeLowerTimer.start();
         }
 
         switch (currentState) {
@@ -170,7 +178,9 @@ public class Intake extends SubsystemBase {
                 colorSensor.update();
                 currentColor = getCurrentColor();
 
-                pivotDown();
+                if (intakeLowerTimer.done()) {
+                    pivotDown();
+                }
                 horizontalOut();
 
                 if (!intakeEmpty()) {

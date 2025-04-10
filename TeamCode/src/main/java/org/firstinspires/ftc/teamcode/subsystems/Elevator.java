@@ -151,11 +151,11 @@ public class Elevator extends SubsystemBase {
     public void moveVertical(double speed) {           // Runs elevator at raw speed. For testing purposes
         vertical.setRunMode(Motor.RunMode.RawPower);
         secondVertical.setRunMode(Motor.RunMode.RawPower);
-        if (speed > 1) {
-            speed = 1;
+        if (speed > 0.85) {
+            speed = 0.85;
         }
-        if (speed < 0) {
-            speed = 0;
+        if (speed < -.1) {
+            speed = -.1;
         }
         vertical.set(speed);
         secondVertical.set(speed);

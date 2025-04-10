@@ -2,15 +2,14 @@ package org.firstinspires.ftc.teamcode.opmode.auto.actions;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Vector2d;
 
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 
 // This class is all the actions used in autonomous. They are all in one file so you only have to change one action to affect all autos.
 public class SampleActions {
     public static final Pose2d basketPos = new Pose2d(
-            -58.523881554,
-            -55.2525317,
+            -57.523881554,
+            -56.2525317,
             Math.toRadians(45));
 
     public static final Pose2d rightmostSamplePos = new Pose2d(
@@ -18,16 +17,31 @@ public class SampleActions {
             -46,
             Math.toRadians(71));
 
+    public static final Pose2d toRightmostBasketPos = new Pose2d(
+            -57.5,
+            -56.25,
+            Math.toRadians(71));
+
     public static final Pose2d middleSamplePos = new Pose2d(
             basketPos.position,
             Math.toRadians(90)
     );
 
+    public static final Pose2d toMiddleBasketPos = new Pose2d(
+            -57.5,
+            -56.25,
+            Math.toRadians(90));
+
     public static final Pose2d leftmostSamplePos = new Pose2d(
-            -58,
+            -56,
             -46,
-            Math.toRadians(115)
+            Math.toRadians(117)
     );
+
+    public static final Pose2d toLeftmostBasketPos = new Pose2d(
+            -57.5,
+            -56.25,
+            Math.toRadians(110));
 
     public static final Pose2d submersiblePos1 = new Pose2d(
             -21,
@@ -44,7 +58,7 @@ public class SampleActions {
 
     public static Action startToBasket(Drivetrain drive, Pose2d home) {
         return drive.getTrajectoryBuilder(home)
-                .strafeToLinearHeading(basketPos.position, basketPos.heading)
+                .strafeToLinearHeading(toLeftmostBasketPos.position, basketPos.heading)
                 .build();
     }
 

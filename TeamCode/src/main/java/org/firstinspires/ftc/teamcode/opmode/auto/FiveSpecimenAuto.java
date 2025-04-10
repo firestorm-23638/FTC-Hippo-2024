@@ -46,10 +46,10 @@ public class FiveSpecimenAuto extends CommandOpMode {
 
         Pose2d home = SpecimenActions.startingPos;
 
-        depositor = new Depositor(hardwareMap, telemetry);
+//        depositor = new Depositor(hardwareMap, telemetry);
         drive = new Drivetrain(hardwareMap, home, telemetry);
-        elevator = new Elevator(hardwareMap, telemetry);
-        intake = new Intake(hardwareMap, telemetry, Intake.color.RED);
+//        elevator = new Elevator(hardwareMap, telemetry);
+//        intake = new Intake(hardwareMap, telemetry, Intake.color.RED);
 
         drive.forwardSpeedlimit = 1;
         drive.strafeSpeedlimit = 1;
@@ -57,22 +57,16 @@ public class FiveSpecimenAuto extends CommandOpMode {
 
         Action startToSpecimen = SpecimenActions.startToScore(drive);
 
-        Action basketToFirstSample = SampleActions.basketToFirstSample(drive);
-        Action basketToSecondSample = SampleActions.basketToSecondSample(drive);
-        Action basketToThirdSample = SampleActions.basketToThirdSample(drive);
-        Action basketToSubmersible = SampleActions.basketToSubmersible2(drive);
-        Action submersibleToBasket = SampleActions.submersibleToBasket(drive);
-        Action basketToSubmersible2 = SampleActions.basketToSubmersible(drive);
-        Action submersible2ToBasket = SampleActions.submersible2ToBasket(drive);
+        Action pushFirstSample = SpecimenActions.pushFirstSample(drive);
 
         register(drive);
         schedule(new RunCommand(telemetry::update));
         waitForStart();
         schedule(new SequentialCommandGroup(
-                new InstantCommand(() -> drive.setCurrentPose(home)),
-                new DepositorCommand(depositor, Depositor.state.CLAWTIGHTEN).withTimeout(10),
-                new DepositorCommand(depositor, Depositor.state.SCORE_SPECIMEN).withTimeout(100),
-                new IntakePositionCommand(intake, Intake.state.RESTING, 10)
+//                new InstantCommand(() -> drive.setCurrentPose(home)),
+//                new DepositorCommand(depositor, Depositor.state.CLAWTIGHTEN).withTimeout(10),
+//                new DepositorCommand(depositor, Depositor.state.SCORE_SPECIMEN).withTimeout(100),
+//                new IntakePositionCommand(intake, Intake.state.RESTING, 10)
 
 //                new DepositorCommand(depositor, Depositor.state.PRIME_BASKET).withTimeout(100)
 //                new WaitCommand(200),
@@ -82,8 +76,9 @@ public class FiveSpecimenAuto extends CommandOpMode {
 
         schedule(new SequentialCommandGroup(
                     new TrajectoryGotoCommand(drive, startToSpecimen),
-                    new ElevatorPositionCommand(elevator, Elevator.basketState.SPECIMEN),
-                    new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(100)
+                    new TrajectoryGotoCommand(drive, pushFirstSample)
+//                    new ElevatorPositionCommand(elevator, Elevator.basketState.SPECIMEN),
+//                    new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(100)
                 )
         );
     }

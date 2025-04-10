@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 
 public class SpecimenActions {
     public static final Pose2d startingPos = new Pose2d(10, -61, Math.toRadians(270));
-    public static final Pose2d firstSpecimenScore = new Pose2d(10, -32, Math.toRadians(270));
+    public static final Pose2d firstSpecimenScore = new Pose2d(5, -29, Math.toRadians(270));
 
     //    public static Action toFirstSample(Drivetrain drive) {
 //        return drive.getTrajectoryBuilder(new Pose2d(rightSpecimenPos, Math.toRadians(180)))
@@ -23,6 +23,16 @@ public class SpecimenActions {
     public static Action startToScore(Drivetrain drivetrain) {
         return drivetrain.getTrajectoryBuilder(startingPos)
                 .strafeToLinearHeading(firstSpecimenScore.position, firstSpecimenScore.heading)
+                .build();
+    }
+
+    public static Action pushFirstSample(Drivetrain drivetrain) {
+        return drivetrain.getTrajectoryBuilder(firstSpecimenScore)
+                .splineToLinearHeading(new Pose2d(5, -35, Math.toRadians(270)), Math.toRadians(270))
+                .splineToLinearHeading(new Pose2d(35, -35, Math.toRadians(270)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(35, -10, Math.toRadians(270)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(45, -10, Math.toRadians(270)), Math.toRadians(270))
+                .splineToLinearHeading(new Pose2d(45, -55, Math.toRadians(270)), Math.toRadians(270))
                 .build();
     }
 

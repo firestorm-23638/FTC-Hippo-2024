@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.subsystems.Depositor;
 import org.firstinspires.ftc.teamcode.subsystems.Elevator;
@@ -36,11 +37,15 @@ public class VerticalTransitionCommand extends SequentialCommandGroup {
                         ),
                         new ParallelCommandGroup(
                                 new SequentialCommandGroup(
-                                        new DepositorCommand(depositor, Depositor.state.VERTICAL_TRANSITION).withTimeout(100),
-                                        new DepositorCommand(depositor, Depositor.state.CLAWTIGHTEN).withTimeout(100),
+                                        new DepositorCommand(depositor, Depositor.state.VERTICAL_TRANSITION).withTimeout(150),
+                                        new DepositorCommand(depositor, Depositor.state.CLAWTIGHTEN).withTimeout(150),
                                         new DepositorCommand(depositor, Depositor.state.PRIME1).withTimeout(200)
                                 ),
-                                new IntakePositionCommand(intake, Intake.state.VERTICAL_TRANSFERRING_AND_BARFING).withTimeout(100)
+                                new SequentialCommandGroup(
+                                        new WaitCommand(100),
+                                        new IntakePositionCommand(intake, Intake.state.VERTICAL_TRANSFERRING_AND_BARFING).withTimeout(100)
+                                )
+
                         ),
                         new IntakePositionCommand(intake, Intake.state.RESTING).withTimeout(100)
                 )
