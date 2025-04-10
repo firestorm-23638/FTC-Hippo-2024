@@ -49,7 +49,7 @@ public class Kicker extends SubsystemBase {
     }
 
     public void open() {
-        servo.turnToAngle(105);
+        servo.turnToAngle(95);
     }
 
     public void close() {

@@ -30,14 +30,14 @@ public class Constants {
     public static final String DEPOSITOR_PIVOT_SHOULDER_CONFIG     = "shoulderServo";
 
     public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_VERTICAL_TRANSITION_ANGLE_PAIR = new Depositor.AnglePair(77, 129);
-    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_PICKUP_ANGLE_PAIR     = new Depositor.AnglePair(129,83); //109,130
-    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_PRIME_ANGLE_PAIR      = new Depositor.AnglePair(135, 70); //109,130
+    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_PICKUP_ANGLE_PAIR     = new Depositor.AnglePair(123,85); //109,130
+    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_PRIME_ANGLE_PAIR      = new Depositor.AnglePair(123, 67); //109,130
     public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_PRIME_PAIR                   = new Depositor.AnglePair(62, 136);
     public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_HOME_ANGLE_PAIR              = new Depositor.AnglePair(149, 90);
-    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_BASKET_ANGLE_PAIR            = new Depositor.AnglePair(25, 86);  //32 92
+    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_BASKET_ANGLE_PAIR            = new Depositor.AnglePair(41, 74);  //32 92
     public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_OVERFLOW_BASKET_ANGLE_PAIR = new Depositor.AnglePair(32, 92);
-    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_SCORE_ANGLE_PAIR    = new Depositor.AnglePair(90, 46);
-    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_INITIATE_ANGLE_PAIR = new Depositor.AnglePair(81, 50);
+    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_SCORE_ANGLE_PAIR    = new Depositor.AnglePair(83, 41);
+    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_INITIATE_ANGLE_PAIR = new Depositor.AnglePair(83, 41);
     public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_PRIME_BASKET_ANGLE_PAIR      = new Depositor.AnglePair(50, 98);
 
     // Extension

@@ -30,7 +30,7 @@ public class SlideUntilHasPieceCommand extends CommandBase {
     public void initialize() {
         intake.hasTheRightColor = false;
         intake.trim = startTrim;
-        timer = new Timing.Timer(35, TimeUnit.MILLISECONDS);
+        timer = new Timing.Timer(25, TimeUnit.MILLISECONDS);
         timer.start();
     }
 
@@ -41,7 +41,7 @@ public class SlideUntilHasPieceCommand extends CommandBase {
         intake.setVacuumRun();
         if (timer.done()) {
             intake.trim += 1;
-            timer = new Timing.Timer(35, TimeUnit.MILLISECONDS);
+            timer = new Timing.Timer(25, TimeUnit.MILLISECONDS);
             timer.start();
         }
 
@@ -49,6 +49,6 @@ public class SlideUntilHasPieceCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return (intake.trim == 45) || (intake.getCurrentColor() == Intake.color.YELLOW) || ((intake.getCurrentColor() != intake.colorToIgnore) && (intake.getCurrentColor() != Intake.color.NONE));
+        return (intake.trim == 50) || (intake.getCurrentColor() == Intake.color.YELLOW) || ((intake.getCurrentColor() != intake.colorToIgnore) && (intake.getCurrentColor() != Intake.color.NONE));
     }
 }

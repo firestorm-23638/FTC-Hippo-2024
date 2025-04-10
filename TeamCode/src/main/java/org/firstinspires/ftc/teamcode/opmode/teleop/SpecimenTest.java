@@ -105,9 +105,9 @@ public class SpecimenTest extends CommandOpMode {
         score.whenHeld(new DepositorCommand(dep, Depositor.state.CLAWOPEN));
 
         drive.setDefaultCommand(new DrivetrainCommand(drive,
-                ()->(double)this.gamepad1.left_stick_y,
+                ()->(double)-this.gamepad1.left_stick_y,
                 ()->(double)-this.gamepad1.left_stick_x,
-                ()->(double)this.gamepad1.right_stick_x,
+                ()->(double)-this.gamepad1.right_stick_x,
                 false));
 
         register(intake, dep, elevator, rumbleManager);
