@@ -29,16 +29,18 @@ public class Constants {
     public static final String DEPOSITOR_PIVOT_ELBOW_CONFIG        = "elbowServo";
     public static final String DEPOSITOR_PIVOT_SHOULDER_CONFIG     = "shoulderServo";
 
-    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_VERTICAL_TRANSITION_ANGLE_PAIR = new Depositor.AnglePair(77, 129);
-    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_PICKUP_ANGLE_PAIR     = new Depositor.AnglePair(123,85); //109,130
-    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_PRIME_ANGLE_PAIR      = new Depositor.AnglePair(123, 67); //109,130
-    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_PRIME_PAIR                   = new Depositor.AnglePair(62, 136);
-    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_HOME_ANGLE_PAIR              = new Depositor.AnglePair(149, 90);
-    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_BASKET_ANGLE_PAIR            = new Depositor.AnglePair(41, 74);  //32 92
-    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_OVERFLOW_BASKET_ANGLE_PAIR = new Depositor.AnglePair(32, 92);
-    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_SCORE_ANGLE_PAIR    = new Depositor.AnglePair(83, 41);
-    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_INITIATE_ANGLE_PAIR = new Depositor.AnglePair(83, 41);
-    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_PRIME_BASKET_ANGLE_PAIR      = new Depositor.AnglePair(50, 98);
+    public static final double shoulderOffset = 9;
+
+    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_VERTICAL_TRANSITION_ANGLE_PAIR = new Depositor.AnglePair(77+shoulderOffset, 125);
+    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_PICKUP_ANGLE_PAIR     = new Depositor.AnglePair(123+shoulderOffset,85); //109,130
+    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_PRIME_ANGLE_PAIR      = new Depositor.AnglePair(123+shoulderOffset, 67); //109,130
+    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_PRIME_PAIR                   = DEPOSITOR_PIVOT_TO_VERTICAL_TRANSITION_ANGLE_PAIR;
+    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_HOME_ANGLE_PAIR              = new Depositor.AnglePair(149+shoulderOffset, 90);
+    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_BASKET_ANGLE_PAIR            = new Depositor.AnglePair(41+shoulderOffset, 74);  //32 92
+    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_OVERFLOW_BASKET_ANGLE_PAIR = new Depositor.AnglePair(32+shoulderOffset, 92);
+    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_SCORE_ANGLE_PAIR    = new Depositor.AnglePair(83+shoulderOffset, 41);
+    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_INITIATE_ANGLE_PAIR = new Depositor.AnglePair(83+shoulderOffset, 41);
+    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_PRIME_BASKET_ANGLE_PAIR      = new Depositor.AnglePair(50+shoulderOffset, 98);
 
     // Extension
     public static final String LEFT_EXTENSION_CONFIG    = "leftHorizontal";
@@ -72,8 +74,17 @@ public class Constants {
     // Kicker
     public static final String KICKER_CONFIG = "kicker";
 
+    // Light indicator
+    public static final String LIGHT_INDICATOR0_CONFIG = "lightIndicator0";
+    public static final String LIGHT_INDICATOR1_CONFIG = "lightIndicator1";
+
+
     // Limelight
     public static final short LIMELIGHT_APRILTAG_PIPELINE = 1;
+
+    // Climb
+    public static final String CLIMB_LEFT_MOTOR_CONFIG = "leftClimb";
+    public static final String CLIMB_RIGHT_MOTOR_CONFIG = "rightClimb";
 
     // ETC.
     public static boolean IS_RED = false;

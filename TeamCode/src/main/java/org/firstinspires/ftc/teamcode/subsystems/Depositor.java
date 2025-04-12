@@ -20,7 +20,7 @@ public class Depositor extends SubsystemBase {
     public enum state {     // The state that the basket is currently in. Home = in, bucket = deposit. Used in BasketPositionCommand
         HOME,
         VERTICAL_TRANSITION,
-        SPECIMEN,
+        INTAKE_SPECIMEN,
         PRIME_SPECIMEN,
         PLACE_SPECIMEN,
         SCORE_SPECIMEN,
@@ -91,7 +91,7 @@ public class Depositor extends SubsystemBase {
             case CLAWTIGHTEN:
                 claw.turnToAngle(15);
                 break;
-            case SPECIMEN:
+            case INTAKE_SPECIMEN:
                 turnToAnglePair(Constants.DEPOSITOR_PIVOT_TO_SPECIMEN_PICKUP_ANGLE_PAIR);
                 break;
             case PLACE_SPECIMEN:

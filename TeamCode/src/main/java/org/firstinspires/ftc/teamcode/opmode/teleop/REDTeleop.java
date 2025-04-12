@@ -21,7 +21,6 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.commands.DepositorCommand;
 import org.firstinspires.ftc.teamcode.commands.DrivetrainCommand;
 import org.firstinspires.ftc.teamcode.commands.ElevatorPositionCommand;
@@ -143,7 +142,7 @@ public class REDTeleop extends CommandOpMode {
         ));
 
         specimenScore.whenHeld(new SequentialCommandGroup(
-                new DepositorCommand(depositor, Depositor.state.SPECIMEN).withTimeout(800),
+                new DepositorCommand(depositor, Depositor.state.INTAKE_SPECIMEN).withTimeout(800),
                 new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(100)
         )).whenReleased(new SequentialCommandGroup(
                 new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(300),

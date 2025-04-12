@@ -18,6 +18,8 @@ import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Light;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.commands.DepositorCommand;
 import org.firstinspires.ftc.teamcode.commands.DrivetrainCommand;
@@ -25,13 +27,16 @@ import org.firstinspires.ftc.teamcode.commands.ElevatorPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.HorizontalTransitionCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakingCommand;
 import org.firstinspires.ftc.teamcode.commands.KickerCommand;
+import org.firstinspires.ftc.teamcode.commands.LightIndicatorCommand;
 import org.firstinspires.ftc.teamcode.commands.RumbleRawCommand;
+import org.firstinspires.ftc.teamcode.commands.SpeedyTransitionCommand;
 import org.firstinspires.ftc.teamcode.commands.VerticalTransitionCommand;
 import org.firstinspires.ftc.teamcode.subsystems.Depositor;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.Elevator;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Kicker;
+import org.firstinspires.ftc.teamcode.subsystems.LightIndicator;
 import org.firstinspires.ftc.teamcode.subsystems.RumbleManager;
 
 @TeleOp
@@ -45,6 +50,7 @@ public class ControlsTest extends CommandOpMode {
     private Elevator elevator;
     private RumbleManager rumbleManager;
     private Kicker kicker;
+    private LightIndicator indicator;
 
     private boolean isVerticalTransition = false;
 
@@ -59,6 +65,8 @@ public class ControlsTest extends CommandOpMode {
         elevator = new Elevator(hardwareMap, telemetry);
         rumbleManager = new RumbleManager(hardwareMap, telemetry, gamepad1);
         kicker = new Kicker(hardwareMap, telemetry);
+        indicator = new LightIndicator(hardwareMap, telemetry);
+
 
         GamepadButton transition = new GamepadButton(driver, GamepadKeys.Button.LEFT_BUMPER);
         GamepadButton intakeButton = new GamepadButton(driver, GamepadKeys.Button.RIGHT_BUMPER);
@@ -68,13 +76,16 @@ public class ControlsTest extends CommandOpMode {
         GamepadButton depositorDownDriver = new GamepadButton(driver, GamepadKeys.Button.DPAD_DOWN);
         GamepadButton kickerOut = new GamepadButton(driver, GamepadKeys.Button.X);
 
-        GamepadButton score = new GamepadButton(operator, GamepadKeys.Button.A);
+        GamepadButton score = new GamepadButton(driver, GamepadKeys.Button.A);
         GamepadButton switchTransition = new GamepadButton(operator, GamepadKeys.Button.Y);
 
         transition.whenPressed(
                 new ConditionalCommand(
                         new HorizontalTransitionCommand(dep, intake, elevator),
-                        new VerticalTransitionCommand(dep, intake, elevator),
+                        new SequentialCommandGroup(
+                                new SpeedyTransitionCommand(dep, intake, elevator),
+                                new DepositorCommand(dep, Depositor.state.PRIME_BASKET)
+                        ),
                         () -> isVerticalTransition
                 )).whenReleased(
                     new SequentialCommandGroup(
@@ -136,7 +147,11 @@ public class ControlsTest extends CommandOpMode {
 
         switchTransition.whenPressed(new InstantCommand(() -> isVerticalTransition = !isVerticalTransition));  // Switches transition mode
 
-        score.whenHeld(new DepositorCommand(dep, Depositor.state.CLAWOPEN));
+        score.whenHeld(new DepositorCommand(dep, Depositor.state.CLAWOPEN))
+                .whenReleased(new SequentialCommandGroup(
+                        new ElevatorPositionCommand(elevator, Elevator.basketState.HOME),
+                        new DepositorCommand(dep, Depositor.state.PRIME1)
+                ));
 
         drive.setDefaultCommand(new DrivetrainCommand(drive,
                 ()->(double)-this.gamepad1.left_stick_y,
@@ -151,11 +166,15 @@ public class ControlsTest extends CommandOpMode {
         waitForStart();
 
         schedule(
-                new SequentialCommandGroup(
-                        new DepositorCommand(dep, Depositor.state.CLAWOPEN).withTimeout(10),
-                        new DepositorCommand(dep, Depositor.state.PRIME1).withTimeout(10),
-                        new RumbleRawCommand(rumbleManager, 0.5, 0.5, 200).withTimeout(10).withTimeout(100)
+                new ParallelCommandGroup(
+                        new SequentialCommandGroup(
+                                new DepositorCommand(dep, Depositor.state.CLAWOPEN).withTimeout(10),
+                                new DepositorCommand(dep, Depositor.state.PRIME1).withTimeout(10),
+                                new RumbleRawCommand(rumbleManager, 0.5, 0.5, 200).withTimeout(10).withTimeout(100)
+                        ),
+                        new LightIndicatorCommand(indicator, LightIndicator.state.YELLOW)
                 )
+
         );
         // Put game start code here. i.e home everything
     }

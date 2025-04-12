@@ -118,10 +118,10 @@ public class MeepMeepTesting {
 
         /* Submersible Zone to Basket */
 
-//        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(new Vector2d(-21, -7), Math.toRadians(0)))
-//                        .setReversed(true)
-//                .splineToLinearHeading(new Pose2d(Field.RED_BASKET, Math.toRadians(45)), Math.toRadians(240))
-//                .build());
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(new Vector2d(-21, -7), Math.toRadians(0)))
+                        .setReversed(true)
+                .splineToLinearHeading(new Pose2d(Field.RED_BASKET, Math.toRadians(45)), Math.toRadians(260))
+                .build());
 
         /* Third Sample to Basket */
 //        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(new Vector2d(-52.5, -34), Math.toRadians(145)))
@@ -168,15 +168,37 @@ public class MeepMeepTesting {
 //        );
 
 // Specimen with kicker
-        myBot2.runAction(myBot2.getDrive().actionBuilder(new Pose2d(10, -61, Math.toRadians(270)))
-                // place first specimen
-                .strafeTo(new Vector2d(5, -29))
-                .waitSeconds(0.2)
-                .splineToLinearHeading(new Pose2d(5, -35, Math.toRadians(270)), Math.toRadians(270))
-                .splineToLinearHeading(new Pose2d(35, -35, Math.toRadians(270)), Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(35, -10, Math.toRadians(270)), Math.toRadians(90))
-                        .splineToLinearHeading(new Pose2d(45, -10, Math.toRadians(270)), Math.toRadians(270))
-                                .splineToLinearHeading(new Pose2d(45, -55, Math.toRadians(270)), Math.toRadians(270))
+
+//        final Pose2d pickupPos = new Pose2d(45, -62, Math.toRadians(270));
+//        myBot2.runAction(myBot2.getDrive().actionBuilder(new Pose2d(10, -61, Math.toRadians(270)))
+//                // place first specimen
+//                .strafeTo(new Vector2d(5, -29))
+//                .waitSeconds(0.2)
+//                // push 'em
+//                .splineToLinearHeading(new Pose2d(5, -35, Math.toRadians(270)), Math.toRadians(270))
+//                .splineToLinearHeading(new Pose2d(35, -35, Math.toRadians(270)), Math.toRadians(90))
+//                .splineToLinearHeading(new Pose2d(35, -15, Math.toRadians(270)), Math.toRadians(90))
+//                .splineToLinearHeading(new Pose2d(45, -15, Math.toRadians(270)), Math.toRadians(270))
+//                .splineToLinearHeading(new Pose2d(45, -50, Math.toRadians(270)), Math.toRadians(270)) // push first one
+//                        .splineToLinearHeading(new Pose2d(45, -15, Math.toRadians(270)), Math.toRadians(90))
+//                        .splineToLinearHeading(new Pose2d(55, -15, Math.toRadians(270)), Math.toRadians(270))
+//                        .splineToLinearHeading(new Pose2d(55, -50, Math.toRadians(270)), Math.toRadians(270)) // push second one
+//                        .splineToLinearHeading(new Pose2d(55, -15, Math.toRadians(270)), Math.toRadians(90))
+//                        .splineToLinearHeading(new Pose2d(63, -15, Math.toRadians(270)), Math.toRadians(270))
+//                        .splineToLinearHeading(new Pose2d(63, -50, Math.toRadians(270)), Math.toRadians(270)) // push third one
+//                        .setReversed(true)
+//                                .splineToLinearHeading(new Pose2d(50, -45, Math.toRadians(270)), Math.toRadians(180))
+//                        .splineToLinearHeading(new Pose2d(45, -62, Math.toRadians(270)), Math.toRadians(270)) // pickup second one
+//
+//                                .strafeTo(new Vector2d(0, -29))
+//                                .strafeTo(pickupPos.position)
+//                                .strafeTo(new Vector2d(-4, -29))
+//                                .strafeTo(pickupPos.position)
+//                                .strafeTo(new Vector2d(-8, -29))
+//                                .strafeTo(pickupPos.position)
+//                                .strafeTo(new Vector2d(-12,-29))
+//                                .strafeTo(pickupPos.position)
+
 
                 // to first sample
 //                .setReversed(true)
@@ -224,8 +246,8 @@ public class MeepMeepTesting {
 //                .splineToLinearHeading(new Pose2d(-1, -30.25, Math.toRadians(180)), Math.toRadians(90))
 //                .waitSeconds(0.200)
 //                .strafeTo(new Vector2d(-1, -35))
-                .build()
-        );
+//                .build()
+//        );
 
         // Specimen with pushing
 //        myBot2.runAction(myBot2.getDrive().actionBuilder(new Pose2d(8, -61, Math.toRadians(270)))

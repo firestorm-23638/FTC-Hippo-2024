@@ -14,7 +14,6 @@ import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -80,7 +79,7 @@ public class SpecimenTest extends CommandOpMode {
         intakeButton.whenHeld(
                 new SequentialCommandGroup(
                         new DepositorCommand(dep, Depositor.state.CLAWOPEN).withTimeout(10),
-                        new DepositorCommand(dep, Depositor.state.SPECIMEN).withTimeout(100)
+                        new DepositorCommand(dep, Depositor.state.INTAKE_SPECIMEN).withTimeout(100)
                 )
         ).whenReleased(
                 new SequentialCommandGroup(

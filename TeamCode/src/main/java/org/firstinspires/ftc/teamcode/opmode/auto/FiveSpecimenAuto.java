@@ -3,35 +3,20 @@ package org.firstinspires.ftc.teamcode.opmode.auto;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
-import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
-import com.arcrobotics.ftclib.command.ParallelRaceGroup;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.commands.DepositorCommand;
 import org.firstinspires.ftc.teamcode.commands.ElevatorPositionCommand;
-import org.firstinspires.ftc.teamcode.commands.HorizontalTransitionCommand;
-import org.firstinspires.ftc.teamcode.commands.IntakeHasSampleCommand;
-import org.firstinspires.ftc.teamcode.commands.IntakePositionCommand;
-import org.firstinspires.ftc.teamcode.commands.IntakingCommand;
-import org.firstinspires.ftc.teamcode.commands.KickerCommand;
-import org.firstinspires.ftc.teamcode.commands.RawDrivetrainCommand;
-import org.firstinspires.ftc.teamcode.commands.SlideUntilHasPieceCommand;
-import org.firstinspires.ftc.teamcode.commands.StrafeToPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.TrajectoryGotoCommand;
-import org.firstinspires.ftc.teamcode.commands.VerticalTransitionCommand;
-import org.firstinspires.ftc.teamcode.opmode.auto.actions.SampleActions;
 import org.firstinspires.ftc.teamcode.opmode.auto.actions.SpecimenActions;
 import org.firstinspires.ftc.teamcode.subsystems.Depositor;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.Elevator;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
-import org.firstinspires.ftc.teamcode.subsystems.Kicker;
-import org.firstinspires.ftc.teamcode.subsystems.Limelight;
 
 @Autonomous
 public class FiveSpecimenAuto extends CommandOpMode {
@@ -46,7 +31,7 @@ public class FiveSpecimenAuto extends CommandOpMode {
 
         Pose2d home = SpecimenActions.startingPos;
 
-//        depositor = new Depositor(hardwareMap, telemetry);
+        depositor = new Depositor(hardwareMap, telemetry);
         drive = new Drivetrain(hardwareMap, home, telemetry);
 //        elevator = new Elevator(hardwareMap, telemetry);
 //        intake = new Intake(hardwareMap, telemetry, Intake.color.RED);
@@ -57,7 +42,9 @@ public class FiveSpecimenAuto extends CommandOpMode {
 
         Action startToSpecimen = SpecimenActions.startToScore(drive);
 
-        Action pushFirstSample = SpecimenActions.pushFirstSample(drive);
+        Action pushAllSamples = SpecimenActions.pushAllSamples(drive);
+
+        depositor.toPosition(Depositor.state.CLAWTIGHTEN);
 
         register(drive);
         schedule(new RunCommand(telemetry::update));
@@ -75,8 +62,18 @@ public class FiveSpecimenAuto extends CommandOpMode {
 
 
         schedule(new SequentialCommandGroup(
-                    new TrajectoryGotoCommand(drive, startToSpecimen),
-                    new TrajectoryGotoCommand(drive, pushFirstSample)
+                    new ParallelCommandGroup(
+                            new DepositorCommand(depositor, Depositor.state.SCORE_SPECIMEN).withTimeout(400),
+                            new TrajectoryGotoCommand(drive, startToSpecimen)
+                    ),
+                    new ElevatorPositionCommand(elevator, Elevator.basketState.SPECIMEN),
+                    new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(100),
+                    new ParallelCommandGroup(
+                            new TrajectoryGotoCommand(drive, pushAllSamples),
+                            new DepositorCommand(depositor, Depositor.state.INTAKE_SPECIMEN).withTimeout(400)
+
+                    )
+
 //                    new ElevatorPositionCommand(elevator, Elevator.basketState.SPECIMEN),
 //                    new DepositorCommand(depositor, Depositor.state.CLAWOPEN).withTimeout(100)
                 )

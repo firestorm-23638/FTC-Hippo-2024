@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.opmode.auto.actions;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Vector2d;
 
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 
@@ -26,13 +25,22 @@ public class SpecimenActions {
                 .build();
     }
 
-    public static Action pushFirstSample(Drivetrain drivetrain) {
+    public static Action pushAllSamples(Drivetrain drivetrain) {
         return drivetrain.getTrajectoryBuilder(firstSpecimenScore)
                 .splineToLinearHeading(new Pose2d(5, -35, Math.toRadians(270)), Math.toRadians(270))
                 .splineToLinearHeading(new Pose2d(35, -35, Math.toRadians(270)), Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(35, -10, Math.toRadians(270)), Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(45, -10, Math.toRadians(270)), Math.toRadians(270))
-                .splineToLinearHeading(new Pose2d(45, -55, Math.toRadians(270)), Math.toRadians(270))
+                .splineToLinearHeading(new Pose2d(35, -15, Math.toRadians(270)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(45, -15, Math.toRadians(270)), Math.toRadians(270))
+                .splineToLinearHeading(new Pose2d(45, -50, Math.toRadians(270)), Math.toRadians(270)) // push first one
+                .splineToLinearHeading(new Pose2d(45, -15, Math.toRadians(270)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(55, -15, Math.toRadians(270)), Math.toRadians(270))
+                .splineToLinearHeading(new Pose2d(55, -50, Math.toRadians(270)), Math.toRadians(270)) // push second one
+                .splineToLinearHeading(new Pose2d(55, -15, Math.toRadians(270)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(63, -15, Math.toRadians(270)), Math.toRadians(270))
+                .splineToLinearHeading(new Pose2d(63, -50, Math.toRadians(270)), Math.toRadians(270)) // push third one
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(50, -45, Math.toRadians(270)), Math.toRadians(180))
+                .splineToLinearHeading(new Pose2d(45, -62, Math.toRadians(270)), Math.toRadians(270)) // pickup second specimen
                 .build();
     }
 

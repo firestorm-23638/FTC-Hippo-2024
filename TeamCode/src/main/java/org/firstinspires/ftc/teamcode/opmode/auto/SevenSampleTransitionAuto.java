@@ -69,8 +69,9 @@ public class SevenSampleTransitionAuto extends CommandOpMode {
         Action submersible2ToBasket = SampleActions.submersible2ToBasket(drive);
 
         Action completelySeparateAction = drive.getTrajectoryBuilder(SampleActions.basketPos)
-                .strafeTo(new Vector2d(-30, -30))
+                .splineTo(new Vector2d(-21, -10), Math.toRadians(0))
                 .build();
+
         Action basketToSubmersible3 = SampleActions.too(drive);
         Action submersible3ToBasket = SampleActions.from(drive);
 
@@ -301,7 +302,7 @@ public class SevenSampleTransitionAuto extends CommandOpMode {
                                 new DepositorCommand(depositor, Depositor.state.VERTICAL_TRANSITION).withTimeout(200),
                                 new ElevatorPositionCommand(elevator, Elevator.basketState.HOME)
                         ),
-                        new TrajectoryGotoCommand(drive, basketToSubmersible3)
+                        new TrajectoryGotoCommand(drive, completelySeparateAction)
                 ),
                 new KickerCommand(kicker, Kicker.state.OPEN).withTimeout(150),
                 new IntakePositionCommand(intake, Intake.state.INTAKING, 300, 0),

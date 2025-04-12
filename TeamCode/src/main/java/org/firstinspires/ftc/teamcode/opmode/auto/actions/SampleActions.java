@@ -102,7 +102,7 @@ public class SampleActions { // 8, 21, -16
     public static Action submersibleToBasket(Drivetrain drive) {
         return drive.getTrajectoryBuilder(submersiblePos1)
                 .setReversed(true)
-                .splineToLinearHeading(basketPos, Math.toRadians(240))
+                .splineToLinearHeading(basketPos, Math.toRadians(260))
                 .build();
     }
 
@@ -115,7 +115,7 @@ public class SampleActions { // 8, 21, -16
     public static Action submersible2ToBasket(Drivetrain drive) {
         return drive.getTrajectoryBuilder(submersiblePos2)
                 .setReversed(true)
-                .splineToLinearHeading(basketPos, Math.toRadians(240))
+                .splineToLinearHeading(basketPos, Math.toRadians(260))
                 .build();
     }
 
@@ -127,7 +127,7 @@ public class SampleActions { // 8, 21, -16
 
     public static Action from(Drivetrain drive) {
         return drive.getTrajectoryBuilder(submersiblePos3)
-                .splineToLinearHeading(basketPos, Math.toRadians(240))
+                .splineToLinearHeading(basketPos, Math.toRadians(260))
                 .build();
     }
 }
