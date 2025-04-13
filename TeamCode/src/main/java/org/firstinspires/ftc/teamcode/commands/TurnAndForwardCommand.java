@@ -19,6 +19,6 @@ public class TurnAndForwardCommand extends CommandBase {
 
     @Override
     public void execute() {
-        m_drivetrain.setRawPower(forward, 0, (targetAngle - Math.toDegrees(m_drivetrain.getCurrentPose().heading.log())) * -0.0135);
+        m_drivetrain.setRawPower(forward, 0, (targetAngle - Math.toDegrees(m_drivetrain.getCurrentPose().heading.log())) * -0.014);
     }
 }

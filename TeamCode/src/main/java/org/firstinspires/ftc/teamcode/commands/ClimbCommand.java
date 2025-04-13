@@ -4,19 +4,24 @@ import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.subsystems.Climb;
 
+import java.util.function.Supplier;
+
 public class ClimbCommand extends CommandBase {
     private final Climb climb;
-    private double leftAmt;
-    private double rightAmt;
+    private Supplier<Double> leftAmt;
+    private Supplier<Double> rightAmt;
 
-    public ClimbCommand(Climb climb, double leftAmt, double rightAmt) {
+    public ClimbCommand(Climb climb, Supplier<Double> leftAmt, Supplier<Double> rightAmt) {
         this.climb = climb;
         this.leftAmt = leftAmt;
         this.rightAmt = rightAmt;
+
+        addRequirements(climb);
     }
 
     @Override
     public void execute() {
-        climb.setState(state);
+        climb.setLeftMotor(leftAmt.get());
+        climb.setRightMotor(rightAmt.get());
     }
 }

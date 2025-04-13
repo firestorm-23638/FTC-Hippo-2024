@@ -13,7 +13,6 @@ public class SlideUntilHasPieceCommand extends CommandBase {
     private final Intake intake;
     private Timing.Timer timer;
     public double startTrim = 0;
-    private double minCurrent = 10000;
 
     public SlideUntilHasPieceCommand(Intake intake) {
         this(intake, 0);
@@ -30,7 +29,7 @@ public class SlideUntilHasPieceCommand extends CommandBase {
     public void initialize() {
         intake.hasTheRightColor = false;
         intake.trim = startTrim;
-        timer = new Timing.Timer(25, TimeUnit.MILLISECONDS);
+        timer = new Timing.Timer(20, TimeUnit.MILLISECONDS);
         timer.start();
     }
 
@@ -41,7 +40,7 @@ public class SlideUntilHasPieceCommand extends CommandBase {
         intake.setVacuumRun();
         if (timer.done()) {
             intake.trim += 1;
-            timer = new Timing.Timer(25, TimeUnit.MILLISECONDS);
+            timer = new Timing.Timer(20, TimeUnit.MILLISECONDS);
             timer.start();
         }
 

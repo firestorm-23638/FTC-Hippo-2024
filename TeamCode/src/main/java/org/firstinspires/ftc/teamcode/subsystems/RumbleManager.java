@@ -37,7 +37,7 @@ public class RumbleManager extends SubsystemBase {
             }
             else if (gameTimer.remainingTime() <= 15) {
                 if (gameTimer.remainingTime() == currentSecond) {
-                    gamepad.rumble(0.5, 0.5, 200);
+                    gamepad.rumble(0.7, 0.7, 200);
                     currentSecond --;
                 }
             }

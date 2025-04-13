@@ -34,7 +34,7 @@ public class SubmersibleTrajectoryGotoCommand extends CommandBase {
         trajectoryAction.run(packet);
         FtcDashboard.getInstance().sendTelemetryPacket(packet);
 
-        isFinished = (drivetrain.getCurrentPose().position.x > -11);
+        isFinished = (drivetrain.getCurrentPose().position.x > -13);
     }
 
     @Override

@@ -31,7 +31,7 @@ public class Constants {
 
     public static final double shoulderOffset = 9;
 
-    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_VERTICAL_TRANSITION_ANGLE_PAIR = new Depositor.AnglePair(77+shoulderOffset, 125);
+    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_VERTICAL_TRANSITION_ANGLE_PAIR = new Depositor.AnglePair(72+shoulderOffset, 129);
     public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_PICKUP_ANGLE_PAIR     = new Depositor.AnglePair(123+shoulderOffset,85); //109,130
     public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_PRIME_ANGLE_PAIR      = new Depositor.AnglePair(123+shoulderOffset, 67); //109,130
     public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_PRIME_PAIR                   = DEPOSITOR_PIVOT_TO_VERTICAL_TRANSITION_ANGLE_PAIR;
@@ -55,7 +55,7 @@ public class Constants {
     public static final String INTAKE_RIGHT_VACUUM_CONFIG       = "leftVacuum";
     public static final String INTAKE_BEAM_BREAK_CONFIG         = "intakeBeam";
     public static final String INTAKE_REV_COLOR_SENSOR_CONFIG   = "revColor";
-    public static final double INTAKE_PIVOT_TO_TRANSITION_ANGLE = 166.5;
+    public static final double INTAKE_PIVOT_TO_TRANSITION_ANGLE = 173;
     public static final double INTAKE_PIVOT_TO_DOWN_ANGLE       = 87;
     public static final double INTAKE_PIVOT_TO_REST_ANGLE       = INTAKE_PIVOT_TO_TRANSITION_ANGLE;
     public static final double INTAKE_PIVOT_TO_SPECIMEN_ANGLE   = INTAKE_PIVOT_TO_TRANSITION_ANGLE;
