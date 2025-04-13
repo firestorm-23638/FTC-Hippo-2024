@@ -30,7 +30,7 @@ public class ElevatorPositionCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        elevator.isZeroed = false;
+
     }
 
     @Override

@@ -35,7 +35,8 @@ public class SlideTest extends CommandOpMode {
         driver = new GamepadEx(this.gamepad1);
         operator = new GamepadEx(this.gamepad2);
 
-        intake = new Intake(hardwareMap, telemetry,  Intake.color.RED);
+        intake = new Intake(hardwareMap, telemetry);
+        intake.setTargetColor(Intake.color.BLUE_YELLOW);
 
         // Reads limelight position for now
         //limelight.setDefaultCommand(new LimelightCommand(limelight, drive));

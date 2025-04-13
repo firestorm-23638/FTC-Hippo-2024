@@ -100,11 +100,18 @@ public class Elevator extends SubsystemBase {
         telemetry.addData("Vertical %", vertical.get());
         telemetry.addData("Limit Switch", limitSwitch.getValue());
 
+        if (isGamepad) {
+            trim = this.gamepad.right_stick_y * 100;
+            if (trim < 0) {
+                trim = 0;
+            }
+        }
+
         pidTarget = currentStage.pos;
 
         telemetry.addData("Trim", trim);
 
-        if ((currentStage == basketState.HOME) || currentStage == basketState.MIDDLE_BASKET) {
+        if (currentStage == basketState.HOME) {
 //            if (!isZeroed) {
 //                if (!limitSwitch.getValue()) {
 //                    moveVertical(0);
@@ -116,11 +123,11 @@ public class Elevator extends SubsystemBase {
 //                }
             //}
             //else {
-                verticalToPos(pidTarget - trim);
+                verticalToPos(pidTarget + trim);
             //}
         }
         else {
-            verticalToPos(pidTarget - trim);    // Runs PID algorithm
+            verticalToPos(pidTarget + trim);    // Runs PID algorithm
         }
 
     }

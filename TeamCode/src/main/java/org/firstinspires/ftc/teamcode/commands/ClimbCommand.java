@@ -21,7 +21,7 @@ public class ClimbCommand extends CommandBase {
 
     @Override
     public void execute() {
-        climb.setLeftMotor(leftAmt.get());
-        climb.setRightMotor(rightAmt.get());
+        climb.requestSetLeftMotor(leftAmt.get());
+        climb.requestSetRightMotor(rightAmt.get());
     }
 }

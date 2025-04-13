@@ -26,6 +26,8 @@ public class Drivetrain extends SubsystemBase {
     public double forwardSpeedlimit = 1;
     public double strafeSpeedlimit = 1;
     public double rotSpeedLimit = 1;
+    public double targetAngle = 0;
+    public boolean isTargetAngle = false;
 
     public Drivetrain(HardwareMap hmap, Pose2d pose, Telemetry telemetry) {
         // get motors for drivetrain
@@ -117,10 +119,26 @@ public class Drivetrain extends SubsystemBase {
         else {
             this.fieldCentricDrive(forwardSpeed, strafeSpeed, turnSpeed, 0);
         }
+    }
 
+    public void enableDriveTargetAngle(double deg) {
+        this.targetAngle = deg;
+        this.isTargetAngle = true;
+    }
+
+    public void disableDriveTargetAngle() {
+        this.isTargetAngle = false;
     }
 
     private void fieldCentricDrive(double forwardSpeed, double strafeSpeed, double turnSpeed, double gyroAngle) {
+
+        if (isTargetAngle) {
+            gyroAngle = 0;
+            turnSpeed = targetAngle - Math.toDegrees(this.mecanumDrive.localizer.getPose().heading.log()) * -0.014;
+            telemetry.addData("Target Angle", targetAngle);
+            telemetry.addData("Current Angle", Math.toDegrees(this.mecanumDrive.localizer.getPose().heading.log()));
+            telemetry.addData("Set Turn Speed", turnSpeed);
+        }
 
         forwardSpeed = forwardSpeed * forwardSpeedlimit;
         strafeSpeed = strafeSpeed * strafeSpeedlimit;

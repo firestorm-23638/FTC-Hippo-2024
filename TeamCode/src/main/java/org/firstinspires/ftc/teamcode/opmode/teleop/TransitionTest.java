@@ -29,8 +29,10 @@ public class TransitionTest extends CommandOpMode {
     public void initialize() {
         driver = new GamepadEx(this.gamepad1);
         dep = new Depositor(hardwareMap, telemetry);
-        intake = new Intake(hardwareMap, telemetry, Intake.color.RED);
+        intake = new Intake(hardwareMap, telemetry);
         elevator = new Elevator(hardwareMap, telemetry);
+
+        intake.setTargetColor(Intake.color.BLUE_YELLOW);
 
         // Reads limelight position for now
         //limelight.setDefaultCommand(new LimelightCommand(limelight, drive));

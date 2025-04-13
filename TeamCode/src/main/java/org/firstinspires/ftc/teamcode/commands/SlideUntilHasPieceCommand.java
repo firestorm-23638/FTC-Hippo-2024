@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.commands;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.util.Timing;
 
-import org.firstinspires.ftc.robotcore.external.Const;
-import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 
 import java.util.concurrent.TimeUnit;
@@ -48,6 +46,6 @@ public class SlideUntilHasPieceCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return (intake.trim == 50) || (intake.getCurrentColor() == Intake.color.YELLOW) || ((intake.getCurrentColor() != intake.colorToIgnore) && (intake.getCurrentColor() != Intake.color.NONE));
+        return (intake.trim == 50) || (intake.getCurrentColor() == Intake.color.YELLOW) || ((intake.getCurrentColor() != intake.targetColor) && (intake.getCurrentColor() != Intake.color.NONE));
     }
 }

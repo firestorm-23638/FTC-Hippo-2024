@@ -2,12 +2,14 @@ package org.firstinspires.ftc.teamcode.opmode.auto.actions;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
 
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 
 public class SpecimenActions {
     public static final Pose2d startingPos = new Pose2d(10, -61, Math.toRadians(270));
-    public static final Pose2d firstSpecimenScore = new Pose2d(5, -29, Math.toRadians(270));
+    public static final Pose2d firstSpecimenScore = new Pose2d(-4, -29, Math.toRadians(270));
+    public static final Pose2d pickupPos = new Pose2d(45, -63, Math.toRadians(270));
 
     //    public static Action toFirstSample(Drivetrain drive) {
 //        return drive.getTrajectoryBuilder(new Pose2d(rightSpecimenPos, Math.toRadians(180)))
@@ -30,21 +32,59 @@ public class SpecimenActions {
                 .splineToLinearHeading(new Pose2d(5, -35, Math.toRadians(270)), Math.toRadians(270))
                 .splineToLinearHeading(new Pose2d(35, -35, Math.toRadians(270)), Math.toRadians(90))
                 .splineToLinearHeading(new Pose2d(35, -15, Math.toRadians(270)), Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(45, -15, Math.toRadians(270)), Math.toRadians(270))
-                .splineToLinearHeading(new Pose2d(45, -50, Math.toRadians(270)), Math.toRadians(270)) // push first one
-                .splineToLinearHeading(new Pose2d(45, -15, Math.toRadians(270)), Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(55, -15, Math.toRadians(270)), Math.toRadians(270))
-                .splineToLinearHeading(new Pose2d(55, -50, Math.toRadians(270)), Math.toRadians(270)) // push second one
-                .splineToLinearHeading(new Pose2d(55, -15, Math.toRadians(270)), Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(63, -15, Math.toRadians(270)), Math.toRadians(270))
-                .splineToLinearHeading(new Pose2d(63, -50, Math.toRadians(270)), Math.toRadians(270)) // push third one
+                .splineToLinearHeading(new Pose2d(50, -15, Math.toRadians(270)), Math.toRadians(270))
                 .setReversed(true)
-                .splineToLinearHeading(new Pose2d(50, -45, Math.toRadians(270)), Math.toRadians(180))
-                .splineToLinearHeading(new Pose2d(45, -62, Math.toRadians(270)), Math.toRadians(270)) // pickup second specimen
+                .setReversed(false)
+                .splineToLinearHeading(new Pose2d(50, -50, Math.toRadians(270)), Math.toRadians(270)) // push first one
+                .setReversed(true)
+                .setReversed(false)
+                .splineToLinearHeading(new Pose2d(50, -15, Math.toRadians(270)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(60, -15, Math.toRadians(270)), Math.toRadians(270))
+                .setReversed(true)
+                .setReversed(false)
+                .splineToLinearHeading(new Pose2d(60, -50, Math.toRadians(270)), Math.toRadians(270)) // push second one
+                .setReversed(true)
+                .setReversed(false)
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(45, -63, Math.toRadians(270)), Math.toRadians(270))
                 .build();
     }
 
+    public static Action scoreSecondSpecimen(Drivetrain drive) {
+        return drive.getTrajectoryBuilder(pickupPos)
+                .strafeTo(new Vector2d(0, -29))
+                .build();
+    }
 
+    public static Action secondSpecimenToPickup(Drivetrain drive) {
+        return drive.getTrajectoryBuilder(new Pose2d(0, -29, Math.toRadians(270)))
+                .strafeTo(pickupPos.position)
+                .build();
+    }
+
+    public static Action scoreThirdSpecimen(Drivetrain drive) {
+        return drive.getTrajectoryBuilder(pickupPos)
+                .strafeTo(new Vector2d(4, -29))
+                .build();
+    }
+
+    public static Action thirdSpecimenToPickup(Drivetrain drive) {
+        return drive.getTrajectoryBuilder(new Pose2d(4, -29, Math.toRadians(270)))
+                .strafeTo(pickupPos.position)
+                .build();
+    }
+
+    public static Action scoreFourthSpecimen(Drivetrain drive) {
+        return drive.getTrajectoryBuilder(pickupPos)
+                .strafeTo(new Vector2d(8, -29))
+                .build();
+    }
+
+    public static Action fourthSpecimenToPickup(Drivetrain drive) {
+        return drive.getTrajectoryBuilder(new Pose2d(8, -29, Math.toRadians(270)))
+                .strafeTo(pickupPos.position)
+                .build();
+    }
 
 //    public static Action pushFirstSample(Drivetrain drive) {
 //        return drive.getTrajectoryBuilder(new Pose2d(39, -20, Math.toRadians(0)))

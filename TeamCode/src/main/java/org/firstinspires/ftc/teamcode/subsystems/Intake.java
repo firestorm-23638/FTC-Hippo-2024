@@ -68,12 +68,14 @@ public class Intake extends SubsystemBase {
         RED,
         YELLOW,
         BLUE,
+        RED_YELLOW,
+        BLUE_YELLOW,
         NONE
     }
 
     public state currentState = state.RESTING;
     public vacuum vacuumState = vacuum.STATIONING;
-    public color colorToIgnore;
+    public color targetColor = color.BLUE_YELLOW;
     public Timing.Timer blockerTimer = new Timing.Timer(300, TimeUnit.MILLISECONDS);
     public Timing.Timer intakeLowerTimer = new Timing.Timer(200, TimeUnit.MILLISECONDS);
     public Gamepad gamepad;
@@ -86,12 +88,12 @@ public class Intake extends SubsystemBase {
     public short colorSampleAmt = 0;
     public color finalSampleColor;
 
-    public Intake(HardwareMap hardwareMap, Telemetry telemetry, color colorToIgnore) {
-        this(hardwareMap, telemetry, colorToIgnore, null);
+    public Intake(HardwareMap hardwareMap, Telemetry telemetry) {
+        this(hardwareMap, telemetry, null);
         isGamepad = false;
     };
 
-    public Intake(HardwareMap hardwareMap, Telemetry telemetry, color colorToIgnore, Gamepad gamepad) {
+    public Intake(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad) {
         leftHorizontal  = new SimpleServo(hardwareMap, Constants.LEFT_EXTENSION_CONFIG, 0, 180, AngleUnit.DEGREES);
         rightHorizontal = new SimpleServo(hardwareMap, Constants.RIGHT_EXTENSION_CONFIG, 0, 180, AngleUnit.DEGREES);
         blocker = new SimpleServo(hardwareMap, "blockerServo", 0, 180);
@@ -105,8 +107,6 @@ public class Intake extends SubsystemBase {
 
         isGamepad = true;
         this.gamepad = gamepad;
-
-        this.colorToIgnore = colorToIgnore;
 
         this.telemetry = telemetry;
     }
@@ -140,6 +140,10 @@ public class Intake extends SubsystemBase {
         blocker.turnToAngle(45);
     }
 
+    public void setTargetColor(color color) {
+        targetColor = color;
+    }
+
     private boolean withinRange(double val, double min, double max) {
         return (val > min) && (val < max);
     }
@@ -162,7 +166,6 @@ public class Intake extends SubsystemBase {
         telemetry.addData("Current", getControlHubMilliamps());
         telemetry.addData("Current Recorded Color", currentColor);
         telemetry.addData("TRIM", trim);
-        telemetry.addData("Current Estimated Color", finalSampleColor);
 
         if (isGamepad) {
             trim = (gamepad.left_trigger * 70);
@@ -185,7 +188,7 @@ public class Intake extends SubsystemBase {
 
                 if (!intakeEmpty()) {
                     runVacuumStop();
-                    if (currentColor == colorToIgnore) {
+                    if (!hasCorrectColor()) {
                         blockerUp();
                         runVacuumRun();
                         blockerTimer = new Timing.Timer(300, TimeUnit.MILLISECONDS);
@@ -262,7 +265,7 @@ public class Intake extends SubsystemBase {
             case BARFING:
                 horizontalOut();
                 pivotEject();
-                runVacuumRun();
+                runVacuumEject();
                 blockerUp();
                 break;
             case DOWN_EJECTING:
@@ -277,6 +280,23 @@ public class Intake extends SubsystemBase {
         }
 
         telemetry.addData("beam", intakeEmpty());
+        telemetry.addData("target color", targetColor);
+    }
+
+    public boolean hasCorrectColor() {
+        if (targetColor == color.BLUE_YELLOW) {
+            return (currentColor == color.BLUE) || (currentColor == color.YELLOW);
+        }
+        else if (targetColor == color.RED_YELLOW) {
+            return (currentColor == color.RED) || (currentColor == color.YELLOW);
+        }
+        else if (targetColor == color.BLUE) {
+            return (currentColor == color.BLUE);
+        }
+        else if (targetColor == color.RED) {
+            return (currentColor == color.RED);
+        }
+        return false;
     }
 
     public boolean intakeEmpty() {

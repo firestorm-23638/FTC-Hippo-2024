@@ -52,7 +52,8 @@ public class SpecimenTest extends CommandOpMode {
 
         drive = new Drivetrain(hardwareMap, new Pose2d(0, 0, 0), telemetry);
         dep = new Depositor(hardwareMap, telemetry);
-        intake = new Intake(hardwareMap, telemetry, Intake.color.RED, gamepad1);
+        intake = new Intake(hardwareMap, telemetry, gamepad1);
+        intake.setTargetColor(Intake.color.BLUE);
         elevator = new Elevator(hardwareMap, telemetry);
         rumbleManager = new RumbleManager(hardwareMap, telemetry, gamepad1);
 

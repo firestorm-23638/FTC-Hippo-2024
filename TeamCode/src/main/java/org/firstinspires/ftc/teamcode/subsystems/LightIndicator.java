@@ -19,6 +19,8 @@ public class LightIndicator extends SubsystemBase {
     private short currentAction = 0;
     private boolean override = false;
     private PatternState overrideState = PatternState.YELLOW_BLUE;
+    private Telemetry telemetry;
+    private ColorState colorState;
 
     public PatternState patternState = PatternState.YELLOW_BLUE;
 
@@ -71,11 +73,13 @@ public class LightIndicator extends SubsystemBase {
     public LightIndicator(HardwareMap hardwareMap, Telemetry telemetry) {
         port0 = hardwareMap.get(Servo.class, Constants.LIGHT_INDICATOR0_CONFIG);
         port1 = hardwareMap.get(Servo.class, Constants.LIGHT_INDICATOR1_CONFIG);
+        this.telemetry = telemetry;
     }
 
     private boolean executePattern(List<LightAction> actions) {
         boolean ret = false;
         setState(actions.get(currentAction).state);
+        colorState = actions.get(currentAction).state;
         if (patternTimer.done()) {
             currentAction++;
             if (currentAction >= actions.size()) {
@@ -83,6 +87,11 @@ public class LightIndicator extends SubsystemBase {
                 ret = true;
             }
             patternTimer = new Timing.Timer(actions.get(currentAction).millis, TimeUnit.MILLISECONDS);
+            patternTimer.start();
+        }
+        else if (!patternTimer.isTimerOn()) {
+            patternTimer = new Timing.Timer(actions.get(currentAction).millis, TimeUnit.MILLISECONDS);
+            patternTimer.start();
         }
         return ret;
     }
@@ -94,26 +103,29 @@ public class LightIndicator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (override) {
-            switch (overrideState) {
-                case OVERRIDE_GREEN:
-                    override = !executePattern(new LightBuilder()
-                            .color(ColorState.GREEN, 150)
-                            .color(ColorState.OFF, 100)
-                            .color(ColorState.GREEN, 150)
-                            .color(ColorState.OFF, 100)
-                            .build());
-                    break;
-                case OVERRIDE_RED:
-                    override = !executePattern(new LightBuilder()
-                            .color(ColorState.RED, 150)
-                            .color(ColorState.OFF, 100)
-                            .color(ColorState.RED, 150)
-                            .color(ColorState.OFF, 100)
-                            .build());
-                    break;
-            }
-        }
+//        if (override) {
+//            switch (overrideState) {
+//                case OVERRIDE_GREEN:
+//                    override = !executePattern(new LightBuilder()
+//                            .color(ColorState.GREEN, 150)
+//                            .color(ColorState.OFF, 100)
+//                            .color(ColorState.GREEN, 150)
+//                            .color(ColorState.OFF, 100)
+//                            .build());
+//                    break;
+//                case OVERRIDE_RED:
+//                    override = !executePattern(new LightBuilder()
+//                            .color(ColorState.RED, 150)
+//                            .color(ColorState.OFF, 100)
+//                            .color(ColorState.RED, 150)
+//                            .color(ColorState.OFF, 100)
+//                            .build());
+//                    break;
+//            }
+//        }
+        telemetry.addData("pattern state", patternState);
+        telemetry.addData("Current action", currentAction);
+        telemetry.addData("current state", colorState);
         switch (patternState) {
             case SOLID_RED:
                 setState(ColorState.RED);
@@ -128,16 +140,25 @@ public class LightIndicator extends SubsystemBase {
                         .build());
                 break;
             case YELLOW_BLUE:
+                telemetry.addData("here", "");
                 executePattern(new LightBuilder()
                         .color(ColorState.YELLOW, 500)
                         .color(ColorState.BLUE, 500)
                         .build());
+                break;
             case FLASHING_GREEN:
                 executePattern(new LightBuilder()
                         .color(ColorState.GREEN, 700)
                         .color(ColorState.OFF, 300)
                         .build());
                 break;
+            case FLASHING_BLUE:
+                executePattern(new LightBuilder()
+                        .color(ColorState.BLUE, 500)
+                        .color(ColorState.OFF, 500)
+                        .build());
+                break;
+
         }
     }
 

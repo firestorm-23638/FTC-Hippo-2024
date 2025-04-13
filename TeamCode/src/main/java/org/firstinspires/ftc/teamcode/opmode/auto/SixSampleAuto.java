@@ -48,8 +48,10 @@ public class SixSampleAuto extends CommandOpMode {
         depositor = new Depositor(hardwareMap, telemetry);
         drive = new Drivetrain(hardwareMap, home, telemetry);
         elevator = new Elevator(hardwareMap, telemetry);
-        intake = new Intake(hardwareMap, telemetry, Intake.color.RED);
+        intake = new Intake(hardwareMap, telemetry);
         kicker = new Kicker(hardwareMap, telemetry);
+
+        intake.setTargetColor(Intake.color.BLUE_YELLOW);
 
         drive.forwardSpeedlimit = 1;
         drive.strafeSpeedlimit = 1;

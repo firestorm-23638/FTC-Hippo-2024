@@ -33,7 +33,8 @@ public class IntakeTest extends CommandOpMode {
         driver = new GamepadEx(this.gamepad1);
         operator = new GamepadEx(this.gamepad2);
 
-        intake = new Intake(hardwareMap, telemetry,  Intake.color.RED, gamepad1);
+        intake = new Intake(hardwareMap, telemetry, gamepad1);
+        intake.setTargetColor(Intake.color.BLUE_YELLOW);
 
         GamepadButton intakeOut = new GamepadButton(driver, GamepadKeys.Button.RIGHT_BUMPER);
 
@@ -43,7 +44,7 @@ public class IntakeTest extends CommandOpMode {
         //TEST.whenHeld(new RunCommand(() -> intake.blockerDown())).whenReleased(new RunCommand(() -> intake.blockerUp()));
 
         intakeOut.whenHeld(new SequentialCommandGroup(
-                new IntakingCommand(intake, Intake.color.RED)
+                new IntakingCommand(intake)
         )).whenReleased(new InstantCommand(() -> {
             intake.currentState = Intake.state.RESTING;
             intake.updateColorSensor(false);

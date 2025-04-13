@@ -130,4 +130,11 @@ public class SampleActions { // 8, 21, -16
                 .splineToLinearHeading(basketPos, Math.toRadians(260))
                 .build();
     }
+
+    public static Action submersibleToSubmersible2(Drivetrain drive) {
+        return drive.getTrajectoryBuilder(submersiblePos1)
+                .strafeTo(submersiblePos2.position)
+                .build();
+
+    }
 }

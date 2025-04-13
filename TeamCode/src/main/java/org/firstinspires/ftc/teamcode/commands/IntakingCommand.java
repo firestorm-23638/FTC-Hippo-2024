@@ -6,11 +6,9 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 
 public class IntakingCommand extends CommandBase {
     private final Intake m_intake;
-    private Intake.color colorToIgnore;
 
-    public IntakingCommand(Intake intake, Intake.color colorToIgnore) {
+    public IntakingCommand(Intake intake) {
         m_intake = intake;
-        this.colorToIgnore = colorToIgnore;
 
         addRequirements(m_intake);
     }
@@ -27,6 +25,6 @@ public class IntakingCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return (m_intake.currentColor != Intake.color.NONE) && (m_intake.currentColor != colorToIgnore);
+        return (m_intake.currentColor != Intake.color.NONE) && m_intake.hasCorrectColor();
     }
 }

@@ -32,7 +32,7 @@ public class Constants {
     public static final double shoulderOffset = 9;
 
     public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_VERTICAL_TRANSITION_ANGLE_PAIR = new Depositor.AnglePair(72+shoulderOffset, 129);
-    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_PICKUP_ANGLE_PAIR     = new Depositor.AnglePair(123+shoulderOffset,85); //109,130
+    public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_PICKUP_ANGLE_PAIR     = new Depositor.AnglePair(130,83); //109,130
     public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_SPECIMEN_PRIME_ANGLE_PAIR      = new Depositor.AnglePair(123+shoulderOffset, 67); //109,130
     public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_PRIME_PAIR                   = DEPOSITOR_PIVOT_TO_VERTICAL_TRANSITION_ANGLE_PAIR;
     public static final Depositor.AnglePair DEPOSITOR_PIVOT_TO_HOME_ANGLE_PAIR              = new Depositor.AnglePair(149+shoulderOffset, 90);
@@ -59,7 +59,7 @@ public class Constants {
     public static final double INTAKE_PIVOT_TO_DOWN_ANGLE       = 87;
     public static final double INTAKE_PIVOT_TO_REST_ANGLE       = INTAKE_PIVOT_TO_TRANSITION_ANGLE;
     public static final double INTAKE_PIVOT_TO_SPECIMEN_ANGLE   = INTAKE_PIVOT_TO_TRANSITION_ANGLE;
-    public static final double INTAKE_PIVOT_TO_EJECT_ANGLE      = 190;
+    public static final double INTAKE_PIVOT_TO_EJECT_ANGLE      = INTAKE_PIVOT_TO_DOWN_ANGLE;
     public static final double INTAKE_INCHING_SPEED             = 0.2;
     public static final double INTAKE_SUCK_SPEED                = -1;
     public static final double INTAKE_EJECT_SPEED               = .5;

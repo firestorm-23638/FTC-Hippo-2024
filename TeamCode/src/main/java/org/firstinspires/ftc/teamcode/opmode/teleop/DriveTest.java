@@ -29,7 +29,8 @@ public class DriveTest extends CommandOpMode {
         operator = new GamepadEx(this.gamepad2);
 
         drive = new Drivetrain(hardwareMap, new Pose2d(0, 0, 0), telemetry);
-        intake = new Intake(hardwareMap, telemetry,  Intake.color.RED, gamepad1);
+        intake = new Intake(hardwareMap, telemetry, gamepad1);
+        intake.setTargetColor(Intake.color.BLUE_YELLOW);
 
         GamepadButton intakeOut = new GamepadButton(driver, GamepadKeys.Button.RIGHT_BUMPER);
 
@@ -42,7 +43,7 @@ public class DriveTest extends CommandOpMode {
                 false));
 
         intakeOut.whenHeld(new SequentialCommandGroup(
-                new IntakingCommand(intake, Intake.color.RED)
+                new IntakingCommand(intake)
         )).whenReleased(new InstantCommand(() -> {
             intake.currentState = Intake.state.RESTING;
             intake.updateColorSensor(false);
